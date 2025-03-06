@@ -1,6 +1,7 @@
 #define SDL_MAIN_HANDLED
 #include <iostream>
-#include "C:\C++\GAME\src\include\SDL2\SDL.h"
+#include "C:\C++\GAME\GAME\src\include\SDL2\SDL.h"
+
 using namespace std;
 
 const int WIDTH = 640;
