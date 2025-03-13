@@ -7,7 +7,7 @@
 #define PLAYER_SIZE 30
 #define ALIEN_SIZE 20
 
-#define WINDOW_TITLE "Smilemo!"
+#define WINDOW_TITLE "RunMo!"
 
 #define BACKGROUND_IMG "sdl_image\\Abstract"
 #endif
