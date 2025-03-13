@@ -1,79 +1,93 @@
 #define SDL_MAIN_HANDLED
-#include <iostream>
-#include "C:\C++\GAME\GAME\src\include\SDL2\SDL.h"
+#include <bits/stdc++.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include "defs.h"
 
 using namespace std;
 
-const int WIDTH = 640;
-const int HEIGHT = 480;
 
-SDL_Surface *image1;
-SDL_Surface *image2;
-SDL_Surface *surface;
-SDL_Window *window;
-
-SDL_Event ev;
-bool running = true;
-
-int main()
+void logErrorAndExit(const char *msg, const char *error)
 {
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+    SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "%s: %s", msg, error);
+    SDL_Quit();
+}
+
+SDL_Window *initSDL(int SCREEN_WIDTH, int SCREEN_HEIGHT, const char *WINDOW_TITLE)
+{
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+        logErrorAndExit("SDL_Init", SDL_GetError());
+
+    SDL_Window *window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    // full screen    if (window == nullptr)
+    logErrorAndExit("CreateWindow", SDL_GetError());
+    if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG))
+        logErrorAndExit("SDL_image error:", IMG_GetError());
+    return window;
+}
+SDL_Texture *loadTexture(const char *filename, SDL_Renderer *renderer)
+{
+    SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Loading %s", filename);
+    SDL_Texture *texture = IMG_LoadTexture(renderer, filename);
+    if (texture == NULL)
     {
-        cout << SDL_GetError();
-        return 1;
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Load texture %s", IMG_GetError());
     }
-    window = SDL_CreateWindow("window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
-    if (!window)
-    {
-        SDL_Log(SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
-    surface = SDL_GetWindowSurface(window);
-    if (!surface)
-    {
-        SDL_Log(SDL_GetError());
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
-    SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 255, 90, 120));
-    SDL_Surface *load = SDL_LoadBMP("test.bmp");
-    SDL_Surface *image = SDL_ConvertSurface(load, surface->format, 0);
-    if (!image)
-    {
-        // load failed
-    }
-    SDL_BlitSurface(image1, NULL, surface, NULL);
-    SDL_Rect dest;
-    dest.x = 100;
-    dest.y = 50;
-    dest.w = 370;
-    dest.h = 240;
-    SDL_BlitSurface(image2, NULL, surface, &dest);
-    SDL_UpdateWindowSurface(window);
-    SDL_Delay(3000);
+    return texture;
+}
+
+SDL_Renderer *createRenderer(SDL_Window *window)
+{
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    // Khi chạy trong máy ảo (ví dụ phòng máy ở trường)
+    // renderer = SDL_CreateSoftwareRenderer(SDL_GetWindowSurface(window));
+
+    if (renderer == nullptr)
+        logErrorAndExit("CreateRenderer", SDL_GetError());
+
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    return renderer;
+}
+
+void quitSDL(SDL_Window *window, SDL_Renderer *renderer)
+{
+    IMG_Quit();
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-    return 0;
 }
-bool load()
+
+void waitUntilKeyPressed()
 {
-    SDL_Surface *temp1, *temp2;
-    temp1 = SDL_LoadBMP("test1.bmp");
-    temp2 = SDL_LoadBMP("test2.bmp");
-    if (!temp1 || !temp2)
+    SDL_Event e;
+    while (true)
     {
-        SDL_Log(SDL_GetError());
-        SDL_Quit();
-        return false;
+        if (SDL_PollEvent(&e) != 0 &&
+            (e.type == SDL_KEYDOWN || e.type == SDL_QUIT))
+            return;
+        SDL_Delay(100);
     }
-    image1 = SDL_ConvertSurface(temp1, surface->format, 0);
-    image2 = SDL_ConvertSurface(temp2, surface->format, 0);
-    if (!image1 || !image2)
-    {
-        cout << SDL_GetError();
-        return false;
-    }
-    return true;
+}
+
+void drawSomething(SDL_Window *window, SDL_Renderer *renderer)
+{
+}
+
+int main(int argc, char *argv[])
+{
+    SDL_Window *window = initSDL(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
+    SDL_Renderer *renderer = createRenderer(window);
+
+    SDL_Texture *background = loadTexture("", renderer);
+    SDL_RenderCopy(renderer, background, NULL, NULL);
+
+    SDL_RenderPresent(renderer);
+    waitUntilKeyPressed();
+    SDL_DestroyTexture(background);
+    background = NULL;
+
+    quitSDL(window, renderer);
+    return 0;
 }
