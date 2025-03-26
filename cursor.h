@@ -14,10 +14,10 @@ struct Cursor
 
     void createCursor(const Graphics &graphics)
     {
-        texCursor1 = IMG_LoadTexture(graphics.renderer, "sdl_image\\cursor1.png");
-        texCursor2 = IMG_LoadTexture(graphics.renderer, "sdl_image\\cursor2.png");
-        rect.w = 40;
-        rect.h = 40;
+        texCursor1 = IMG_LoadTexture(graphics.renderer, "sdl_image\\cursor 1.png");
+        texCursor2 = IMG_LoadTexture(graphics.renderer, "sdl_image\\cursor 2.png");
+        rect.w = 60;
+        rect.h = 60;
         point.w = 1;
         point.h = 1;
     }
