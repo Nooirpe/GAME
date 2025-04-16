@@ -21,7 +21,7 @@ struct Player
     float movetime = 0.0f;  // Thời gian đã di chuyển
     bool isGrounded = false;
     float gravity = 1350.0f;  // Gia tốc trọng trường
-    float jumpForce = 400.0f; // Lực nhảy
+    float jumpForce = 500.0f; // Lực nhảy
     float landTimer = 0.0f;
     static constexpr float PLATFORM_HEIGHT = 539.0f; // Change this value to whatever you want
 
@@ -552,7 +552,6 @@ struct Player
             if (player.y + player.height > PLATFORM_HEIGHT - 33 &&
                 player.y < PLATFORM_HEIGHT - 33 + 33)
             {
-                // Left boundary - block exactly at x=350
                 if (player.x + player.width > 370 && player.x < 370)
                 {
                     player.x = 370 - player.width;
@@ -563,12 +562,10 @@ struct Player
             if (player.y + player.height > PLATFORM_HEIGHT - 71 &&
                 player.y < PLATFORM_HEIGHT - 71 + 71)
             {
-                // Left boundary - block exactly at x=430
                 if (player.x + player.width > 430 && player.x < 430)
                 {
                     player.x = 430 - player.width;
                 }
-                // Right boundary - block exactly at x=460
                 if (player.x < 460 && player.x + player.width > 460)
                 {
                     player.x = 460;
@@ -579,12 +576,10 @@ struct Player
             if (player.y + player.height > PLATFORM_HEIGHT - 111 &&
                 player.y < PLATFORM_HEIGHT - 111 + 111)
             {
-                // Left boundary - block exactly at x=480
                 if (player.x + player.width > 490 && player.x < 490)
                 {
                     player.x = 490 - player.width;
                 }
-                // Right boundary - block exactly at x=736
                 if (player.x < 736 && player.x + player.width > 736)
                 {
                     player.x = 736;
@@ -595,12 +590,10 @@ struct Player
             if (player.y + player.height > PLATFORM_HEIGHT - 52 &&
                 player.y < PLATFORM_HEIGHT - 52 + 52)
             {
-                // Left boundary - block exactly at x=811
                 if (player.x + player.width > 811 && player.x + player.width < 811)
                 {
                     player.x = 811 - player.width;
                 }
-                // Right boundary - block exactly at x=860
                 if (player.x < 840 && player.x + player.width > 840)
                 {
                     player.x = 840;
@@ -611,17 +604,46 @@ struct Player
             if (player.y + player.height > PLATFORM_HEIGHT - 16 &&
                 player.y < PLATFORM_HEIGHT - 16 + 16)
             {
-                // Left boundary - block exactly at x=928
                 if (player.x + player.width > 948 && player.x < 948)
                 {
                     player.x = 948 - player.width;
                 }
-                // Right boundary - block exactly at x=1015
                 if (player.x < 995 && player.x + player.width > 995)
                 {
                     player.x = 995;
                 }
             }
+        }
+        if (level == 3)
+        {
+            if (!player.isGrounded)
+            {
+                // Increase falling speed (gravity effect)
+                player.velocityY += player.gravity * deltaTime;
+
+                // Update position based on velocity
+                player.y += player.velocityY * deltaTime;
+                // Check if player landed on platform
+                if (player.y >= PLATFORM_HEIGHT + 13 - player.height)
+                {
+                    player.y = PLATFORM_HEIGHT + 13 - player.height;
+                    player.velocityY = 0;
+                    player.isGrounded = true;
+                    // landing animation
+                    player.justLanded = true;
+                    player.landTimer = 0.2f; // Reset timer for landing animation
+                    if (player.velocityX == 0)
+                        player.animation.currentDirection = player.animation.IDLE;
+                }
+            }
+            // Update horizontal position
+            player.x += player.velocityX * deltaTime;
+
+            // Apply horizontal boundaries
+            if (player.x < 0)
+                player.x = 0;
+            if (player.x > 1300 - player.width)
+                player.x = 1300 - player.width;
         }
 
         // Set moving state based on any movement (horizontal or vertical)

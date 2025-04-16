@@ -13,18 +13,7 @@
 #include "C:\C++\GAME\GAME\src\include\SDL2\SDL_mixer.h"
 using namespace std;
 Mix_Music *massahMusic = nullptr;
-/* void waitUntilKeyPressed()
-{
-    SDL_Event e;
-    while (true)
-    {
-        if (SDL_PollEvent(&e) != 0 &&
-            (e.type == SDL_KEYDOWN || e.type == SDL_QUIT))
-            return;
-        SDL_Delay(100);
-    }
-} */
-int main(int argc, char *argv[])
+int main()
 {
     Graphics graphics;
     graphics.init();
@@ -63,7 +52,7 @@ int main(int argc, char *argv[])
     bool playerWinning = false;
     bool onemenu = true;    // Tranh lap menu
     bool onelevel = true;   // Tranh lap level
-    bool sfxEnbaled = true; // check sfx
+    bool sfxEnabled = true; // check sfx
     SDL_Event e;
     bool keyStates[SDL_NUM_SCANCODES] = {false}; // Dò key states
     Uint32 lastTime = SDL_GetTicks();
@@ -90,7 +79,7 @@ int main(int argc, char *argv[])
             SDL_RenderClear(graphics.renderer);
             if (!end)
             {
-                menu(mn, graphics, cursor, e, countmenu, quit, playSound, ingame, options, level, menuSelect, menuChoose, sfxEnbaled, massahMusic);
+                menu(mn, graphics, cursor, e, countmenu, quit, playSound, ingame, options, level, menuSelect, menuChoose, sfxEnabled, massahMusic);
             }
             cursor.draw(graphics); // Chuot de cuoi
             if (ingame)
@@ -103,7 +92,7 @@ int main(int argc, char *argv[])
         {
             if (onelevel)
             {
-                if (level == 0 || player.health <= 0) // Only reset health when starting a new level
+                if (level == 0 || player.health <= 0 || playerWinning) // Only reset health when starting a new level
                 {
                     player.health = 5;
                 }
@@ -133,16 +122,15 @@ int main(int argc, char *argv[])
                         gameover(graphics, mn, player, ingame);
                         onemenu = true;
                     }
-                    continue;
                 }
                 if (playerWinning && SDL_GetTicks() - stateChangeTime > 500)
                 {
                     win(graphics, player);
                     complete(graphics, mn, player, ingame);
                     playerWinning = false;
-                    level++;
+                    player.health = 5;
+                    level = 0;
                     onelevel = true;
-                    continue;
                 }
             }
 
@@ -157,6 +145,11 @@ int main(int argc, char *argv[])
 
                 level2(onelevel, graphics, player, mn, level, playerDying, playerWinning, stateChangeTime);
             }
+            else if (level == 3)
+            {
+                level3(onelevel, graphics, player, mn, level,
+                       playerDying, playerWinning, stateChangeTime);
+            }
             drawhealth(graphics, player, mn);
             graphics.presentScene();
 
@@ -168,79 +161,5 @@ int main(int argc, char *argv[])
     massahMusic = nullptr;
     Mix_CloseAudio();
 
-    /* SDL_Event event;
-    bool keyStates[SDL_NUM_SCANCODES] = {false}; // Dò key states
-    bool quit = false;
-
-    Uint32 lastTime = SDL_GetTicks();
-    while (!quit)
-    {
-        // Tính toán deltaTime để di chuyển mượt mà
-        Uint32 currentTime = SDL_GetTicks();
-        float deltaTime = (currentTime - lastTime) / 1000.0f;
-        lastTime = currentTime;
-        // Chạy events
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
-            case SDL_QUIT:
-                quit = true;
-                break;
-            case SDL_KEYDOWN:
-                if (event.key.repeat == 0)
-                {
-                    keyStates[event.key.keysym.scancode] = true;
-                }
-                break;
-            case SDL_KEYUP:
-                keyStates[event.key.keysym.scancode] = false;
-                break;
-            }
-        }
-        // Di chuyển liên tục
-        player.velocityX = 0;
-        player.velocityY = 0;
-        // Handle movement - prioritize x-axis movement over y-axis
-        bool movingHorizontally = false;
-
-        // First check horizontal movement
-        if (keyStates[SDL_SCANCODE_A] || keyStates[SDL_SCANCODE_LEFT])
-        {
-            player.velocityX = -player.speed;
-            movingHorizontally = true;
-        }
-        else if (keyStates[SDL_SCANCODE_D] || keyStates[SDL_SCANCODE_RIGHT])
-        {
-            player.velocityX = player.speed;
-            movingHorizontally = true;
-        }
-
-        // Only process vertical movement if not moving horizontally
-        if (!movingHorizontally)
-        {
-            if (keyStates[SDL_SCANCODE_W] || keyStates[SDL_SCANCODE_UP])
-            {
-                player.velocityY = -player.speed;
-            }
-            else if (keyStates[SDL_SCANCODE_S] || keyStates[SDL_SCANCODE_DOWN])
-            {
-                player.velocityY = player.speed;
-            }
-        }
-        // Cập nhật logic
-        player.update(deltaTime);
-
-        // Render
-        SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 255);
-        SDL_RenderClear(graphics.renderer);
-
-        player.render(graphics.renderer);
-        // player.testRender(graphics.renderer);
-
-        SDL_RenderPresent(graphics.renderer);
-
-        SDL_Delay(16); // ~60 FPS */
-    //}
     return 0;
 }

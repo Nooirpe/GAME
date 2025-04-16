@@ -7,6 +7,7 @@
 using namespace std;
 struct Bat
 {
+    SDL_Texture *batTexture = nullptr;
     SDL_Rect rect;
     SDL_Texture *Bat;
     float dx, dy;
