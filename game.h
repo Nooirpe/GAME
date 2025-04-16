@@ -31,8 +31,33 @@ void intro(Graphics graphics)
     SDL_Delay(700);
     SDL_DestroyTexture(show);
 }
-void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int &count, bool &quit, bool &playSound, bool &ingame, int &options, int &level, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose)
+void AudioSettings(int options, Mix_Music *music, bool &sfxEnabled)
 {
+    switch (options)
+    {
+    case 1: // setting 1
+        Mix_ResumeMusic();
+        Mix_VolumeMusic(68);
+        sfxEnabled = true;
+        break;
+    case 3: // setting 3
+        Mix_PauseMusic();
+        sfxEnabled = true;
+        break;
+    case 5: // setting 4
+        Mix_ResumeMusic();
+        Mix_VolumeMusic(68);
+        sfxEnabled = false;
+        break;
+    case 6: // setting 2
+        Mix_PauseMusic();
+        sfxEnabled = false;
+        break;
+    }
+}
+void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int &count, bool &quit, bool &playSound, bool &ingame, int &options, int &level, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled, Mix_Music *massahMusic)
+{
+
     cursor.update();
     const Uint8 *currentKeyStates = SDL_GetKeyboardState(NULL);
 
@@ -48,7 +73,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 mn = graphics.loadTexture("sdl_image\\Menu\\Menu 2.png");
                 if (playSound)
                 {
-                    graphics.play(menuChoose);
+                    graphics.play(menuChoose, sfxEnabled);
                     playSound = false;
                 }
 
@@ -56,7 +81,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 {
                     if (e.type == SDL_MOUSEBUTTONDOWN)
                     {
-                        graphics.play(menuSelect);
+                        graphics.play(menuSelect, sfxEnabled);
                         count = 2;
                         if (prevCount != count)
                             return;
@@ -68,7 +93,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 cursor.in = 1;
                 if (playSound)
                 {
-                    graphics.play(menuChoose);
+                    graphics.play(menuChoose, sfxEnabled);
                     playSound = false;
                 }
                 SDL_DestroyTexture(mn);
@@ -77,7 +102,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 {
                     if (e.type == SDL_MOUSEBUTTONDOWN)
                     {
-                        graphics.play(menuSelect);
+                        graphics.play(menuSelect, sfxEnabled);
                         count = 3;
                     }
                 }
@@ -87,7 +112,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 cursor.in = 1;
                 if (playSound)
                 {
-                    graphics.play(menuChoose);
+                    graphics.play(menuChoose, sfxEnabled);
                     playSound = false;
                 }
                 SDL_DestroyTexture(mn);
@@ -96,7 +121,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 {
                     if (e.type == SDL_MOUSEBUTTONDOWN)
                     {
-                        graphics.play(menuSelect);
+                        graphics.play(menuSelect, sfxEnabled);
                         count = 4;
                     }
                 }
@@ -127,14 +152,14 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 mn = graphics.loadTexture("sdl_image\\Menu\\level 1.png");
                 if (playSound)
                 {
-                    graphics.play(menuChoose);
+                    graphics.play(menuChoose, sfxEnabled);
                     playSound = false;
                 }
                 if (SDL_PollEvent(&e))
                 {
                     if (e.type == SDL_MOUSEBUTTONDOWN)
                     {
-                        graphics.play(menuSelect);
+                        graphics.play(menuSelect, sfxEnabled);
                         for (int i = 0; i < 12; i++)
                         {
                             SDL_DestroyTexture(mn);
@@ -165,14 +190,14 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 mn = graphics.loadTexture("sdl_image\\Menu\\level 2.png");
                 if (playSound)
                 {
-                    graphics.play(menuChoose);
+                    graphics.play(menuChoose, sfxEnabled);
                     playSound = false;
                 }
                 if (SDL_PollEvent(&e))
                 {
                     if (e.type == SDL_MOUSEBUTTONDOWN)
                     {
-                        graphics.play(menuSelect);
+                        graphics.play(menuSelect, sfxEnabled);
                         for (int i = 0; i < 12; i++)
                         {
                             SDL_DestroyTexture(mn);
@@ -203,14 +228,14 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 mn = graphics.loadTexture("sdl_image\\Menu\\level 3.png");
                 if (playSound)
                 {
-                    graphics.play(menuChoose);
+                    graphics.play(menuChoose, sfxEnabled);
                     playSound = false;
                 }
                 if (SDL_PollEvent(&e))
                 {
                     if (e.type == SDL_MOUSEBUTTONDOWN)
                     {
-                        graphics.play(menuSelect);
+                        graphics.play(menuSelect, sfxEnabled);
                         for (int i = 0; i < 12; i++)
                         {
                             SDL_DestroyTexture(mn);
@@ -250,7 +275,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
 
             if (playSound)
             {
-                graphics.play(menuChoose);
+                graphics.play(menuChoose, sfxEnabled);
                 playSound = false;
             }
 
@@ -258,7 +283,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
             {
                 if (e.type == SDL_MOUSEBUTTONDOWN)
                 {
-                    graphics.play(menuSelect);
+                    graphics.play(menuSelect, sfxEnabled);
                     count = 1;
                 }
             }
@@ -273,7 +298,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
 
         if (currentKeyStates[SDL_SCANCODE_ESCAPE])
         {
-            graphics.play(menuSelect);
+            graphics.play(menuSelect, sfxEnabled);
             count = 1;
         }
     }
@@ -308,7 +333,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 cursor.in = 1;
                 if (playSound)
                 {
-                    graphics.play(menuChoose);
+                    graphics.play(menuChoose, sfxEnabled);
                     playSound = false;
                 }
                 if (SDL_PollEvent(&e))
@@ -318,20 +343,24 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                         if (options == 1)
                         {
                             options = 2;
+                            AudioSettings(3, massahMusic, sfxEnabled);
                         }
                         else if (options == 3)
                         {
                             options = 1;
-                            graphics.play(menuSelect);
+                            graphics.play(menuSelect, sfxEnabled);
+                            AudioSettings(1, massahMusic, sfxEnabled);
                         }
                         else if (options == 6)
                         {
                             options = 4;
-                            graphics.play(menuSelect);
+                            graphics.play(menuSelect, sfxEnabled);
+                            AudioSettings(5, massahMusic, sfxEnabled);
                         }
                         else if (options == 5)
                         {
                             options = 6;
+                            AudioSettings(6, massahMusic, sfxEnabled);
                         }
                     }
                 }
@@ -341,7 +370,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 cursor.in = 1;
                 if (playSound)
                 {
-                    graphics.play(menuChoose);
+                    graphics.play(menuChoose, sfxEnabled);
                     playSound = false;
                 }
                 if (SDL_PollEvent(&e))
@@ -355,12 +384,12 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                         else if (options == 5)
                         {
                             options = 1;
-                            graphics.play(menuSelect);
+                            graphics.play(menuSelect, sfxEnabled);
                         }
                         else if (options == 6)
                         {
                             options = 2;
-                            graphics.play(menuSelect);
+                            graphics.play(menuSelect, sfxEnabled);
                         }
                         else if (options == 3)
                         {
@@ -380,14 +409,14 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
             cursor.in = 1;
             if (playSound)
             {
-                graphics.play(menuChoose);
+                graphics.play(menuChoose, sfxEnabled);
                 playSound = false;
             }
             if (SDL_PollEvent(&e))
             {
                 if (e.type == SDL_MOUSEBUTTONDOWN)
                 {
-                    graphics.play(menuSelect);
+                    graphics.play(menuSelect, sfxEnabled);
                     count = 1;
                 }
             }
@@ -399,7 +428,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
         }
         if (currentKeyStates[SDL_SCANCODE_ESCAPE])
         {
-            graphics.play(menuSelect);
+            graphics.play(menuSelect, sfxEnabled);
             count = 1;
         }
     }
@@ -412,7 +441,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 cursor.in = 1;
                 if (playSound)
                 {
-                    graphics.play(menuChoose);
+                    graphics.play(menuChoose, sfxEnabled);
                     playSound = false;
                 }
                 SDL_DestroyTexture(mn);
@@ -421,7 +450,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 {
                     if (e.type == SDL_MOUSEBUTTONDOWN)
                     {
-                        graphics.play(menuSelect);
+                        graphics.play(menuSelect, sfxEnabled);
                         quit = true;
                     }
                 }
@@ -431,7 +460,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 cursor.in = 1;
                 if (playSound)
                 {
-                    graphics.play(menuChoose);
+                    graphics.play(menuChoose, sfxEnabled);
                     playSound = false;
                 }
                 SDL_DestroyTexture(mn);
@@ -440,7 +469,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
                 {
                     if (e.type == SDL_MOUSEBUTTONDOWN)
                     {
-                        graphics.play(menuSelect);
+                        graphics.play(menuSelect, sfxEnabled);
                         count = 1;
                     }
                 }
@@ -462,7 +491,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int
         }
         if (currentKeyStates[SDL_SCANCODE_ESCAPE])
         {
-            graphics.play(menuSelect);
+            graphics.play(menuSelect, sfxEnabled);
             count = 1;
         }
     }

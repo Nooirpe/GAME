@@ -95,5 +95,64 @@ void level1(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         stateChangeTime = SDL_GetTicks();
     }
 }
+void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn, int &level,
+            bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
+{
+    static SDL_Texture *mapTexture = nullptr;
+    if (onelevel)
+    {
+        mapTexture = graphics.loadTexture("sdl_image\\Things\\Map\\map 2.png");
+        // Reset player position
+        player.x = 54;
+        player.y = Player::PLATFORM_HEIGHT + 13 - player.height;
+        player.velocityY = 0;
+        player.isGrounded = true;
+        player.hasFallen = false;
+        player.justSpawned = true;
+        onelevel = false;
+    }
+
+    // Draw the map
+    if (mapTexture != nullptr)
+    {
+        SDL_RenderCopy(graphics.renderer, mapTexture, NULL, NULL);
+    }
+    int collisionOffset = 12; // Adjust this value to make the collision box smaller
+    SDL_Rect playerCollisionBox = {
+        static_cast<int>(player.x + collisionOffset),
+        static_cast<int>(player.y + collisionOffset),
+        player.width - (collisionOffset * 2),
+        player.height - (collisionOffset * 2)};
+
+    // Render player
+    player.render(graphics.renderer);
+
+    // Check win condition
+    if (player.x > 1156 && player.y > 425)
+    {
+        if (!playerWinning)
+        {
+            playerWinning = true;
+            stateChangeTime = SDL_GetTicks();
+        }
+    }
+
+    // Check death condition
+    else if (((
+                  (playerCollisionBox.x + playerCollisionBox.w > 249) && (playerCollisionBox.x < 269) &&
+                  (playerCollisionBox.y + playerCollisionBox.h > 522) && (playerCollisionBox.y < 535)) ||
+
+              ((playerCollisionBox.x + playerCollisionBox.w > 750) && (playerCollisionBox.x < 800) &&
+               (playerCollisionBox.y + playerCollisionBox.h > 522) && (playerCollisionBox.y < 535)) ||
+
+              ((playerCollisionBox.x + playerCollisionBox.w > 960) && (playerCollisionBox.x < 974) &&
+               (playerCollisionBox.y + playerCollisionBox.h > 494) && (playerCollisionBox.y < 505))) &&
+             !playerDying)
+    {
+
+        playerDying = true;
+        stateChangeTime = SDL_GetTicks();
+    }
+}
 
 #endif

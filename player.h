@@ -79,7 +79,6 @@ struct Player
     Player(SDL_Renderer *renderer) : animation(64, 64, 2, 1)
     {
         health = 5;
-        // Sử dụng đường dẫn nhất quán - đường dẫn tuyệt đối
         idleTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/chibi/idle/idle.png");
         if (idleTexture == nullptr)
         {
@@ -139,7 +138,6 @@ struct Player
 
         // Cập nhật vị trí dựa trên vận tốc
         x += velocityX * deltaTime;
-        /* y += velocityY * deltaTime; */
         // Giữ nhân vật trong màn hình
         if (x < 0)
             x = 0;
@@ -147,8 +145,6 @@ struct Player
             x = 1366 - width;
         if (y < 0)
             y = 0;
-        /* if (y > 600 - height)
-            y = 600 - height; */
 
         // Cập nhật hướng di chuyển cho animation
         if (velocityX > 0)
@@ -236,14 +232,17 @@ struct Player
             width,
             height};
 
-        // DEBUG: Show current state
+        SDL_RendererFlip flip;
+        if (animation.currentDirection == Animation::LEFT)
+            flip = SDL_FLIP_NONE;
+        else
+            flip = SDL_FLIP_HORIZONTAL;
 
         // CASE 1: Not moving - show idle texture
         if (justLanded)
         {
             if (jumpTexture)
             {
-                SDL_RendererFlip flip = (animation.currentDirection == Animation::RIGHT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
                 SDL_RenderCopyEx(renderer, jumpTexture, nullptr, &dstRect, 0, NULL, flip);
             }
             landTimer -= 0.016f;
@@ -270,7 +269,6 @@ struct Player
                     texH        // Full texture height
                 };
 
-                SDL_RendererFlip flip = (animation.currentDirection == Animation::RIGHT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
                 SDL_RenderCopyEx(renderer, idleTexture, &srcRect, &dstRect, 0, NULL, flip);
             }
         }
@@ -280,39 +278,11 @@ struct Player
             if (startTexture)
             {
                 // Flip based on direction
-                SDL_RendererFlip flip = (velocityX > 0 || animation.currentDirection == Animation::RIGHT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 
                 SDL_RenderCopyEx(renderer, startTexture, NULL, &dstRect, 0, NULL, flip);
             }
         }
 
-        // Visual debug indicator
-        /*  if (enableDebug)
-         {
-             // Draw a color bar showing the current state
-             SDL_Rect statusBar = {
-                 static_cast<int>(x),
-                 static_cast<int>(y - 10),
-                 width,
-                 5};
-
-             if (!isMoving)
-             {
-                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White
-             }
-             else if (movetime <= 1.0f)
-             {
-                 SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red
-                 // Draw progress of initial animation
-                 statusBar.w = static_cast<int>((movetime / 1.0f) * width);
-             }
-             else
-             {
-                 SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green
-             }
-
-             SDL_RenderFillRect(renderer, &statusBar);
-         } */
         // CASE 4: Running - show run animation
         else if (isMoving && isGrounded)
         {
@@ -330,11 +300,11 @@ struct Player
                     texH        // Full texture height
                 };
 
-                SDL_RendererFlip flip = (velocityX > 0 || animation.currentDirection == Animation::RIGHT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
                 SDL_RenderCopyEx(renderer, animationTexture, &srcRect, &dstRect, 0, NULL, flip);
             }
         }
     }
+
     void movePlayer(Player &player, const Uint8 *currentKeyStates, float deltaTime, int level)
     {
         // Store previous moving state
@@ -366,7 +336,7 @@ struct Player
         if (level == 1)
         {
             bool isOverGap = ((player.x + player.width) > 430 && player.x < 435) ||
-                             ((player.x + player.width) > 910 && player.x < 920);
+                             ((player.x + player.width) > 915 && player.x < 920);
             // IMMEDIATELY make the player not grounded when over a gap
             if (isOverGap)
             {
@@ -429,9 +399,233 @@ struct Player
             }
         }
         if (level == 2)
+        {
 
-            // Set moving state based on any movement (horizontal or vertical)
-            player.isMoving = (player.velocityX != 0 || !player.isGrounded);
+            if (!player.isGrounded)
+            {
+                // Apply gravity
+                player.velocityY += player.gravity * deltaTime;
+
+                // Update vertical position
+                player.y += player.velocityY * deltaTime;
+                bool onPlatform = false;
+                if (player.x + player.width > 350 && player.x < 406 &&
+                    player.y + player.height <= PLATFORM_HEIGHT - 33 + 5 &&  // Add small tolerance
+                    player.y + player.height >= PLATFORM_HEIGHT - 33 - 10 && // Check if close enough
+                    player.velocityY > 0)                                    // Only land when falling down
+                {
+                    player.y = PLATFORM_HEIGHT - player.height - 33;
+                    player.velocityY = 0;
+                    player.isGrounded = true;
+                    player.justLanded = true;
+                    player.landTimer = 0.2f;
+                    onPlatform = true;
+                }
+
+                // Platform 2: x from 410 to 460, height = 71
+                else if (player.x + player.width > 430 && player.x < 460 &&
+                         player.y + player.height <= PLATFORM_HEIGHT - 71 + 5 &&
+                         player.y + player.height >= PLATFORM_HEIGHT - 71 - 10 &&
+                         player.velocityY > 0)
+                {
+                    player.y = PLATFORM_HEIGHT - player.height - 71;
+                    player.velocityY = 0;
+                    player.isGrounded = true;
+                    player.justLanded = true;
+                    player.landTimer = 0.2f;
+                    onPlatform = true;
+                }
+
+                // Platform 3: x from 465 to 736, height = 111
+                else if (player.x + player.width > 480 && player.x < 736 &&
+                         player.y + player.height <= PLATFORM_HEIGHT - 111 + 5 &&
+                         player.y + player.height >= PLATFORM_HEIGHT - 111 - 10 &&
+                         player.velocityY > 0)
+                {
+                    player.y = PLATFORM_HEIGHT - player.height - 111;
+                    player.velocityY = 0;
+                    player.isGrounded = true;
+                    player.justLanded = true;
+                    player.landTimer = 0.2f;
+                    onPlatform = true;
+                }
+
+                // Platform 4: x from 811 to 860, height = 52
+                else if (player.x + player.width > 811 && player.x < 860 &&
+                         player.y + player.height <= PLATFORM_HEIGHT - 52 + 5 &&
+                         player.y + player.height >= PLATFORM_HEIGHT - 52 - 10 &&
+                         player.velocityY > 0)
+                {
+                    player.y = PLATFORM_HEIGHT - player.height - 52;
+                    player.velocityY = 0;
+                    player.isGrounded = true;
+                    player.justLanded = true;
+                    player.landTimer = 0.2f;
+                    onPlatform = true;
+                }
+
+                // Platform 5: x from 928 to 1015, height = 16
+                else if (player.x + player.width > 948 && player.x < 995 &&
+                         player.y + player.height <= PLATFORM_HEIGHT - 16 + 5 &&
+                         player.y + player.height >= PLATFORM_HEIGHT - 16 - 10 &&
+                         player.velocityY > 0)
+                {
+                    player.y = PLATFORM_HEIGHT - player.height - 16;
+                    player.velocityY = 0;
+                    player.isGrounded = true;
+                    player.justLanded = true;
+                    player.landTimer = 0.2f;
+                    onPlatform = true;
+                }
+                // Check if player should land on the flat platform
+                else if (player.y >= PLATFORM_HEIGHT + 13 - player.height && player.velocityY > 0)
+                {
+                    // Land on platform
+                    player.y = PLATFORM_HEIGHT + 13 - player.height;
+                    player.velocityY = 0;
+                    player.isGrounded = true;
+
+                    // Show landing animation
+                    player.justLanded = true;
+                    player.landTimer = 0.2f;
+
+                    if (player.velocityX == 0)
+                        player.animation.currentDirection = player.animation.IDLE;
+                }
+            }
+            if (player.isGrounded) // Player is grounded
+            {
+                // Check if player is still on a platform
+                bool stillOnPlatform = false;
+
+                // Platform 1
+                if (player.x + player.width > 350 && player.x < 406 &&
+                    player.y + player.height == PLATFORM_HEIGHT - 33)
+                {
+                    stillOnPlatform = true;
+                }
+                // Platform 2
+                else if (player.x + player.width > 430 && player.x < 460 &&
+                         player.y + player.height == PLATFORM_HEIGHT - 71)
+                {
+                    stillOnPlatform = true;
+                }
+                // Platform 3
+                else if (player.x + player.width > 480 && player.x < 736 &&
+                         player.y + player.height == PLATFORM_HEIGHT - 111)
+                {
+                    stillOnPlatform = true;
+                }
+                // Platform 4
+                else if (player.x + player.width > 811 && player.x < 860 &&
+                         player.y + player.height == PLATFORM_HEIGHT - 52)
+                {
+                    stillOnPlatform = true;
+                }
+                // Platform 5
+                else if (player.x + player.width > 948 && player.x < 995 &&
+                         player.y + player.height == PLATFORM_HEIGHT - 16)
+                {
+                    stillOnPlatform = true;
+                }
+                // Main floor
+                else if (player.y + player.height == PLATFORM_HEIGHT + 13)
+                {
+                    stillOnPlatform = true;
+                }
+
+                // FALL
+                if (!stillOnPlatform)
+                {
+                    player.isGrounded = false;
+                }
+            }
+
+            // Update horizontal position
+            player.x += player.velocityX * deltaTime;
+
+            // Apply horizontal boundaries
+            if (player.x < 0)
+                player.x = 0;
+            if (player.x > 1300 - player.width)
+                player.x = 1300 - player.width;
+            if (player.y + player.height > PLATFORM_HEIGHT - 33 &&
+                player.y < PLATFORM_HEIGHT - 33 + 33)
+            {
+                // Left boundary - block exactly at x=350
+                if (player.x + player.width > 370 && player.x < 370)
+                {
+                    player.x = 370 - player.width;
+                }
+            }
+
+            // Platform 2 boundaries collision (430-460, height 71)
+            if (player.y + player.height > PLATFORM_HEIGHT - 71 &&
+                player.y < PLATFORM_HEIGHT - 71 + 71)
+            {
+                // Left boundary - block exactly at x=430
+                if (player.x + player.width > 430 && player.x < 430)
+                {
+                    player.x = 430 - player.width;
+                }
+                // Right boundary - block exactly at x=460
+                if (player.x < 460 && player.x + player.width > 460)
+                {
+                    player.x = 460;
+                }
+            }
+
+            // Platform 3 boundaries collision (480-736, height 111)
+            if (player.y + player.height > PLATFORM_HEIGHT - 111 &&
+                player.y < PLATFORM_HEIGHT - 111 + 111)
+            {
+                // Left boundary - block exactly at x=480
+                if (player.x + player.width > 490 && player.x < 490)
+                {
+                    player.x = 490 - player.width;
+                }
+                // Right boundary - block exactly at x=736
+                if (player.x < 736 && player.x + player.width > 736)
+                {
+                    player.x = 736;
+                }
+            }
+
+            // Platform 4 boundaries collision (811-860, height 52)
+            if (player.y + player.height > PLATFORM_HEIGHT - 52 &&
+                player.y < PLATFORM_HEIGHT - 52 + 52)
+            {
+                // Left boundary - block exactly at x=811
+                if (player.x + player.width > 811 && player.x + player.width < 811)
+                {
+                    player.x = 811 - player.width;
+                }
+                // Right boundary - block exactly at x=860
+                if (player.x < 840 && player.x + player.width > 840)
+                {
+                    player.x = 840;
+                }
+            }
+
+            // Platform 5 boundaries collision (928-1015, height 16)
+            if (player.y + player.height > PLATFORM_HEIGHT - 16 &&
+                player.y < PLATFORM_HEIGHT - 16 + 16)
+            {
+                // Left boundary - block exactly at x=928
+                if (player.x + player.width > 948 && player.x < 948)
+                {
+                    player.x = 948 - player.width;
+                }
+                // Right boundary - block exactly at x=1015
+                if (player.x < 995 && player.x + player.width > 995)
+                {
+                    player.x = 995;
+                }
+            }
+        }
+
+        // Set moving state based on any movement (horizontal or vertical)
+        player.isMoving = (player.velocityX != 0 || !player.isGrounded);
 
         if (player.isMoving && !player.wasMoving)
         {

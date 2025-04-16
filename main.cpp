@@ -61,8 +61,9 @@ int main(int argc, char *argv[])
     bool playSound = true;
     bool playerDying = false;
     bool playerWinning = false;
-    bool onemenu = true;  // Tranh lap menu
-    bool onelevel = true; // Tranh lap level
+    bool onemenu = true;    // Tranh lap menu
+    bool onelevel = true;   // Tranh lap level
+    bool sfxEnbaled = true; // check sfx
     SDL_Event e;
     bool keyStates[SDL_NUM_SCANCODES] = {false}; // Dò key states
     Uint32 lastTime = SDL_GetTicks();
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
             SDL_RenderClear(graphics.renderer);
             if (!end)
             {
-                menu(mn, graphics, cursor, e, countmenu, quit, playSound, ingame, options, level, menuSelect, menuChoose);
+                menu(mn, graphics, cursor, e, countmenu, quit, playSound, ingame, options, level, menuSelect, menuChoose, sfxEnbaled, massahMusic);
             }
             cursor.draw(graphics); // Chuot de cuoi
             if (ingame)
@@ -118,12 +119,13 @@ int main(int argc, char *argv[])
                 Uint32 currentTime = SDL_GetTicks();
                 float deltaTime = (currentTime - lastTime) / 1000.0f;
                 lastTime = currentTime;
-                player.movePlayer(player, currentKeyStates, deltaTime, 1);
+                player.movePlayer(player, currentKeyStates, deltaTime, level);
             }
             else
             {
                 if (playerDying && SDL_GetTicks() - stateChangeTime > 500)
                 {
+                    std::cout << "Player died! Current health: " << player.health << std::endl;
                     death(graphics, player, mn, onelevel);
                     playerDying = false;
                     if (player.health <= 0)
@@ -147,7 +149,13 @@ int main(int argc, char *argv[])
             SDL_RenderClear(graphics.renderer);
             if (level == 1)
             {
+
                 level1(onelevel, graphics, player, mn, level, playerDying, playerWinning, stateChangeTime);
+            }
+            else if (level == 2)
+            {
+
+                level2(onelevel, graphics, player, mn, level, playerDying, playerWinning, stateChangeTime);
             }
             drawhealth(graphics, player, mn);
             graphics.presentScene();
