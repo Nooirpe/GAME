@@ -73,6 +73,8 @@ struct Graphics
     // Hiển thị ảnh nền
     void prepareImg(SDL_Texture *background)
     {
+        /* SDL_RenderClear(renderer);
+        // Xoá màn hình */
         SDL_RenderCopy(renderer, background, NULL, NULL);
         // Sao chép texture lên renderer
     }
@@ -80,8 +82,8 @@ struct Graphics
     // Chuẩn bị cảnh vẽ
     void prepareScene(SDL_Texture *background = nullptr)
     {
-        SDL_RenderClear(renderer);
-        // Xoá màn hình
+        /*  SDL_RenderClear(renderer);
+         // Xoá màn hình */
         if (background != nullptr)
             SDL_RenderCopy(renderer, background, NULL, NULL);
         // Nếu có ảnh nền -> sao chép lên renderer

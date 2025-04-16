@@ -7,16 +7,23 @@
 #include "animation.h"
 #include <iostream>
 
-class Player
+struct Player
 {
-private:
+    SDL_Texture *character = nullptr;
     SDL_Texture *idleTexture = nullptr;
     SDL_Texture *startTexture = nullptr;
     SDL_Texture *animationTexture = nullptr;
+    SDL_Texture *jumpTexture = nullptr;
+    SDL_Rect rect;
     Animation animation;
     bool isMoving = false;
     bool wasMoving = false; // Lưu trạng thái di chuyển trước đó
     float movetime = 0.0f;  // Thời gian đã di chuyển
+    bool isGrounded = false;
+    float gravity = 1350.0f;  // Gia tốc trọng trường
+    float jumpForce = 400.0f; // Lực nhảy
+    float landTimer = 0.0f;
+    static constexpr float PLATFORM_HEIGHT = 539.0f; // Change this value to whatever you want
 
     // Biến cho animation ban đầu
     int startFrame = 0;
@@ -25,37 +32,77 @@ private:
 
     // Debug
     bool enableDebug = true;
+    bool justSpawned = true;
+    bool hasFallen = false;
+    bool justLanded = false;
 
-public:
     float x = 400;
     float y = 300;
     float velocityX;
     float velocityY;
     float speed = 200.0f;
-    int width = 64;
-    int height = 64;
+    int width;
+    int height;
+    int health;
+    void createPlayer(const Graphics &graphics)
+    {
+        character = IMG_LoadTexture(graphics.renderer, "C:/C++/GAME/GAME/sdl_image/New folder/player 1.png");
+        rect.h = height;
+        rect.w = width;
+    }
+    void spawnPlayer(Graphics &graphics, int spawnX, int spawnY)
+    {
+        this->x = spawnX;
+        this->y = spawnY;
+        rect.x = spawnX;
+        rect.y = spawnY;
+        rect.w = width;
+        rect.h = height;
+        justSpawned = true;
+        hasFallen = false;
+    }
+
+    void jump()
+    {
+        if (isGrounded)
+        {
+            velocityY = -jumpForce;
+            isGrounded = false;
+            justLanded = false; // not landed yet
+            // Reset movetime and startFrameTime when jumping
+            movetime = 0.0f;
+            startFrame = 0;
+            startFrameTime = 0.0f;
+        }
+    }
 
     Player(SDL_Renderer *renderer) : animation(64, 64, 2, 1)
     {
+        health = 5;
         // Sử dụng đường dẫn nhất quán - đường dẫn tuyệt đối
-        idleTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/New folder/player 1.PNG");
+        idleTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/chibi/idle/idle.png");
         if (idleTexture == nullptr)
         {
             std::cerr << "Failed to load idle texture! SDL_image Error: " << IMG_GetError() << std::endl;
         }
 
-        startTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/animation.png");
-        if (startTexture == nullptr)
+        animationTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/chibi/run/run.png");
+        if (animationTexture == nullptr)
         {
             std::cerr << "Failed to load start texture! SDL_image Error: " << IMG_GetError() << std::endl;
         }
 
-        animationTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/Animation2.png");
-        if (animationTexture == nullptr)
+        startTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/chibi/jump/jump.png");
+        if (startTexture == nullptr)
         {
             std::cerr << "Failed to load animation texture! SDL_image Error: " << IMG_GetError() << std::endl;
         }
-
+        jumpTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/chibi/jump/jump 1.png");
+        if (jumpTexture == nullptr)
+        {
+            std::cerr << "Failed to load jump texture! SDL_image Error: " << IMG_GetError() << std::endl;
+        }
+        animation.setAnimationSpeed(8.0f);
         // Debug: In kích thước các textures
         int w, h;
         if (startTexture)
@@ -80,6 +127,8 @@ public:
             SDL_DestroyTexture(startTexture);
         if (animationTexture != nullptr)
             SDL_DestroyTexture(animationTexture);
+        if (jumpTexture != nullptr)
+            SDL_DestroyTexture(jumpTexture);
     }
 
     void update(float deltaTime)
@@ -90,17 +139,16 @@ public:
 
         // Cập nhật vị trí dựa trên vận tốc
         x += velocityX * deltaTime;
-        y += velocityY * deltaTime;
-
+        /* y += velocityY * deltaTime; */
         // Giữ nhân vật trong màn hình
         if (x < 0)
             x = 0;
-        if (x > 800 - width)
-            x = 800 - width;
+        if (x > 1366 - width)
+            x = 1366 - width;
         if (y < 0)
             y = 0;
-        if (y > 600 - height)
-            y = 600 - height;
+        /* if (y > 600 - height)
+            y = 600 - height; */
 
         // Cập nhật hướng di chuyển cho animation
         if (velocityX > 0)
@@ -191,89 +239,218 @@ public:
         // DEBUG: Show current state
 
         // CASE 1: Not moving - show idle texture
-        if (!isMoving)
+        if (justLanded)
         {
-            if (idleTexture)
+            if (jumpTexture)
             {
-                SDL_RenderCopy(renderer, idleTexture, nullptr, &dstRect);
-                /* if (enableDebug)
-                    std::cout << "Rendering: IDLE" << std::endl; */
+                SDL_RendererFlip flip = (animation.currentDirection == Animation::RIGHT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+                SDL_RenderCopyEx(renderer, jumpTexture, nullptr, &dstRect, 0, NULL, flip);
+            }
+            landTimer -= 0.016f;
+            if (landTimer <= 0)
+            {
+                justLanded = false;
+                landTimer = 0;
             }
         }
         // CASE 2: Moving for less than 1 second - show start animation
-        else if (movetime <= 1.0f)
+        else if (!isMoving && isGrounded)
+        {
+            if (idleTexture)
+            {
+                int texW, texH;
+                SDL_QueryTexture(idleTexture, NULL, NULL, &texW, &texH);
+                int frameWidth = texW / 8; // 8 frames in idle animation
+
+                int idleFrame = (SDL_GetTicks() / 100) % 8;
+                SDL_Rect srcRect = {
+                    idleFrame * frameWidth, // Use correct frame width
+                    0,
+                    frameWidth, // Width from texture size
+                    texH        // Full texture height
+                };
+
+                SDL_RendererFlip flip = (animation.currentDirection == Animation::RIGHT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+                SDL_RenderCopyEx(renderer, idleTexture, &srcRect, &dstRect, 0, NULL, flip);
+            }
+        }
+        // CASE 3: in the air - show jump animation
+        else if (!isGrounded)
         {
             if (startTexture)
             {
-                // Create a source rectangle for the specific frame
-                SDL_Rect srcRect = {
-                    startFrame * width, // X offset based on current frame
-                    0,                  // Y offset (top row)
-                    width,              // Width of one frame
-                    height              // Height of one frame
-                };
+                // Flip based on direction
+                SDL_RendererFlip flip = (velocityX > 0 || animation.currentDirection == Animation::RIGHT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 
-                // Draw only the selected frame from the texture
-                SDL_RenderCopy(renderer, startTexture, &srcRect, &dstRect);
-
-                /* if (enableDebug)
-                {
-                    std::cout << "Rendering: START ANIMATION frame " << startFrame
-                              << " (x=" << srcRect.x << ",y=" << srcRect.y
-                              << ",w=" << srcRect.w << ",h=" << srcRect.h << ")"
-                              << std::endl;
-                } */
-            }
-        }
-        // CASE 3: Moving for more than 1 second - show main animation
-        else
-        {
-            if (animationTexture)
-            {
-                // Get the frame from the Animation class
-                SDL_Rect animSrcRect = animation.getCurrentFrame();
-
-                // Render the frame
-                SDL_RenderCopy(renderer, animationTexture, &animSrcRect, &dstRect);
-
-                /* if (enableDebug)
-                {
-                    std::cout << "Rendering main animation frame "
-                              << animation.getCurrentFrameIndex()
-                              << " direction=" << animation.getDirectionOffset() / 4
-                              << " rect=(" << animSrcRect.x << "," << animSrcRect.y
-                              << "," << animSrcRect.w << "," << animSrcRect.h << ")" << std::endl;
-                } */
+                SDL_RenderCopyEx(renderer, startTexture, NULL, &dstRect, 0, NULL, flip);
             }
         }
 
         // Visual debug indicator
-        if (enableDebug)
+        /*  if (enableDebug)
+         {
+             // Draw a color bar showing the current state
+             SDL_Rect statusBar = {
+                 static_cast<int>(x),
+                 static_cast<int>(y - 10),
+                 width,
+                 5};
+
+             if (!isMoving)
+             {
+                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White
+             }
+             else if (movetime <= 1.0f)
+             {
+                 SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red
+                 // Draw progress of initial animation
+                 statusBar.w = static_cast<int>((movetime / 1.0f) * width);
+             }
+             else
+             {
+                 SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green
+             }
+
+             SDL_RenderFillRect(renderer, &statusBar);
+         } */
+        // CASE 4: Running - show run animation
+        else if (isMoving && isGrounded)
         {
-            // Draw a color bar showing the current state
-            SDL_Rect statusBar = {
-                static_cast<int>(x),
-                static_cast<int>(y - 10),
-                width,
-                5};
+            if (animationTexture)
+            {
+                int texW, texH;
+                SDL_QueryTexture(animationTexture, NULL, NULL, &texW, &texH);
+                int frameWidth = texW / 7; // 7 frames in run animation
 
-            if (!isMoving)
-            {
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White
-            }
-            else if (movetime <= 1.0f)
-            {
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red
-                // Draw progress of initial animation
-                statusBar.w = static_cast<int>((movetime / 1.0f) * width);
-            }
-            else
-            {
-                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green
-            }
+                int runFrame = (SDL_GetTicks() / 100) % 7;
+                SDL_Rect srcRect = {
+                    runFrame * frameWidth, // Use correct frame width
+                    0,
+                    frameWidth, // Width from texture size
+                    texH        // Full texture height
+                };
 
-            SDL_RenderFillRect(renderer, &statusBar);
+                SDL_RendererFlip flip = (velocityX > 0 || animation.currentDirection == Animation::RIGHT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+                SDL_RenderCopyEx(renderer, animationTexture, &srcRect, &dstRect, 0, NULL, flip);
+            }
         }
+    }
+    void movePlayer(Player &player, const Uint8 *currentKeyStates, float deltaTime, int level)
+    {
+        // Store previous moving state
+        player.wasMoving = player.isMoving;
+
+        // Reset horizontal velocity
+        player.velocityX = 0;
+
+        // Handle horizontal movement only
+        if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
+        {
+            player.velocityX = -player.speed;
+            player.animation.currentDirection = player.animation.LEFT;
+        }
+        else if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
+        {
+            player.velocityX = player.speed;
+            player.animation.currentDirection = player.animation.RIGHT;
+        }
+
+        // Handle jump input - only when player is on the ground
+        if ((currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP] ||
+             currentKeyStates[SDL_SCANCODE_W]) &&
+            player.isGrounded)
+        {
+            player.jump();
+            player.animation.currentDirection = player.animation.UP;
+        }
+        if (level == 1)
+        {
+            bool isOverGap = ((player.x + player.width) > 430 && player.x < 435) ||
+                             ((player.x + player.width) > 910 && player.x < 920);
+            // IMMEDIATELY make the player not grounded when over a gap
+            if (isOverGap)
+            {
+                player.isGrounded = false;
+
+                // Set hasFallen only when they actually drop below platform level
+                if (player.y >= PLATFORM_HEIGHT - 10)
+                {
+                    player.hasFallen = true;
+                    player.justSpawned = false;
+                }
+            }
+            // ALWAYS apply gravity when not grounded
+            if (!player.isGrounded)
+            {
+                // Increase falling speed (gravity effect)
+                player.velocityY += player.gravity * deltaTime;
+
+                // Update position based on velocity
+                player.y += player.velocityY * deltaTime;
+
+                // Check if player landed on platform
+                if (player.y >= PLATFORM_HEIGHT + 13 - player.height && !isOverGap && !player.hasFallen)
+                {
+                    player.y = PLATFORM_HEIGHT + 13 - player.height;
+                    player.velocityY = 0;
+                    player.isGrounded = true;
+                    // landing animation
+                    player.justLanded = true;
+                    player.landTimer = 0.2f; // Reset timer for landing animation
+                    if (player.velocityX == 0)
+                        player.animation.currentDirection = player.animation.IDLE;
+                }
+                // Neu roi qua y = 700 thi chet
+                if (player.y > 730 && isOverGap)
+                {
+                    player.y = 730;
+                }
+            }
+
+            // Update horizontal position
+            player.x += player.velocityX * deltaTime;
+
+            // Apply horizontal boundaries
+            if (player.x < 0)
+                player.x = 0;
+            if (player.x > 1300 - player.width)
+                player.x = 1300 - player.width;
+
+            // Check if player is over the gap
+            if (isOverGap)
+            {
+                // Player is not grounded when over a gap
+                player.isGrounded = false;
+                if (player.y >= PLATFORM_HEIGHT - 10)
+                {
+                    player.justSpawned = false;
+                    player.hasFallen = true;
+                }
+            }
+        }
+        if (level == 2)
+
+            // Set moving state based on any movement (horizontal or vertical)
+            player.isMoving = (player.velocityX != 0 || !player.isGrounded);
+
+        if (player.isMoving && !player.wasMoving)
+        {
+            // Started moving
+            player.movetime = 0.0f;
+            player.startFrame = 0;
+            player.startFrameTime = 0.0f;
+        }
+        else if (player.isMoving)
+        {
+            // Continue moving
+            player.movetime += deltaTime;
+        }
+        // Update collision rect
+        player.rect.x = static_cast<int>(player.x);
+        player.rect.y = static_cast<int>(player.y);
+
+        // Update animation
+        player.animation.update(deltaTime);
     }
 };
 #endif
