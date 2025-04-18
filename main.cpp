@@ -9,6 +9,7 @@
 #include "animation.h"
 #include "player.h"
 #include "game.h"
+#include "obstacle.h"
 #include "stage.h"
 #include "C:\C++\GAME\GAME\src\include\SDL2\SDL_mixer.h"
 using namespace std;
@@ -114,7 +115,6 @@ int main()
             {
                 if (playerDying && SDL_GetTicks() - stateChangeTime > 500)
                 {
-                    std::cout << "Player died! Current health: " << player.health << std::endl;
                     death(graphics, player, mn, onelevel);
                     playerDying = false;
                     if (player.health <= 0)

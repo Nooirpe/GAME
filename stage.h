@@ -7,6 +7,7 @@
 #include <iostream>
 #include <list>
 #include <cmath>
+#include "obstacle.h"
 #include "player.h"
 using namespace std;
 
@@ -99,6 +100,7 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
 {
     static SDL_Texture *mapTexture = nullptr;
+
     if (onelevel)
     {
         mapTexture = graphics.loadTexture("sdl_image\\Things\\Map\\map 2.png");
@@ -109,6 +111,7 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         player.isGrounded = true;
         player.hasFallen = false;
         player.justSpawned = true;
+
         onelevel = false;
     }
 
@@ -157,17 +160,40 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
 void level3(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn, int &level,
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
 {
+
     static SDL_Texture *mapTexture = nullptr;
+    static Bat bat;
+    static bool batInitialized = false;
+    static Uint32 lastFrameTime = SDL_GetTicks();
+    Uint32 currentTime = SDL_GetTicks();
+    float deltaTime = (currentTime - lastFrameTime) / 1000.0f;
+    lastFrameTime = currentTime;
     if (onelevel)
     {
         mapTexture = graphics.loadTexture("sdl_image\\Things\\Map\\map 3.png");
         // Reset player position
         player.x = 54;
         player.y = Player::PLATFORM_HEIGHT + 13 - player.height;
+        bat.width = player.width;
+        bat.height = player.height;
         player.velocityY = 0;
         player.isGrounded = true;
         player.hasFallen = false;
         player.justSpawned = true;
+        if (!batInitialized)
+        {
+            bat.createBat(graphics, 500, 300, 400, 800);
+            batInitialized = true;
+        }
+        else
+            bat.spawnBat(500, 300, 400, 800);
+        bat.width = player.width;
+        bat.height = player.height;
+
+        // Update rect with new dimensions
+        bat.rect.w = bat.width;
+        bat.rect.h = bat.height;
+
         onelevel = false;
     }
 
@@ -207,6 +233,16 @@ void level3(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
     {
         playerDying = true;
         stateChangeTime = SDL_GetTicks();
+    }
+    if (batInitialized)
+    {
+        bat.update(deltaTime, player);
+        if (bat.collidesWithPlayer(player, graphics.renderer) && bat.currentState != Bat::DIE)
+        {
+            player.health--;
+            bat.die();
+        }
+        bat.render(graphics.renderer);
     }
 }
 
