@@ -1,16 +1,16 @@
 #define SDL_MAIN_HANDLED
 #include <bits/stdc++.h>
-#include "C:\C++\GAME\GAME\src\include\SDL2\SDL.h"
-#include "C:\C++\GAME\GAME\src\include\SDL2\SDL_image.h"
-#include "Headers\defs.h"
-#include "Headers\graphics.h"
-#include "Headers\cursor.h"
-#include "Headers\player.h"
-#include "Headers\animation.h"
-#include "Headers\game.h"
-#include "Headers\obstacle.h"
-#include "Headers\stage.h"
-#include "C:\C++\GAME\GAME\src\include\SDL2\SDL_mixer.h"
+#include "src/include/SDL2/SDL.h"
+#include "src/include/SDL2/SDL_image.h"
+#include "Headers/defs.h"
+#include "Headers/graphics.h"
+#include "Headers/cursor.h"
+#include "Headers/player.h"
+#include "Headers/animation.h"
+#include "Headers/game.h"
+#include "Headers/obstacle.h"
+#include "Headers/stage.h"
+#include "src/include/SDL2/SDL_mixer.h"
 using namespace std;
 Mix_Music *massahMusic = nullptr;
 int main()
