@@ -1,10 +1,11 @@
 #ifndef _GAME__H
 #define _GAME__H
-#include "player.h"
-#include "C:\\C++\\GAME\\GAME\\src\\include\\SDL2\\SDL.h"
-#include "C:\\C++\\GAME\\GAME\\src\\include\\SDL2\\SDL_image.h"
-#include "graphics.h"
-#include "cursor.h"
+#include "../Entities/player.h"
+#include "../../src/include/SDL2/SDL.h"
+#include "../../src/include/SDL2/SDL_image.h"
+#include "../Core/graphics.h"
+#include "../Systems/cursor.h"
+#include "../Systems/sound.h"
 #include <bits/stdc++.h>
 
 using namespace std;

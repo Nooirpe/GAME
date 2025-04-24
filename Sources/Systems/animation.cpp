@@ -1,4 +1,4 @@
-#include "../Headers/animation.h"
+#include "../../Headers/Systems/animation.h"
 #include <iostream>
 
 Animation::Animation(int spriteWidth, int spriteHeight, int numFrames, int numRows, int framesPerDir)

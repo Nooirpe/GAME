@@ -1,7 +1,7 @@
 #ifndef MOUSE_H
 #define MOUSE_H
-#include "C:\\C++\\GAME\\GAME\\src\\include\\SDL2\\SDL.h"
-#include "graphics.h"
+#include "../../src/include/SDL2/SDL.h"
+#include "../Core/graphics.h"
 
 struct Cursor
 {

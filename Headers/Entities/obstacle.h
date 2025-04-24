@@ -1,11 +1,11 @@
 #ifndef _OBSTACLE__H
 #define _OBSTACLE__H
-#include "C:/C++/GAME/GAME/src/include/SDL2/SDL.h"
-#include "C:/C++/GAME/GAME/src/include/SDL2/SDL_image.h"
-#include "graphics.h"
+#include "../../src/include/SDL2/SDL.h"
+#include "../../src/include/SDL2/SDL_image.h"
+#include "../Core/graphics.h"
 #include <bits/stdc++.h>
 #include "player.h"
-#include "animation.h"
+#include "../Systems/animation.h"
 using namespace std;
 
 struct Bat

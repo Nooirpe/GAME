@@ -1,4 +1,4 @@
-#include "../Headers/graphics.h"
+#include "../../Headers/Core/graphics.h"
 #include <iostream>
 
 void Graphics::logErrorAndExit(const char *msg, const char *error)
@@ -84,49 +84,4 @@ void Graphics::render(const ScrollingBackground &background)
 {
     renderTexture(background.texture, background.scrollingOffset, 0);
     renderTexture(background.texture, background.scrollingOffset - background.width, 0);
-}
-
-Mix_Music *Graphics::loadMusic(const char *path)
-{
-    Mix_Music *gMusic = Mix_LoadMUS(path);
-    if (gMusic == nullptr)
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
-                       "Could not load music! SDL_mixer Error: %s", Mix_GetError());
-    }
-    return gMusic;
-}
-
-void Graphics::play(Mix_Music *gMusic)
-{
-    if (gMusic == nullptr)
-        return;
-
-    if (Mix_PlayingMusic() == 0)
-    {
-        Mix_PlayMusic(gMusic, -1);
-    }
-    else if (Mix_PausedMusic() == 1)
-    {
-        Mix_ResumeMusic();
-    }
-}
-
-Mix_Chunk *Graphics::loadSound(const char *path)
-{
-    Mix_Chunk *gChunk = Mix_LoadWAV(path);
-    if (gChunk == nullptr)
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
-                       "Could not load sound! SDL_mixer Error: %s", Mix_GetError());
-    }
-    return gChunk;
-}
-
-void Graphics::play(Mix_Chunk *sound, bool sfxEnabled)
-{
-    if (sfxEnabled && sound != nullptr)
-    {
-        Mix_PlayChannel(-1, sound, 0);
-    }
 }

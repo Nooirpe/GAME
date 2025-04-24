@@ -1,4 +1,4 @@
-#include "../Headers/obstacle.h"
+#include "../../Headers/Entities/obstacle.h"
 
 void Bat::spawnBat(float spawnX, float spawnY, float leftBound, float rightBound)
 {

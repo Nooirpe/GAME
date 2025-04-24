@@ -1,5 +1,5 @@
-#include "../Headers/player.h"
-#include "../Headers/animation.h"
+#include "../../Headers/Entities/player.h"
+#include "../../Headers/Systems/animation.h"
 
 void Player::createPlayer(const Graphics &graphics)
 {

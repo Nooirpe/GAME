@@ -1,26 +1,30 @@
 CXX = g++
 CXXFLAGS = -g -Wall -Wextra -std=c++11
-CLIBS = -Isrc/include -Lsrc/lib -lmingw32 -lSDL2main \
-        -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2
-OBJECTS = GameUnity.o main.o
+INCLUDES = -Isrc/include
+LIBS = -Lsrc/lib -lmingw32 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2
 
-all: main copy_dlls
+OBJECTS = main.o GameUnity.o
+
+all: main
 
 main: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o main $(OBJECTS) $(CLIBS)
+	$(CXX) $(CXXFLAGS) -o main $(OBJECTS) $(LIBS)
 
-copy_dlls:
-	copy src\\include\\SDL2\\*.dll .
+# Main program files
+main.o: main.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-main.o: main.cpp Headers/*.h
-	$(CXX) $(CXXFLAGS) -c main.cpp $(CLIBS)
-
-GameUnity.o: GameUnity.cpp Headers/*.h Sources/*.cpp
-	$(CXX) $(CXXFLAGS) -c GameUnity.cpp $(CLIBS)
+GameUnity.o: GameUnity.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 run: all
-	./main
+	.\main
 
-.PHONY : clean copy_dlls
+.PHONY: clean all run
+
 clean:
-	-del -f *.o *.exe *.dll
+ifeq ($(OS),Windows_NT)
+	del /Q /F main.exe *.o 2>NUL || echo "Already clean"
+else
+	rm -f main *.o *.exe
+endif

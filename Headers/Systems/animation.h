@@ -1,7 +1,7 @@
 #ifndef _ANIMATION_H
 #define _ANIMATION_H
 #include <vector>
-#include "C:\C++\GAME\GAME\src\include\SDL2\SDL.h"
+#include "../../src/include/SDL2/SDL.h"
 
 class Animation
 {

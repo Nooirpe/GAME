@@ -1,8 +1,8 @@
 #ifndef _STAGE__H
 #define _STAGE__H
 
-#include <C:\C++\GAME\GAME\src\include\SDL2\SDL.h>
-#include "game.h"
+#include "../../src/include/SDL2/SDL.h"
+#include "../States/game.h"
 #include <vector>
 #include <iostream>
 #include <list>

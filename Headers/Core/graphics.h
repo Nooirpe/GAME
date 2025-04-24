@@ -1,10 +1,9 @@
 #ifndef _GRAPHICS__H
 #define _GRAPHICS__H
 
-#include "C:\\C++\\GAME\\GAME\\src\\include\\SDL2\\SDL.h"
-#include "C:\\C++\\GAME\\GAME\\src\\include\\SDL2\\SDL_image.h"
-#include "defs.h"
-#include "C:\\C++\\GAME\\GAME\\src\\include\\SDL2\\SDL_mixer.h"
+#include "../../src/include/SDL2/SDL.h"
+#include "../../src/include/SDL2/SDL_image.h"
+#include "../Systems/defs.h"
 #include <vector>
 
 struct ScrollingBackground
@@ -31,10 +30,6 @@ struct Graphics
     void blitRect(SDL_Texture *texture, SDL_Rect *src, int x, int y);
     void quit();
     void render(const ScrollingBackground &background);
-    Mix_Music *loadMusic(const char *path);
-    void play(Mix_Music *gMusic);
-    Mix_Chunk *loadSound(const char *path);
-    void play(Mix_Chunk *sound, bool sfxEnabled = true);
 };
 
 #endif // _GRAPHICS__H

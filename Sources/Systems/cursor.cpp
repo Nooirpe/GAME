@@ -1,5 +1,5 @@
-#include "../Headers/cursor.h"
-#include "../Headers/graphics.h"
+#include "../../Headers/Systems/cursor.h"
+#include "../../Headers/Core/graphics.h"
 
 void Cursor::createCursor(const Graphics &graphics)
 {

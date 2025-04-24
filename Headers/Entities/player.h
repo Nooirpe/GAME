@@ -1,9 +1,9 @@
 #ifndef _PLAYER__H
 #define _PLAYER__H
-#include "C:/C++/GAME/GAME/src/include/SDL2/SDL.h"
-#include "C:/C++/GAME/GAME/src/include/SDL2/SDL_image.h"
-#include "graphics.h"
-#include "animation.h"
+#include "../../src/include/SDL2/SDL.h"
+#include "../../src/include/SDL2/SDL_image.h"
+#include "../Core/graphics.h"
+#include "../Systems/animation.h"
 #include <iostream>
 
 struct Player
@@ -49,7 +49,7 @@ struct Player
     void spawnPlayer(Graphics &graphics, int spawnX, int spawnY);
     void jump();
     void update(float deltaTime);
-    inline void render(SDL_Renderer *renderer); // fix multiple definition error
+    void render(SDL_Renderer *renderer); // removed inline keyword to fix multiple definition error
     void movePlayer(Player &player, const Uint8 *currentKeyStates, float deltaTime, int level);
 
     // Constructor and destructor
