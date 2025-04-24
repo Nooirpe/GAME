@@ -7,7 +7,6 @@
 #include "cursor.h"
 #include "player.h"
 #include "animation.h"
-#include "player.h"
 #include "game.h"
 #include "obstacle.h"
 #include "stage.h"
