@@ -9,7 +9,7 @@ void level1(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
     static SDL_Texture *mapTexture = nullptr;
     if (onelevel)
     {
-        mapTexture = graphics.loadTexture("sdl_image\\Things\\Map\\map 1.png");
+        mapTexture = graphics.loadTexture("Assets\\Things\\Map\\map 1.png");
         player.x = 54;
         player.y = Player::PLATFORM_HEIGHT + 13 - player.height;
         player.velocityY = 0;
@@ -48,7 +48,7 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
 
     if (onelevel)
     {
-        mapTexture = graphics.loadTexture("sdl_image\\Things\\Map\\map 2.png");
+        mapTexture = graphics.loadTexture("Assets\\Things\\Map\\map 2.png");
         player.x = 54;
         player.y = Player::PLATFORM_HEIGHT + 13 - player.height;
         player.velocityY = 0;
@@ -103,7 +103,7 @@ void level3(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
 
     if (onelevel)
     {
-        mapTexture = graphics.loadTexture("sdl_image\\Things\\Map\\map 3.png");
+        mapTexture = graphics.loadTexture("Assets\\Things\\Map\\map 3.png");
         player.x = 54;
         player.y = Player::PLATFORM_HEIGHT + 13 - player.height;
         player.velocityY = 0;

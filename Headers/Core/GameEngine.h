@@ -39,6 +39,9 @@ private:
     int options;
     int level;
 
+    // Mouse state tracking
+    bool mouseClicked; // Thêm biến để theo dõi trạng thái chuột
+
     // Resources
     SDL_Texture *menuTexture;
     SDL_Texture *introTexture[3];
@@ -78,6 +81,9 @@ public:
     bool initialize();
     void run();
     void cleanup();
+
+    bool wasMouseClicked() { return mouseClicked; }
+    void resetMouseClick() { mouseClicked = false; }
 };
 
 #endif // GAME_ENGINE_H

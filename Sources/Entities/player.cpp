@@ -3,7 +3,7 @@
 
 void Player::createPlayer(const Graphics &graphics)
 {
-    character = IMG_LoadTexture(graphics.renderer, "C:/C++/GAME/GAME/sdl_image/New folder/player 1.png");
+    character = IMG_LoadTexture(graphics.renderer, "C:/C++/GAME/GAME/Assets/New folder/player 1.png");
     rect.h = height;
     rect.w = width;
 }
@@ -37,24 +37,24 @@ void Player::jump()
 Player::Player(SDL_Renderer *renderer) : animation(64, 64, 2, 1)
 {
     health = 5;
-    idleTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/chibi/idle/idle.png");
+    idleTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/Assets/chibi/idle/idle.png");
     if (idleTexture == nullptr)
     {
         std::cerr << "Failed to load idle texture! SDL_image Error: " << IMG_GetError() << std::endl;
     }
 
-    animationTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/chibi/run/run.png");
+    animationTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/Assets/chibi/run/run.png");
     if (animationTexture == nullptr)
     {
         std::cerr << "Failed to load start texture! SDL_image Error: " << IMG_GetError() << std::endl;
     }
 
-    startTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/chibi/jump/jump.png");
+    startTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/Assets/chibi/jump/jump.png");
     if (startTexture == nullptr)
     {
         std::cerr << "Failed to load animation texture! SDL_image Error: " << IMG_GetError() << std::endl;
     }
-    jumpTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/sdl_image/chibi/jump/jump 1.png");
+    jumpTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/Assets/chibi/jump/jump 1.png");
     if (jumpTexture == nullptr)
     {
         std::cerr << "Failed to load jump texture! SDL_image Error: " << IMG_GetError() << std::endl;

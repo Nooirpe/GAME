@@ -21,10 +21,10 @@ void Bat::createBat(const Graphics &graphics, float startX, float startY, float 
     leftBoundary = leftBound;
     rightBoundary = rightBound;
 
-    idleTexture = IMG_LoadTexture(graphics.renderer, "sdl_image/monster/Idle/Idle.png");
-    flyTexture = IMG_LoadTexture(graphics.renderer, "sdl_image/monster/Fly/Fly.png");
-    attackTexture = IMG_LoadTexture(graphics.renderer, "sdl_image/monster/Attack/Attack.png");
-    dieTexture = IMG_LoadTexture(graphics.renderer, "sdl_image/monster/Die/Die.png");
+    idleTexture = IMG_LoadTexture(graphics.renderer, "Assets/monster/Idle/Idle.png");
+    flyTexture = IMG_LoadTexture(graphics.renderer, "Assets/monster/Fly/Fly.png");
+    attackTexture = IMG_LoadTexture(graphics.renderer, "Assets/monster/Attack/Attack.png");
+    dieTexture = IMG_LoadTexture(graphics.renderer, "Assets/monster/Die/Die.png");
 
     int textureWidth, textureHeight;
     if (flyTexture)

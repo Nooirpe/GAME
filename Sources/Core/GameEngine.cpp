@@ -14,6 +14,7 @@ GameEngine::GameEngine() : player(nullptr),
                            countmenu(1),
                            options(1),
                            level(0),
+                           mouseClicked(false),
                            menuTexture(nullptr),
                            gameMusic(nullptr),
                            menuSelect(nullptr),
@@ -68,7 +69,7 @@ bool GameEngine::initialize()
     }
 
     // Load game music
-    gameMusic = soundSystem.loadMusic("Sound\\Massah.mp3");
+    gameMusic = soundSystem.loadMusic("Assets\\Sound\\Massah.mp3");
     if (gameMusic == nullptr)
     {
         std::cout << "Error: Failed to load music file" << std::endl;
@@ -81,41 +82,41 @@ bool GameEngine::initialize()
     }
 
     // Load sound effects
-    menuSelect = soundSystem.loadSound("Sound\\sfx\\menuselect.wav");
-    menuChoose = soundSystem.loadSound("Sound\\sfx\\menuchoose.wav");
+    menuSelect = soundSystem.loadSound("Assets\\Sound\\sfx\\menuselect.wav");
+    menuChoose = soundSystem.loadSound("Assets\\Sound\\sfx\\menuchoose.wav");
 
     // Load textures
-    menuTexture = graphics.loadTexture("sdl_image\\Menu\\Menu 1.png");
+    menuTexture = graphics.loadTexture("Assets\\Menu\\Menu 1.png");
 
     // Initialize intro textures
-    introTexture[0] = graphics.loadTexture("sdl_image\\Intro\\Intro 1.PNG");
-    introTexture[1] = graphics.loadTexture("sdl_image\\Intro\\Intro 2.PNG");
-    introTexture[2] = graphics.loadTexture("sdl_image\\Intro\\Intro 3.PNG");
+    introTexture[0] = graphics.loadTexture("Assets\\Intro\\Intro 1.PNG");
+    introTexture[1] = graphics.loadTexture("Assets\\Intro\\Intro 2.PNG");
+    introTexture[2] = graphics.loadTexture("Assets\\Intro\\Intro 3.PNG");
 
     // Initialize health textures
     for (int i = 0; i < 5; i++)
     {
-        std::string path = "sdl_image\\Things\\Health\\health " + std::to_string(i + 1) + ".png";
+        std::string path = "Assets\\Things\\Health\\health " + std::to_string(i + 1) + ".png";
         healthTexture[i] = graphics.loadTexture(path.c_str());
     }
 
     // Initialize level textures
-    levelTexture[0] = graphics.loadTexture("sdl_image\\Menu\\level.png");
-    levelTexture[1] = graphics.loadTexture("sdl_image\\Menu\\level 1.png");
-    levelTexture[2] = graphics.loadTexture("sdl_image\\Menu\\level 2.png");
-    levelTexture[3] = graphics.loadTexture("sdl_image\\Menu\\level 3.png");
+    levelTexture[0] = graphics.loadTexture("Assets\\Menu\\level.png");
+    levelTexture[1] = graphics.loadTexture("Assets\\Menu\\level 1.png");
+    levelTexture[2] = graphics.loadTexture("Assets\\Menu\\level 2.png");
+    levelTexture[3] = graphics.loadTexture("Assets\\Menu\\level 3.png");
 
     // Initialize setting textures
     for (int i = 0; i < 4; i++)
     {
-        std::string path = "sdl_image\\Menu\\setting " + std::to_string(i + 1) + ".png";
+        std::string path = "Assets\\Menu\\setting " + std::to_string(i + 1) + ".png";
         settingTexture[i] = graphics.loadTexture(path.c_str());
     }
 
     // Initialize quit textures
     for (int i = 0; i < 3; i++)
     {
-        std::string path = "sdl_image\\Menu\\quit " + std::to_string(i + 1) + ".png";
+        std::string path = "Assets\\Menu\\quit " + std::to_string(i + 1) + ".png";
         quitTexture[i] = graphics.loadTexture(path.c_str());
     }
 
@@ -157,24 +158,30 @@ void GameEngine::processInput()
 {
     SDL_Event e;
 
+    // Reset trạng thái click chuột ở đầu mỗi frame
+    mouseClicked = false;
+
     while (SDL_PollEvent(&e) != 0)
     {
         if (e.type == SDL_QUIT)
         {
             quit = true;
         }
-
-        // Update cursor position when mouse moves
-        if (e.type == SDL_MOUSEMOTION)
+        // Phát hiện click chuột
+        else if (e.type == SDL_MOUSEBUTTONDOWN)
         {
-            cursor.update(); // Use the correct method to update cursor position
+            mouseClicked = true;
+        }
+        // Update cursor position when mouse moves
+        else if (e.type == SDL_MOUSEMOTION)
+        {
+            cursor.update();
         }
     }
 }
 
 void GameEngine::handleIntro()
 {
-    // Implementation for handling intro screen
     intro(graphics);
 }
 
@@ -194,9 +201,11 @@ void GameEngine::handleMenu()
 
     if (!end)
     {
-        SDL_Event e;
-        menu(menuTexture, graphics, cursor, e, countmenu, quit, playSound,
+
+        menu(menuTexture, graphics, cursor, mouseClicked, countmenu, quit, playSound,
              ingame, options, level, menuSelect, menuChoose, sfxEnabled, gameMusic);
+
+        mouseClicked = false;
     }
 
     cursor.draw(graphics); // Draw cursor last
@@ -223,9 +232,7 @@ void GameEngine::handleGameplay()
         player->height = 64;
         player->rect = {static_cast<int>(player->x), static_cast<int>(player->y),
                         player->width, player->height};
-        player->character = graphics.loadTexture("sdl_image/chibi/idle/idle.png");
-
-        // Don't set onelevel to false here - let the level functions handle it
+        player->character = graphics.loadTexture("Assets/chibi/idle/idle.png");
     }
 
     if (!playerDying && !playerWinning)

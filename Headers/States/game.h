@@ -12,7 +12,7 @@ using namespace std;
 
 void intro(Graphics graphics);
 void AudioSettings(int options, Mix_Music *music, bool &sfxEnabled);
-void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, SDL_Event &e, int &count, bool &quit, bool &playSound, bool &ingame, int &options, int &level, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled, Mix_Music *massahMusic);
+void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, bool &quit, bool &playSound, bool &ingame, int &options, int &level, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled, Mix_Music *massahMusic);
 void drawhealth(Graphics &graphics, Player &player, SDL_Texture *mn);
 void win(Graphics &graphics, Player &player);
 void death(Graphics &graphics, Player &player, SDL_Texture *mn, bool &onelevel);

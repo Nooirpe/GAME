@@ -3,8 +3,8 @@
 
 void Cursor::createCursor(const Graphics &graphics)
 {
-    texCursor1 = IMG_LoadTexture(graphics.renderer, "sdl_image\\cursor 1.png");
-    texCursor2 = IMG_LoadTexture(graphics.renderer, "sdl_image\\cursor 2.png");
+    texCursor1 = IMG_LoadTexture(graphics.renderer, "Assets\\cursor 1.png");
+    texCursor2 = IMG_LoadTexture(graphics.renderer, "Assets\\cursor 2.png");
     rect.w = 60;
     rect.h = 60;
     point.w = 1;
