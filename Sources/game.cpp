@@ -1,4 +1,8 @@
-#include "game.h"
+#include "../Headers/game.h"
+#include "../Headers/player.h"
+#include "../Headers/graphics.h"
+#include "../Headers/obstacle.h"
+#include "../Headers/stage.h"
 
 void intro(Graphics graphics)
 {

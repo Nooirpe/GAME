@@ -1,4 +1,7 @@
-#include "stage.h"
+#include "../Headers/stage.h"
+#include "../Headers/player.h"
+#include "../Headers/graphics.h"
+#include "../Headers/obstacle.h"
 
 void level1(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn, int &level,
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)

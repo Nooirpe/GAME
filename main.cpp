@@ -2,14 +2,14 @@
 #include <bits/stdc++.h>
 #include "C:\C++\GAME\GAME\src\include\SDL2\SDL.h"
 #include "C:\C++\GAME\GAME\src\include\SDL2\SDL_image.h"
-#include "defs.h"
-#include "graphics.h"
-#include "cursor.h"
-#include "player.h"
-#include "animation.h"
-#include "game.h"
-#include "obstacle.h"
-#include "stage.h"
+#include "Headers\defs.h"
+#include "Headers\graphics.h"
+#include "Headers\cursor.h"
+#include "Headers\player.h"
+#include "Headers\animation.h"
+#include "Headers\game.h"
+#include "Headers\obstacle.h"
+#include "Headers\stage.h"
 #include "C:\C++\GAME\GAME\src\include\SDL2\SDL_mixer.h"
 using namespace std;
 Mix_Music *massahMusic = nullptr;

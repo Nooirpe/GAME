@@ -1,4 +1,5 @@
-#include "player.h"
+#include "../Headers/player.h"
+#include "../Headers/animation.h"
 
 void Player::createPlayer(const Graphics &graphics)
 {

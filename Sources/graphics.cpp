@@ -1,4 +1,5 @@
-#include "graphics.h"
+#include "../Headers/graphics.h"
+#include <iostream>
 
 void Graphics::logErrorAndExit(const char *msg, const char *error)
 {
