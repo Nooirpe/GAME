@@ -38,13 +38,16 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
 {
     cursor.update();
     const Uint8 *currentKeyStates = SDL_GetKeyboardState(NULL);
+    SDL_Texture *tempTexture = nullptr;
 
+    // Xử lý phím ESC
     if (currentKeyStates[SDL_SCANCODE_ESCAPE] && (count == 2 || count == 3 || count == 4))
     {
         soundSystem.playSound(menuSelect, sfxEnabled);
         count = 1;
     }
 
+    // Xử lý menu dựa trên vị trí chuột và trạng thái click
     int prevCount = count;
     if (count == 1)
     {
@@ -53,8 +56,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
             if (cursor.point.y > 361 && cursor.point.y < 474)
             {
                 cursor.in = 1;
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\Menu 2.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\Menu 2.png");
                 if (playSound)
                 {
                     soundSystem.playSound(menuChoose, sfxEnabled);
@@ -65,8 +67,6 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
                 {
                     soundSystem.playSound(menuSelect, sfxEnabled);
                     count = 2;
-                    if (prevCount != count)
-                        return;
                 }
             }
             else if (cursor.point.y > 511 && cursor.point.y < 630)
@@ -77,8 +77,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
                     soundSystem.playSound(menuChoose, sfxEnabled);
                     playSound = false;
                 }
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\Menu 3.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\Menu 3.png");
                 if (mouseClicked)
                 {
                     soundSystem.playSound(menuSelect, sfxEnabled);
@@ -93,8 +92,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
                     soundSystem.playSound(menuChoose, sfxEnabled);
                     playSound = false;
                 }
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\Menu 4.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\Menu 4.png");
                 if (mouseClicked)
                 {
                     soundSystem.playSound(menuSelect, sfxEnabled);
@@ -105,16 +103,14 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
             {
                 cursor.in = 0;
                 playSound = true;
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\Menu 1.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\Menu 1.png");
             }
         }
         else
         {
             cursor.in = 0;
             playSound = true;
-            SDL_DestroyTexture(mn);
-            mn = graphics.loadTexture("Assets\\Menu\\Menu 1.png");
+            tempTexture = graphics.loadTexture("Assets\\Menu\\Menu 1.png");
         }
     }
     else if (count == 2)
@@ -124,8 +120,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
             if (cursor.point.x > 176 && cursor.point.x < 399)
             {
                 cursor.in = 1;
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\level 1.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\level 1.png");
                 if (playSound)
                 {
                     soundSystem.playSound(menuChoose, sfxEnabled);
@@ -136,31 +131,41 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
                     soundSystem.playSound(menuSelect, sfxEnabled);
                     for (int i = 0; i < 12; i++)
                     {
-                        SDL_DestroyTexture(mn);
-                        mn = graphics.loadTexture("Assets\\Menu\\level.png");
-                        graphics.prepareImg(mn);
+                        if (tempTexture)
+                        {
+                            SDL_DestroyTexture(tempTexture);
+                        }
+                        tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
+                        graphics.prepareImg(tempTexture);
                         graphics.presentScene();
                         SDL_Delay(50);
 
-                        SDL_DestroyTexture(mn);
-                        mn = graphics.loadTexture("Assets\\Menu\\level 1.png");
-                        graphics.prepareImg(mn);
+                        SDL_DestroyTexture(tempTexture);
+                        tempTexture = graphics.loadTexture("Assets\\Menu\\level 1.png");
+                        graphics.prepareImg(tempTexture);
                         graphics.presentScene();
                         SDL_Delay(50);
                     }
-                    mn = graphics.loadTexture("Assets\\Menu\\level.png");
-                    graphics.prepareImg(mn);
+
+                    if (tempTexture)
+                    {
+                        SDL_DestroyTexture(tempTexture);
+                    }
+                    tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
+                    graphics.prepareImg(tempTexture);
                     graphics.presentScene();
-                    SDL_DestroyTexture(mn);
+                    SDL_DestroyTexture(tempTexture);
+                    tempTexture = nullptr;
+
                     ingame = 1;
                     level = 1;
+                    return;
                 }
             }
             else if (cursor.point.x > 574 && cursor.point.x < 829)
             {
                 cursor.in = 1;
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\level 2.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\level 2.png");
                 if (playSound)
                 {
                     soundSystem.playSound(menuChoose, sfxEnabled);
@@ -171,31 +176,41 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
                     soundSystem.playSound(menuSelect, sfxEnabled);
                     for (int i = 0; i < 12; i++)
                     {
-                        SDL_DestroyTexture(mn);
-                        mn = graphics.loadTexture("Assets\\Menu\\level.png");
-                        graphics.prepareImg(mn);
+                        if (tempTexture)
+                        {
+                            SDL_DestroyTexture(tempTexture);
+                        }
+                        tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
+                        graphics.prepareImg(tempTexture);
                         graphics.presentScene();
                         SDL_Delay(50);
 
-                        SDL_DestroyTexture(mn);
-                        mn = graphics.loadTexture("Assets\\Menu\\level 2.png");
-                        graphics.prepareImg(mn);
+                        SDL_DestroyTexture(tempTexture);
+                        tempTexture = graphics.loadTexture("Assets\\Menu\\level 2.png");
+                        graphics.prepareImg(tempTexture);
                         graphics.presentScene();
                         SDL_Delay(50);
                     }
-                    mn = graphics.loadTexture("Assets\\Menu\\level.png");
-                    graphics.prepareImg(mn);
+
+                    if (tempTexture)
+                    {
+                        SDL_DestroyTexture(tempTexture);
+                    }
+                    tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
+                    graphics.prepareImg(tempTexture);
                     graphics.presentScene();
-                    SDL_DestroyTexture(mn);
+                    SDL_DestroyTexture(tempTexture);
+                    tempTexture = nullptr;
+
                     ingame = 1;
                     level = 2;
+                    return;
                 }
             }
             else if (cursor.point.x > 974 && cursor.point.x < 1226)
             {
                 cursor.in = 1;
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\level 3.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\level 3.png");
                 if (playSound)
                 {
                     soundSystem.playSound(menuChoose, sfxEnabled);
@@ -206,39 +221,48 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
                     soundSystem.playSound(menuSelect, sfxEnabled);
                     for (int i = 0; i < 12; i++)
                     {
-                        SDL_DestroyTexture(mn);
-                        mn = graphics.loadTexture("Assets\\Menu\\level.png");
-                        graphics.prepareImg(mn);
+                        if (tempTexture)
+                        {
+                            SDL_DestroyTexture(tempTexture);
+                        }
+                        tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
+                        graphics.prepareImg(tempTexture);
                         graphics.presentScene();
                         SDL_Delay(50);
 
-                        SDL_DestroyTexture(mn);
-                        mn = graphics.loadTexture("Assets\\Menu\\level 3.png");
-                        graphics.prepareImg(mn);
+                        SDL_DestroyTexture(tempTexture);
+                        tempTexture = graphics.loadTexture("Assets\\Menu\\level 3.png");
+                        graphics.prepareImg(tempTexture);
                         graphics.presentScene();
                         SDL_Delay(50);
                     }
-                    mn = graphics.loadTexture("Assets\\Menu\\level.png");
-                    graphics.prepareImg(mn);
+
+                    if (tempTexture)
+                    {
+                        SDL_DestroyTexture(tempTexture);
+                    }
+                    tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
+                    graphics.prepareImg(tempTexture);
                     graphics.presentScene();
-                    SDL_DestroyTexture(mn);
+                    SDL_DestroyTexture(tempTexture);
+                    tempTexture = nullptr;
+
                     ingame = 1;
                     level = 3;
+                    return;
                 }
             }
             else
             {
                 cursor.in = 0;
                 playSound = true;
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\level.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
             }
         }
         else if (cursor.point.x > 76 && cursor.point.x < 138 && cursor.point.y > 122 && cursor.point.y < 192)
         {
             cursor.in = 1;
-            SDL_DestroyTexture(mn);
-            mn = graphics.loadTexture("Assets\\Menu\\level.png");
+            tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
 
             if (playSound)
             {
@@ -256,33 +280,28 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
         {
             cursor.in = 0;
             playSound = true;
-            SDL_DestroyTexture(mn);
-            mn = graphics.loadTexture("Assets\\Menu\\level.png");
+            tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
         }
     }
     else if (count == 3)
     {
         if (options == 1)
         {
-            SDL_DestroyTexture(mn);
-            mn = graphics.loadTexture("Assets\\Menu\\setting 1.png");
+            tempTexture = graphics.loadTexture("Assets\\Menu\\setting 1.png");
         }
         else if (options == 2 || options == 3)
         {
-            SDL_DestroyTexture(mn);
-            mn = graphics.loadTexture("Assets\\Menu\\setting 3.png");
+            tempTexture = graphics.loadTexture("Assets\\Menu\\setting 3.png");
             options = 3;
         }
         else if (options == 4 || options == 5)
         {
-            SDL_DestroyTexture(mn);
-            mn = graphics.loadTexture("Assets\\Menu\\setting 4.png");
+            tempTexture = graphics.loadTexture("Assets\\Menu\\setting 4.png");
             options = 5;
         }
         else if (options == 6)
         {
-            SDL_DestroyTexture(mn);
-            mn = graphics.loadTexture("Assets\\Menu\\setting 2.png");
+            tempTexture = graphics.loadTexture("Assets\\Menu\\setting 2.png");
         }
         if (cursor.point.x > 790 && cursor.point.x < 826)
         {
@@ -392,12 +411,19 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
                     soundSystem.playSound(menuChoose, sfxEnabled);
                     playSound = false;
                 }
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\quit 2.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\quit 2.png");
+
                 if (mouseClicked)
                 {
+                    // Quan trọng: đảm bảo texture được giải phóng trước khi đặt quit = true
                     soundSystem.playSound(menuSelect, sfxEnabled);
+                    if (tempTexture)
+                    {
+                        SDL_DestroyTexture(tempTexture);
+                        tempTexture = nullptr;
+                    }
                     quit = true;
+                    return;
                 }
             }
             else if (cursor.point.x > 806 && cursor.point.x < 900)
@@ -408,8 +434,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
                     soundSystem.playSound(menuChoose, sfxEnabled);
                     playSound = false;
                 }
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\quit 3.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\quit 3.png");
                 if (mouseClicked)
                 {
                     soundSystem.playSound(menuSelect, sfxEnabled);
@@ -420,20 +445,23 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
             {
                 cursor.in = 0;
                 playSound = true;
-                SDL_DestroyTexture(mn);
-                mn = graphics.loadTexture("Assets\\Menu\\quit 1.png");
+                tempTexture = graphics.loadTexture("Assets\\Menu\\quit 1.png");
             }
         }
         else
         {
             cursor.in = 0;
             playSound = true;
-            SDL_DestroyTexture(mn);
-            mn = graphics.loadTexture("Assets\\Menu\\quit 1.png");
+            tempTexture = graphics.loadTexture("Assets\\Menu\\quit 1.png");
         }
     }
-    graphics.prepareImg(mn);
-    SDL_DestroyTexture(mn);
+
+    // Vẽ texture tạm thời và giải phóng nó
+    if (tempTexture)
+    {
+        graphics.prepareImg(tempTexture);
+        SDL_DestroyTexture(tempTexture);
+    }
 }
 void drawhealth(Graphics &graphics, Player &player, SDL_Texture *mn)
 {

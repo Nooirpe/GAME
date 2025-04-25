@@ -48,10 +48,7 @@ GameEngine::GameEngine() : player(nullptr),
     }
 }
 
-GameEngine::~GameEngine()
-{
-    cleanup();
-}
+GameEngine::~GameEngine() {}
 
 bool GameEngine::initialize()
 {
@@ -64,7 +61,7 @@ bool GameEngine::initialize()
     // Initialize sound system
     if (!soundSystem.init(44100, MIX_DEFAULT_FORMAT, 2, 2048))
     {
-        std::cout << "Failed to initialize audio system!" << std::endl;
+        std::cout << "Error: Failed to initialize audio system!" << std::endl;
         return false;
     }
 
@@ -89,9 +86,11 @@ bool GameEngine::initialize()
     menuTexture = graphics.loadTexture("Assets\\Menu\\Menu 1.png");
 
     // Initialize intro textures
-    introTexture[0] = graphics.loadTexture("Assets\\Intro\\Intro 1.PNG");
-    introTexture[1] = graphics.loadTexture("Assets\\Intro\\Intro 2.PNG");
-    introTexture[2] = graphics.loadTexture("Assets\\Intro\\Intro 3.PNG");
+    for (int i = 0; i < 3; i++)
+    {
+        std::string path = "Assets\\Intro\\intro " + std::to_string(i + 1) + ".png";
+        introTexture[i] = graphics.loadTexture(path.c_str());
+    }
 
     // Initialize health textures
     for (int i = 0; i < 5; i++)
@@ -102,9 +101,11 @@ bool GameEngine::initialize()
 
     // Initialize level textures
     levelTexture[0] = graphics.loadTexture("Assets\\Menu\\level.png");
-    levelTexture[1] = graphics.loadTexture("Assets\\Menu\\level 1.png");
-    levelTexture[2] = graphics.loadTexture("Assets\\Menu\\level 2.png");
-    levelTexture[3] = graphics.loadTexture("Assets\\Menu\\level 3.png");
+    for (int i = 0; i < 3; i++)
+    {
+        std::string path = "Assets\\Menu\\level " + std::to_string(i + 1) + ".png";
+        levelTexture[i + 1] = graphics.loadTexture(path.c_str());
+    }
 
     // Initialize setting textures
     for (int i = 0; i < 4; i++)
@@ -127,31 +128,6 @@ bool GameEngine::initialize()
     lastTime = SDL_GetTicks();
 
     return true;
-}
-
-void GameEngine::run()
-{
-    SDL_Event e;
-
-    while (!quit)
-    {
-        // Process input
-        processInput();
-
-        if (!ingame)
-        {
-            // Handle menu state
-            handleMenu();
-        }
-        else
-        {
-            // Handle gameplay state
-            handleGameplay();
-        }
-
-        // Limit frame rate
-        SDL_Delay(16); // ~60 FPS
-    }
 }
 
 void GameEngine::processInput()
@@ -320,6 +296,31 @@ void GameEngine::handleDeath()
     }
 }
 
+void GameEngine::run()
+{
+    SDL_Event e;
+
+    while (!quit)
+    {
+        // Process input
+        processInput();
+
+        if (!ingame)
+        {
+            // Handle menu state
+            handleMenu();
+        }
+        else
+        {
+            // Handle gameplay state
+            handleGameplay();
+        }
+
+        // Limit frame rate
+        SDL_Delay(16); // ~60 FPS
+    }
+}
+
 void GameEngine::cleanup()
 {
     // Free player
@@ -330,34 +331,81 @@ void GameEngine::cleanup()
     }
 
     // Free textures
-    SDL_DestroyTexture(menuTexture);
+    if (menuTexture != nullptr)
+    {
+        SDL_DestroyTexture(menuTexture);
+        menuTexture = nullptr;
+    }
 
     for (int i = 0; i < 3; i++)
     {
-        SDL_DestroyTexture(introTexture[i]);
+        if (introTexture[i] != nullptr)
+        {
+            SDL_DestroyTexture(introTexture[i]);
+            introTexture[i] = nullptr;
+        }
     }
 
     for (int i = 0; i < 5; i++)
     {
-        SDL_DestroyTexture(healthTexture[i]);
+        if (healthTexture[i] != nullptr)
+        {
+            SDL_DestroyTexture(healthTexture[i]);
+            healthTexture[i] = nullptr;
+        }
     }
 
     for (int i = 0; i < 4; i++)
     {
-        SDL_DestroyTexture(levelTexture[i]);
-        SDL_DestroyTexture(settingTexture[i]);
+        if (levelTexture[i] != nullptr)
+        {
+            SDL_DestroyTexture(levelTexture[i]);
+            levelTexture[i] = nullptr;
+        }
+        if (settingTexture[i] != nullptr)
+        {
+            SDL_DestroyTexture(settingTexture[i]);
+            settingTexture[i] = nullptr;
+        }
     }
 
     for (int i = 0; i < 3; i++)
     {
-        SDL_DestroyTexture(quitTexture[i]);
+        if (quitTexture[i] != nullptr)
+        {
+            SDL_DestroyTexture(quitTexture[i]);
+            quitTexture[i] = nullptr;
+        }
     }
 
     // Free music and sound effects
-    Mix_FreeMusic(gameMusic);
-    Mix_FreeChunk(menuSelect);
-    Mix_FreeChunk(menuChoose);
+    if (gameMusic != nullptr)
+    {
+        Mix_FreeMusic(gameMusic);
+        gameMusic = nullptr;
+    }
+
+    if (menuSelect != nullptr)
+    {
+        Mix_FreeChunk(menuSelect);
+        menuSelect = nullptr;
+    }
+
+    if (menuChoose != nullptr)
+    {
+        Mix_FreeChunk(menuChoose);
+        menuChoose = nullptr;
+    }
 
     // Close sound system
     soundSystem.close();
+
+    // Close graphics system
+    graphics.quit();
+
+    // Quit SDL subsystems
+    Mix_Quit();
+    IMG_Quit();
+    TTF_Quit();
+    SDL_Quit();
 }

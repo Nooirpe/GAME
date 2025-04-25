@@ -75,8 +75,19 @@ void Graphics::blitRect(SDL_Texture *texture, SDL_Rect *src, int x, int y)
 void Graphics::quit()
 {
     IMG_Quit();
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+
+    if (renderer != nullptr)
+    {
+        SDL_DestroyRenderer(renderer);
+        renderer = nullptr;
+    }
+
+    if (window != nullptr)
+    {
+        SDL_DestroyWindow(window);
+        window = nullptr;
+    }
+
     SDL_Quit();
 }
 

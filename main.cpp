@@ -17,5 +17,8 @@ int main()
     // Run the game
     engine.run();
 
+    // Cleanup
+    engine.cleanup();
+
     return 0;
 }
