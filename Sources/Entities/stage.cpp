@@ -82,7 +82,9 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
     else if (((playerCollisionBox.x + playerCollisionBox.w > 249 && playerCollisionBox.x < 269 &&
                playerCollisionBox.y + playerCollisionBox.h > 522 && playerCollisionBox.y < 535) ||
               (playerCollisionBox.x + playerCollisionBox.w > 750 && playerCollisionBox.x < 800 &&
-               playerCollisionBox.y + playerCollisionBox.h > 522 && playerCollisionBox.y < 535)) &&
+               playerCollisionBox.y + playerCollisionBox.h > 522 && playerCollisionBox.y < 535) ||
+              (playerCollisionBox.x + playerCollisionBox.w > 962 && playerCollisionBox.x < 980 &&
+               playerCollisionBox.y + playerCollisionBox.h > 498 && playerCollisionBox.y < 509)) &&
              !playerDying)
     {
         playerDying = true;

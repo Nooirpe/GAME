@@ -1,7 +1,7 @@
 #include "../../Headers/Systems/animation.h"
 #include <iostream>
 
-Animation::Animation(int spriteWidth, int spriteHeight, int numFrames, int numRows, int framesPerDir)
+Animation::Animation(int spriteWidth, int spriteHeight, int numFrames, int framesPerDir)
 {
     framesPerDirection = framesPerDir;
     for (int i = 0; i < numFrames; i++)

@@ -23,10 +23,10 @@
 - Game gồm 3 levels, càng lên level cao càng có thêm tính năng cũng như chướng ngại vật
 - Mỗi màn sẽ gồm NHÂN VẬT, ĐƯỜNG ĐI, TƯỜNG, CỔNG KẾT THÚC, ấn ESC để thoát ra ngoài màn. Bên góc phải màn sẽ hiện lượng máu còn lại, khi máu về 0 sẽ GAME OVER!
 
-![image](https://github.com/Nooirpe/GAME/blob/main/sdl_image/Menu/Menu%201.png)
-![image](https://github.com/Nooirpe/GAME/blob/main/sdl_image/Intro/Intro%201.PNG)
-![image](https://github.com/Nooirpe/GAME/blob/main/sdl_image/Things/gameover.png)
-![image](https://github.com/Nooirpe/GAME/blob/main/sdl_image/Things/complete.png)
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/Menu%201.png)
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Intro/Intro%201.PNG)
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/gameover.png)
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/complete.png)
 
 ## **Một số điểm nổi bật**
 
@@ -34,18 +34,18 @@
 
 - Tính năng tắt, bật sfx/music
 
-![image](https://github.com/Nooirpe/GAME/blob/main/sdl_image/Menu/setting%201.png)
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/setting%201.png)
 
 - Tính năng thoát game
 
-![image](https://github.com/Nooirpe/GAME/blob/main/sdl_image/Menu/quit%201.png)
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/quit%201.png)
 
 - Tính năng giảm máu khi chết
 
-![image](https://github.com/Nooirpe/GAME/blob/main/sdl_image/Things/Death/5.png)
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/Death/5.png)
 
 - Tính năng chia level khi có event click chuột
-  ![image](https://github.com/Nooirpe/GAME/blob/main/sdl_image/Menu/level.png)
+  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/level.png)
 
 - Tính năng thoát màn khi ấn ESC
 
@@ -55,8 +55,8 @@
 
 - Kị sĩ + animation
 
-![image]()
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/chibi/idle/player.png)
 
 - Quái vật + animation
 
-![image]()
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/monster/Idle/monster.png)

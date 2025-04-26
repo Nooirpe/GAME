@@ -415,7 +415,6 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
 
                 if (mouseClicked)
                 {
-                    // Quan trọng: đảm bảo texture được giải phóng trước khi đặt quit = true
                     soundSystem.playSound(menuSelect, sfxEnabled);
                     if (tempTexture)
                     {
@@ -456,7 +455,6 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
         }
     }
 
-    // Vẽ texture tạm thời và giải phóng nó
     if (tempTexture)
     {
         graphics.prepareImg(tempTexture);

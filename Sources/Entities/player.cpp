@@ -3,7 +3,7 @@
 
 void Player::createPlayer(const Graphics &graphics)
 {
-    character = IMG_LoadTexture(graphics.renderer, "C:/C++/GAME/GAME/Assets/New folder/player 1.png");
+    character = IMG_LoadTexture(graphics.renderer, "C:/C++/GAME/GAME/Assets/chibi/idle/idle.png");
     rect.h = height;
     rect.w = width;
 }
@@ -26,51 +26,35 @@ void Player::jump()
     {
         velocityY = -jumpForce;
         isGrounded = false;
-        justLanded = false; // not landed yet
-        // Reset movetime and startFrameTime when jumping
-        movetime = 0.0f;
-        startFrame = 0;
-        startFrameTime = 0.0f;
+        justLanded = false;
     }
 }
 
 Player::Player(SDL_Renderer *renderer) : animation(64, 64, 2, 1)
 {
     health = 5;
-    idleTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/Assets/chibi/idle/idle.png");
+    idleTexture = IMG_LoadTexture(renderer, "Assets/chibi/idle/idle.png");
     if (idleTexture == nullptr)
     {
         std::cerr << "Failed to load idle texture! SDL_image Error: " << IMG_GetError() << std::endl;
     }
 
-    animationTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/Assets/chibi/run/run.png");
+    animationTexture = IMG_LoadTexture(renderer, "Assets/chibi/run/run.png");
     if (animationTexture == nullptr)
     {
-        std::cerr << "Failed to load start texture! SDL_image Error: " << IMG_GetError() << std::endl;
+        std::cerr << "Failed to load run texture! SDL_image Error: " << IMG_GetError() << std::endl;
     }
 
-    startTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/Assets/chibi/jump/jump.png");
+    startTexture = IMG_LoadTexture(renderer, "Assets/chibi/jump/jump.png");
     if (startTexture == nullptr)
-    {
-        std::cerr << "Failed to load animation texture! SDL_image Error: " << IMG_GetError() << std::endl;
-    }
-    jumpTexture = IMG_LoadTexture(renderer, "C:/C++/GAME/GAME/Assets/chibi/jump/jump 1.png");
-    if (jumpTexture == nullptr)
     {
         std::cerr << "Failed to load jump texture! SDL_image Error: " << IMG_GetError() << std::endl;
     }
-    animation.setAnimationSpeed(8.0f);
-    // Debug: In kích thước các textures
-    int w, h;
-    if (startTexture)
+
+    jumpTexture = IMG_LoadTexture(renderer, "Assets/chibi/jump/jump 1.png");
+    if (jumpTexture == nullptr)
     {
-        SDL_QueryTexture(startTexture, NULL, NULL, &w, &h);
-        /*  std::cout << "Start texture dimensions: " << w << "x" << h << std::endl; */
-    }
-    if (animationTexture)
-    {
-        SDL_QueryTexture(animationTexture, NULL, NULL, &w, &h);
-        /*         std::cout << "Animation texture dimensions: " << w << "x" << h << std::endl; */
+        std::cerr << "Failed to load landing texture! SDL_image Error: " << IMG_GetError() << std::endl;
     }
 
     animation.setAnimationSpeed(8.0f);
@@ -126,59 +110,10 @@ void Player::update(float deltaTime)
         animation.setDirection(Animation::IDLE);
     }
 
-    // Xử lý thời gian di chuyển và animation
+    // Xử lý animation
     if (isMoving)
     {
-        // Nếu trước đó không di chuyển và bây giờ di chuyển
-        if (!wasMoving)
-        {
-            movetime = 0.0f;
-            startFrame = 0;
-            startFrameTime = 0.0f;
-            /*    if (enableDebug)
-               {
-                   std::cout << "Started moving - reset timers" << std::endl;
-               } */
-        }
-
-        // Luôn tăng movetime khi đang di chuyển
-        movetime += deltaTime;
-
-        /*  if (enableDebug && (int)(movetime * 10) % 10 == 0)
-         {
-             std::cout << "Moving: " << movetime << "s" << std::endl;
-         } */
-
-        // Xử lý animation ban đầu (trong 1 giây đầu)
-        if (movetime <= 1.0f)
-        {
-            startFrameTime += deltaTime;
-            if (startFrameTime >= startFrameDelay)
-            {
-                startFrameTime = 0.0f;
-                startFrame = (startFrame + 1) % 2;
-                /*  if (enableDebug)
-                 {
-                     std::cout << "Start animation - Frame: " << startFrame << std::endl;
-                 } */
-            }
-        }
-        // Xử lý animation chính (sau 1 giây)
-        else
-        {
-            animation.update(deltaTime);
-            /* if (enableDebug && (int)(movetime * 10) % 30 == 0)
-            {
-                std::cout << "Main animation - Frame: " << animation.getCurrentFrameIndex() << std::endl;
-            } */
-        }
-    }
-    else
-    {
-        // Reset các giá trị khi dừng
-        movetime = 0.0f;
-        startFrame = 0;
-        startFrameTime = 0.0f;
+        animation.update(deltaTime);
     }
 }
 
@@ -196,7 +131,7 @@ void Player::render(SDL_Renderer *renderer)
     else
         flip = SDL_FLIP_HORIZONTAL;
 
-    // CASE 1: Not moving - show idle texture
+    // CASE 1: Just landed - show landing texture
     if (justLanded)
     {
         if (jumpTexture)
@@ -210,7 +145,7 @@ void Player::render(SDL_Renderer *renderer)
             landTimer = 0;
         }
     }
-    // CASE 2: Moving for less than 1 second - show start animation
+    // CASE 2: Idle - show idle animation
     else if (!isMoving && isGrounded)
     {
         if (idleTexture)
@@ -221,26 +156,22 @@ void Player::render(SDL_Renderer *renderer)
 
             int idleFrame = (SDL_GetTicks() / 100) % 8;
             SDL_Rect srcRect = {
-                idleFrame * frameWidth, // Use correct frame width
+                idleFrame * frameWidth,
                 0,
-                frameWidth, // Width from texture size
-                texH        // Full texture height
-            };
+                frameWidth,
+                texH};
 
             SDL_RenderCopyEx(renderer, idleTexture, &srcRect, &dstRect, 0, NULL, flip);
         }
     }
-    // CASE 3: in the air - show jump animation
+    // CASE 3: In the air - show jump animation
     else if (!isGrounded)
     {
         if (startTexture)
         {
-            // Flip based on direction
-
             SDL_RenderCopyEx(renderer, startTexture, NULL, &dstRect, 0, NULL, flip);
         }
     }
-
     // CASE 4: Running - show run animation
     else if (isMoving && isGrounded)
     {
@@ -252,14 +183,98 @@ void Player::render(SDL_Renderer *renderer)
 
             int runFrame = (SDL_GetTicks() / 100) % 7;
             SDL_Rect srcRect = {
-                runFrame * frameWidth, // Use correct frame width
+                runFrame * frameWidth,
                 0,
-                frameWidth, // Width from texture size
-                texH        // Full texture height
-            };
+                frameWidth,
+                texH};
 
             SDL_RenderCopyEx(renderer, animationTexture, &srcRect, &dstRect, 0, NULL, flip);
         }
+    }
+
+    // Draw level 1 boundaries with blue lines
+    static int currentLevel = 0;
+    // Get the current level from somewhere - for now we'll check if we're at level 1 location
+    if (y >= PLATFORM_HEIGHT - 10 && y <= PLATFORM_HEIGHT + 20)
+    {
+        currentLevel = 1;
+    }
+
+    // Draw level 1 boundaries
+    if (currentLevel == 1)
+    {
+        /* // Set the color to blue (RGB: 0, 0, 255, full opacity)
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+
+        // Draw horizontal platform line - at exact platform level
+        SDL_RenderDrawLine(renderer, 0, PLATFORM_HEIGHT, 1300, PLATFORM_HEIGHT);
+
+        // First gap boundaries
+        // Left boundary of first gap
+        SDL_RenderDrawLine(renderer, 400, PLATFORM_HEIGHT, 400, PLATFORM_HEIGHT + 250);
+        // Right boundary of first gap
+        SDL_RenderDrawLine(renderer, 460, PLATFORM_HEIGHT, 460, PLATFORM_HEIGHT + 250);
+
+        // Second gap boundaries
+        // Left boundary of second gap
+        SDL_RenderDrawLine(renderer, 895, PLATFORM_HEIGHT, 895, PLATFORM_HEIGHT + 250);
+        // Right boundary of second gap
+        SDL_RenderDrawLine(renderer, 950, PLATFORM_HEIGHT, 950, PLATFORM_HEIGHT + 250);
+ */
+        // Draw rounded corners for the first gap
+        // Top-left corner of first gap
+        for (int i = 0; i < 5; i++)
+        {
+            SDL_RenderDrawPoint(renderer, 400 - i, PLATFORM_HEIGHT + i);
+            SDL_RenderDrawPoint(renderer, 400 - i, PLATFORM_HEIGHT + i + 1);
+        }
+        // Top-right corner of first gap
+        for (int i = 0; i < 5; i++)
+        {
+            SDL_RenderDrawPoint(renderer, 460 + i, PLATFORM_HEIGHT + i);
+            SDL_RenderDrawPoint(renderer, 460 + i, PLATFORM_HEIGHT + i + 1);
+        }
+        // Bottom-left corner of first gap
+        for (int i = 0; i < 5; i++)
+        {
+            SDL_RenderDrawPoint(renderer, 400 - i, PLATFORM_HEIGHT + 250 - i);
+            SDL_RenderDrawPoint(renderer, 400 - i, PLATFORM_HEIGHT + 250 - i - 1);
+        }
+        // Bottom-right corner of first gap
+        for (int i = 0; i < 5; i++)
+        {
+            SDL_RenderDrawPoint(renderer, 460 + i, PLATFORM_HEIGHT + 250 - i);
+            SDL_RenderDrawPoint(renderer, 460 + i, PLATFORM_HEIGHT + 250 - i - 1);
+        }
+
+        // Draw rounded corners for the second gap
+        // Top-left corner of second gap
+        for (int i = 0; i < 5; i++)
+        {
+            SDL_RenderDrawPoint(renderer, 895 - i, PLATFORM_HEIGHT + i);
+            SDL_RenderDrawPoint(renderer, 895 - i, PLATFORM_HEIGHT + i + 1);
+        }
+        // Top-right corner of second gap
+        for (int i = 0; i < 5; i++)
+        {
+            SDL_RenderDrawPoint(renderer, 950 + i, PLATFORM_HEIGHT + i);
+            SDL_RenderDrawPoint(renderer, 950 + i, PLATFORM_HEIGHT + i + 1);
+        }
+        // Bottom-left corner of second gap
+        for (int i = 0; i < 5; i++)
+        {
+            SDL_RenderDrawPoint(renderer, 895 - i, PLATFORM_HEIGHT + 250 - i);
+            SDL_RenderDrawPoint(renderer, 895 - i, PLATFORM_HEIGHT + 250 - i - 1);
+        }
+        // Bottom-right corner of second gap
+        for (int i = 0; i < 5; i++)
+        {
+            SDL_RenderDrawPoint(renderer, 950 + i, PLATFORM_HEIGHT + 250 - i);
+            SDL_RenderDrawPoint(renderer, 950 + i, PLATFORM_HEIGHT + 250 - i - 1);
+        }
+
+        // Reset to default drawing color
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     }
 }
 
@@ -291,10 +306,15 @@ void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float del
         player.jump();
         player.animation.currentDirection = player.animation.UP;
     }
+
+    // Level-specific movement logic
     if (level == 1)
     {
-        bool isOverGap = ((player.x + player.width) > 430 && player.x < 435) ||
-                         ((player.x + player.width) > 915 && player.x < 920);
+        // Kiểm tra nếu nhân vật đang ở trên hố
+        bool isOverFirstGap = ((player.x + player.width) > 432 && (player.x + player.width) < 480);
+        bool isOverSecondGap = ((player.x + player.width) > 935 && (player.x + player.width) < 975);
+        bool isOverGap = isOverFirstGap || isOverSecondGap;
+
         // IMMEDIATELY make the player not grounded when over a gap
         if (isOverGap)
         {
@@ -307,6 +327,7 @@ void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float del
                 player.justSpawned = false;
             }
         }
+
         // ALWAYS apply gravity when not grounded
         if (!player.isGrounded)
         {
@@ -344,6 +365,30 @@ void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float del
         if (player.x > 1300 - player.width)
             player.x = 1300 - player.width;
 
+        // First gap boundaries
+        if (player.y >= PLATFORM_HEIGHT && player.y < PLATFORM_HEIGHT + 250)
+        {
+            // First gap boundaries
+            if ((player.x + player.width) < 432)
+            {
+                player.x = 432 - player.width;
+            }
+            else if ((player.x + player.width > 480) && (player.x + player.width < 600))
+            {
+                player.x = 480 - player.width;
+            }
+
+            // Second gap boundaries
+            else if ((player.x + player.width) < 935 && (player.x + player.width) > 800)
+            {
+                player.x = 935 - player.width;
+            }
+            else if ((player.x + player.width > 975))
+            {
+                player.x = 975 - player.width;
+            }
+        }
+
         // Check if player is over the gap
         if (isOverGap)
         {
@@ -356,9 +401,8 @@ void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float del
             }
         }
     }
-    if (level == 2)
+    else if (level == 2)
     {
-
         if (!player.isGrounded)
         {
             // Apply gravity
@@ -572,7 +616,7 @@ void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float del
             }
         }
     }
-    if (level == 3)
+    else if (level == 3)
     {
         if (!player.isGrounded)
         {
@@ -607,18 +651,6 @@ void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float del
     // Set moving state based on any movement (horizontal or vertical)
     player.isMoving = (player.velocityX != 0 || !player.isGrounded);
 
-    if (player.isMoving && !player.wasMoving)
-    {
-        // Started moving
-        player.movetime = 0.0f;
-        player.startFrame = 0;
-        player.startFrameTime = 0.0f;
-    }
-    else if (player.isMoving)
-    {
-        // Continue moving
-        player.movetime += deltaTime;
-    }
     // Update collision rect
     player.rect.x = static_cast<int>(player.x);
     player.rect.y = static_cast<int>(player.y);

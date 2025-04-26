@@ -26,7 +26,7 @@ public:
 
     Direction currentDirection = IDLE;
 
-    Animation(int spriteWidth, int spriteHeight, int numFrames, int numRows, int framesPerDir = 2);
+    Animation(int spriteWidth, int spriteHeight, int numFrames, int framesPerDir = 2);
     void update(float deltaTime);
     SDL_Rect getCurrentFrame();
     int getDirectionOffset();
