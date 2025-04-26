@@ -7,6 +7,11 @@ void level1(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
 {
     static SDL_Texture *mapTexture = nullptr;
+    static Uint32 lastFrameTime = SDL_GetTicks();
+    Uint32 currentTime = SDL_GetTicks();
+    float deltaTime = (currentTime - lastFrameTime) / 1000.0f;
+    lastFrameTime = currentTime;
+
     if (onelevel)
     {
         mapTexture = graphics.loadTexture("Assets\\Things\\Map\\map 1.png");
@@ -24,7 +29,11 @@ void level1(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         SDL_RenderCopy(graphics.renderer, mapTexture, NULL, NULL);
     }
 
-    player.render(graphics.renderer);
+    // Update player
+    player.update(deltaTime);
+
+    // Render player
+    player.render(graphics.renderer, deltaTime);
 
     if (player.x > 1156 && player.y > 425)
     {
@@ -45,6 +54,10 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
 {
     static SDL_Texture *mapTexture = nullptr;
+    static Uint32 lastFrameTime = SDL_GetTicks();
+    Uint32 currentTime = SDL_GetTicks();
+    float deltaTime = (currentTime - lastFrameTime) / 1000.0f;
+    lastFrameTime = currentTime;
 
     if (onelevel)
     {
@@ -69,7 +82,11 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         player.width - 24,
         player.height - 24};
 
-    player.render(graphics.renderer);
+    // Update player
+    player.update(deltaTime);
+
+    // Render player
+    player.render(graphics.renderer, deltaTime);
 
     if (player.x > 1156 && player.y > 425)
     {
@@ -125,7 +142,11 @@ void level3(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         SDL_RenderCopy(graphics.renderer, mapTexture, NULL, NULL);
     }
 
-    player.render(graphics.renderer);
+    // Update player
+    player.update(deltaTime);
+
+    // Render player
+    player.render(graphics.renderer, deltaTime);
 
     if (player.x > 1156 && player.y > 425)
     {

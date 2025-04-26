@@ -57,6 +57,11 @@ Player::Player(SDL_Renderer *renderer) : animation(64, 64, 2, 1)
         std::cerr << "Failed to load landing texture! SDL_image Error: " << IMG_GetError() << std::endl;
     }
 
+    attackTexture = IMG_LoadTexture(renderer, "Assets/chibi/attack/attack.png");
+    if (attackTexture == nullptr)
+    {
+        std::cerr << "Failed to load attack texture! SDL_image Error: " << IMG_GetError() << std::endl;
+    }
     animation.setAnimationSpeed(8.0f);
 }
 
@@ -70,6 +75,8 @@ Player::~Player()
         SDL_DestroyTexture(animationTexture);
     if (jumpTexture != nullptr)
         SDL_DestroyTexture(jumpTexture);
+    if (attackTexture != nullptr)
+        SDL_DestroyTexture(attackTexture);
 }
 
 void Player::update(float deltaTime)
@@ -78,46 +85,59 @@ void Player::update(float deltaTime)
     wasMoving = isMoving;
     isMoving = (velocityX != 0 || velocityY != 0);
 
+    // Update attack state
+    if (isAttacking)
+    {
+        attackTimer += deltaTime;
+
+        const float totalAttackDuration = attackDuration;
+
+        // End attack state when animation completes
+        if (attackTimer >= totalAttackDuration)
+        {
+            isAttacking = false;
+            attackTimer = 0.0f;
+            attackFrame = 0;
+
+            // Restore previous direction
+            animation.setDirection(lastDirection);
+        }
+    }
+
     // Cập nhật vị trí dựa trên vận tốc
     x += velocityX * deltaTime;
-    // Giữ nhân vật trong màn hình
-    if (x < 0)
-        x = 0;
-    if (x > 1366 - width)
-        x = 1366 - width;
-    if (y < 0)
-        y = 0;
-
     // Cập nhật hướng di chuyển cho animation
-    if (velocityX > 0)
+    if (!isAttacking) // Chỉ cập nhật hướng khi không tấn công
     {
-        animation.setDirection(Animation::RIGHT);
-    }
-    else if (velocityX < 0)
-    {
-        animation.setDirection(Animation::LEFT);
-    }
-    else if (velocityY > 0)
-    {
-        animation.setDirection(Animation::DOWN);
-    }
-    else if (velocityY < 0)
-    {
-        animation.setDirection(Animation::UP);
-    }
-    else
-    {
-        animation.setDirection(Animation::IDLE);
+        if (velocityX > 0)
+        {
+            lastDirection = Animation::RIGHT;
+            animation.setDirection(Animation::RIGHT);
+        }
+        else if (velocityX < 0)
+        {
+            lastDirection = Animation::LEFT;
+            animation.setDirection(Animation::LEFT);
+        }
+        else if (velocityY > 0)
+        {
+            animation.setDirection(Animation::DOWN);
+        }
+        else if (velocityY < 0)
+        {
+            animation.setDirection(Animation::UP);
+        }
+        else
+        {
+            animation.setDirection(Animation::IDLE);
+        }
     }
 
-    // Xử lý animation
-    if (isMoving)
-    {
-        animation.update(deltaTime);
-    }
+    // Xử lý animation - luôn cập nhật animation kể cả khi đang tấn công
+    animation.update(deltaTime);
 }
 
-void Player::render(SDL_Renderer *renderer)
+void Player::render(SDL_Renderer *renderer, float deltaTime)
 {
     SDL_Rect dstRect = {
         static_cast<int>(x),
@@ -125,14 +145,68 @@ void Player::render(SDL_Renderer *renderer)
         width,
         height};
 
-    SDL_RendererFlip flip;
-    if (animation.currentDirection == Animation::LEFT)
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+    // Xác định hướng quay mặt của nhân vật
+    if (animation.currentDirection == Animation::LEFT || lastDirection == Animation::LEFT)
         flip = SDL_FLIP_NONE;
     else
         flip = SDL_FLIP_HORIZONTAL;
 
+    // CASE 0: Attacking - show attack animation
+    if (isAttacking)
+    {
+        if (attackTexture)
+        {
+            int texW, texH;
+            SDL_QueryTexture(attackTexture, NULL, NULL, &texW, &texH);
+            int frameCount = 8; // 8 frames attack
+            int frameWidth = texW / frameCount;
+
+            float animationProgress;
+            int attackDisplayFrame;
+
+            if (attackTimer < 0.01f)
+            {
+                // Force the first frame to appear instantly when attack starts
+                attackDisplayFrame = 0;
+            }
+            else
+            {
+                // Normal animation progression
+                animationProgress = attackTimer / attackDuration;
+
+                // Ensure animation progress stays within valid range (0.0-1.0)
+                if (animationProgress > 1.0f)
+                    animationProgress = 1.0f;
+
+                // Calculate the current frame based on progress
+                attackDisplayFrame = static_cast<int>(animationProgress * frameCount);
+
+                // Prevent index out of bounds
+                if (attackDisplayFrame >= frameCount)
+                    attackDisplayFrame = frameCount - 1;
+            }
+
+            SDL_Rect srcRect = {
+                attackDisplayFrame * frameWidth,
+                0,
+                frameWidth,
+                texH};
+
+            SDL_RenderCopyEx(renderer, attackTexture, &srcRect, &dstRect, 0, NULL, flip);
+
+            // Hiển thị hitbox nếu debug mode được bật
+            if (enableDebug)
+            {
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
+                SDL_RenderFillRect(renderer, &attackHitbox);
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            }
+        }
+    }
     // CASE 1: Just landed - show landing texture
-    if (justLanded)
+    else if (justLanded)
     {
         if (jumpTexture)
         {
@@ -191,91 +265,6 @@ void Player::render(SDL_Renderer *renderer)
             SDL_RenderCopyEx(renderer, animationTexture, &srcRect, &dstRect, 0, NULL, flip);
         }
     }
-
-    // Draw level 1 boundaries with blue lines
-    static int currentLevel = 0;
-    // Get the current level from somewhere - for now we'll check if we're at level 1 location
-    if (y >= PLATFORM_HEIGHT - 10 && y <= PLATFORM_HEIGHT + 20)
-    {
-        currentLevel = 1;
-    }
-
-    // Draw level 1 boundaries
-    if (currentLevel == 1)
-    {
-        /* // Set the color to blue (RGB: 0, 0, 255, full opacity)
-        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-
-        // Draw horizontal platform line - at exact platform level
-        SDL_RenderDrawLine(renderer, 0, PLATFORM_HEIGHT, 1300, PLATFORM_HEIGHT);
-
-        // First gap boundaries
-        // Left boundary of first gap
-        SDL_RenderDrawLine(renderer, 400, PLATFORM_HEIGHT, 400, PLATFORM_HEIGHT + 250);
-        // Right boundary of first gap
-        SDL_RenderDrawLine(renderer, 460, PLATFORM_HEIGHT, 460, PLATFORM_HEIGHT + 250);
-
-        // Second gap boundaries
-        // Left boundary of second gap
-        SDL_RenderDrawLine(renderer, 895, PLATFORM_HEIGHT, 895, PLATFORM_HEIGHT + 250);
-        // Right boundary of second gap
-        SDL_RenderDrawLine(renderer, 950, PLATFORM_HEIGHT, 950, PLATFORM_HEIGHT + 250);
- */
-        // Draw rounded corners for the first gap
-        // Top-left corner of first gap
-        for (int i = 0; i < 5; i++)
-        {
-            SDL_RenderDrawPoint(renderer, 400 - i, PLATFORM_HEIGHT + i);
-            SDL_RenderDrawPoint(renderer, 400 - i, PLATFORM_HEIGHT + i + 1);
-        }
-        // Top-right corner of first gap
-        for (int i = 0; i < 5; i++)
-        {
-            SDL_RenderDrawPoint(renderer, 460 + i, PLATFORM_HEIGHT + i);
-            SDL_RenderDrawPoint(renderer, 460 + i, PLATFORM_HEIGHT + i + 1);
-        }
-        // Bottom-left corner of first gap
-        for (int i = 0; i < 5; i++)
-        {
-            SDL_RenderDrawPoint(renderer, 400 - i, PLATFORM_HEIGHT + 250 - i);
-            SDL_RenderDrawPoint(renderer, 400 - i, PLATFORM_HEIGHT + 250 - i - 1);
-        }
-        // Bottom-right corner of first gap
-        for (int i = 0; i < 5; i++)
-        {
-            SDL_RenderDrawPoint(renderer, 460 + i, PLATFORM_HEIGHT + 250 - i);
-            SDL_RenderDrawPoint(renderer, 460 + i, PLATFORM_HEIGHT + 250 - i - 1);
-        }
-
-        // Draw rounded corners for the second gap
-        // Top-left corner of second gap
-        for (int i = 0; i < 5; i++)
-        {
-            SDL_RenderDrawPoint(renderer, 895 - i, PLATFORM_HEIGHT + i);
-            SDL_RenderDrawPoint(renderer, 895 - i, PLATFORM_HEIGHT + i + 1);
-        }
-        // Top-right corner of second gap
-        for (int i = 0; i < 5; i++)
-        {
-            SDL_RenderDrawPoint(renderer, 950 + i, PLATFORM_HEIGHT + i);
-            SDL_RenderDrawPoint(renderer, 950 + i, PLATFORM_HEIGHT + i + 1);
-        }
-        // Bottom-left corner of second gap
-        for (int i = 0; i < 5; i++)
-        {
-            SDL_RenderDrawPoint(renderer, 895 - i, PLATFORM_HEIGHT + 250 - i);
-            SDL_RenderDrawPoint(renderer, 895 - i, PLATFORM_HEIGHT + 250 - i - 1);
-        }
-        // Bottom-right corner of second gap
-        for (int i = 0; i < 5; i++)
-        {
-            SDL_RenderDrawPoint(renderer, 950 + i, PLATFORM_HEIGHT + 250 - i);
-            SDL_RenderDrawPoint(renderer, 950 + i, PLATFORM_HEIGHT + 250 - i - 1);
-        }
-
-        // Reset to default drawing color
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    }
 }
 
 void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float deltaTime, int level)
@@ -307,13 +296,17 @@ void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float del
         player.animation.currentDirection = player.animation.UP;
     }
 
+    // Handle attack input - can attack in any state, even while jumping
+    if (currentKeyStates[SDL_SCANCODE_J] && !player.isAttacking)
+    {
+        player.attack();
+    }
+
     // Level-specific movement logic
     if (level == 1)
     {
         // Kiểm tra nếu nhân vật đang ở trên hố
-        bool isOverFirstGap = ((player.x + player.width) > 432 && (player.x + player.width) < 480);
-        bool isOverSecondGap = ((player.x + player.width) > 935 && (player.x + player.width) < 975);
-        bool isOverGap = isOverFirstGap || isOverSecondGap;
+        bool isOverGap = ((player.x + player.width) > 432 && (player.x + player.width) < 480) || ((player.x + player.width) > 935 && (player.x + player.width) < 975);
 
         // IMMEDIATELY make the player not grounded when over a gap
         if (isOverGap)
@@ -365,7 +358,6 @@ void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float del
         if (player.x > 1300 - player.width)
             player.x = 1300 - player.width;
 
-        // First gap boundaries
         if (player.y >= PLATFORM_HEIGHT && player.y < PLATFORM_HEIGHT + 250)
         {
             // First gap boundaries
@@ -655,6 +647,63 @@ void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float del
     player.rect.x = static_cast<int>(player.x);
     player.rect.y = static_cast<int>(player.y);
 
+    // Update attack hitbox position based on player direction and position
+    if (player.isAttacking)
+    {
+        if (player.animation.currentDirection == Animation::LEFT)
+        {
+            player.attackHitbox = {
+                static_cast<int>(player.x - player.width / 2),
+                static_cast<int>(player.y + player.height / 4),
+                player.width / 2,
+                player.height / 2};
+        }
+        else
+        {
+            player.attackHitbox = {
+                static_cast<int>(player.x + player.width),
+                static_cast<int>(player.y + player.height / 4),
+                player.width / 2,
+                player.height / 2};
+        }
+    }
+
     // Update animation
     player.animation.update(deltaTime);
+}
+
+void Player::attack()
+{
+    if (!isAttacking)
+    {
+        isAttacking = true;
+        attackTimer = 0.0f; // Start exactly at 0 for immediate animation start
+        attackFrame = 0;    // Reset frame index
+
+        // Lưu hướng hiện tại trước khi tấn công
+        if (animation.currentDirection == Animation::LEFT || animation.currentDirection == Animation::RIGHT)
+            lastDirection = animation.currentDirection;
+
+        // Setup attack hitbox based on player direction (left/right)
+        if (lastDirection == Animation::LEFT)
+        {
+            // Attack hitbox to the left
+            attackHitbox = {
+                static_cast<int>(x - width / 2), // Hitbox extends to the left
+                static_cast<int>(y + height / 4),
+                width / 2, // Hitbox width
+                height / 2 // Hitbox height
+            };
+        }
+        else
+        {
+            // Attack hitbox to the right
+            attackHitbox = {
+                static_cast<int>(x + width), // Hitbox extends to the right
+                static_cast<int>(y + height / 4),
+                width / 2, // Hitbox width
+                height / 2 // Hitbox height
+            };
+        }
+    }
 }

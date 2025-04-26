@@ -21,7 +21,8 @@ public:
         LEFT = 1,
         RIGHT = 2,
         UP = 3,
-        IDLE = 4
+        IDLE = 4,
+        ATTACK = 5 // Thêm trạng thái ATTACK
     };
 
     Direction currentDirection = IDLE;

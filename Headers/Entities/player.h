@@ -13,8 +13,10 @@ struct Player
     SDL_Texture *startTexture = nullptr;
     SDL_Texture *animationTexture = nullptr;
     SDL_Texture *jumpTexture = nullptr;
+    SDL_Texture *attackTexture = nullptr;
     SDL_Rect rect;
     Animation animation;
+
     bool isMoving = false;
     bool wasMoving = false; // Lưu trạng thái di chuyển trước đó
     float movetime = 0.0f;  // Thời gian đã di chuyển
@@ -23,6 +25,15 @@ struct Player
     float jumpForce = 500.0f; // Lực nhảy
     float landTimer = 0.0f;
     static constexpr float PLATFORM_HEIGHT = 539.0f; // Change this value to whatever you want
+
+    // Attack variables
+    bool isAttacking = false;
+    float attackTimer = 0.0f;
+    float attackDuration = 0.5f; // Attack animation duration in seconds
+    int attackFrame = 0;
+    int attackDamage = 1;
+    SDL_Rect attackHitbox;                                 // Hitbox for attack collision detection
+    Animation::Direction lastDirection = Animation::RIGHT; // Lưu hướng trước khi tấn công
 
     // Biến cho animation ban đầu
     int startFrame = 0;
@@ -39,7 +50,7 @@ struct Player
     float y = 300;
     float velocityX;
     float velocityY;
-    float speed = 200.0f;
+    float speed = 100.0f;
     int width;
     int height;
     int health;
@@ -49,9 +60,9 @@ struct Player
     void spawnPlayer(Graphics &graphics, int spawnX, int spawnY);
     void jump();
     void update(float deltaTime);
-    void render(SDL_Renderer *renderer); // removed inline keyword to fix multiple definition error
+    void render(SDL_Renderer *renderer, float deltaTime); // Added deltaTime parameter
     void movePlayer(Player &player, const Uint8 *currentKeyStates, float deltaTime, int level);
-
+    void attack();
     // Constructor and destructor
     Player(SDL_Renderer *renderer);
     ~Player();
