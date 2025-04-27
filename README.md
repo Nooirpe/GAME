@@ -12,9 +12,10 @@
 
 ### **Mô tả chung**
 
-- RunMo! là trò chơi sử dụng ngôn ngữ C++ và SDL2
+- RunMo! là trò chơi sử dụng ngôn ngữ C++ và SDL2, là sản phẩm cho bài tập lớn của lớp Lập trình nâng cao (2425II_INT2215_12)
 - Bạn là một kị sĩ. Tất cả những gì bạn cần làm là vượt qua các chướng ngại vật và tới đích
 - Tựa game được lấy ý tưởng và đơn giản hoá từ tựa game "I Wanna Be the Guy: The Movie: The Game (Michael O’Reilly, 2007)"
+- Video: [RunMo!](https://youtu.be/JKnO0Bbb6xU)
 
 ### **Chi tiết**
 
@@ -29,6 +30,14 @@
 ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/complete.png)
 
 ## **Một số điểm nổi bật**
+
+### **Cấu trúc**
+
+- Chia file ra riêng từng mục để hệ thống cũng như dễ dàng hơn trong việc sửa lỗi
+
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Structure.png)
+
+- Việc tích hợp và mở rộng các chức năng trong game trở nên linh hoạt. Game loop được tổ chức chặt chẽ.
 
 ### **Tính năng**
 
@@ -53,10 +62,32 @@
 
 ### **Nhân vật**
 
-- Kị sĩ + animation
+- Kị sĩ
 
 ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/chibi/idle/player.png)
 
-- Quái vật + animation
+- Quái vật
 
 ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/monster/Idle/monster.png)
+
+### **Hệ thống âm thanh và đồ hoạ**
+
+- Có âm thanh chạy xuyên suốt cả game, sfx cho các nút
+
+- Đồ hoạ chạy bằng spritesheet cũng như các hình ảnh dẫn tới trải nghiệm mượt mà
+
+## **Credits**
+
+- Ý tưởng game, các chức năng và gameplay: Nguyễn Lê Dũng
+
+- Lập trình game: Nguyễn Lê Dũng
+
+- Thư viện SDL2.0 (tham khảo trên [lazyfoo](https://lazyfoo.net/tutorials/SDL/index.php), [tianchinchiko](https://www.youtube.com/@tianchinchiko) và tài liệu trên lớp)
+
+- Đồ hoạ được lấy từ [opengameart](https://opengameart.org) và tự thiết kế trên [LibreSprite](https://github.com/LibreSprite/libresprite.github.io/blob/master/install.md)
+
+- Âm nhạc: [Massah](https://www.newgrounds.com/audio/listen/1412555)
+
+- Âm thanh (SFX): từ các retro sfx trên youtube
+
+- Tham khảo các cách dựng từ [Phaser](https://phaser.io/examples/v3.85.0)

@@ -193,7 +193,7 @@ void level3(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         }
     }
 
-    // Xử lý logic liên quan đến bat - không dùng else if
+    // Xử lý logic liên quan đến bat
     if (batInitialized && !playerDying && !playerWinning)
     {
         bat.update(deltaTime, player);
@@ -214,7 +214,7 @@ void level3(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         bat.render(graphics.renderer);
     }
 
-    // Kiểm tra va chạm với các khu vực nguy hiểm - không dùng else if để đảm bảo luôn được kiểm tra
+    // Kiểm tra va chạm với các khu vực nguy hiểm
     if (((playerCollisionBox.x + playerCollisionBox.w > 305 && playerCollisionBox.x < 330 &&
           playerCollisionBox.y + playerCollisionBox.h > 505 && playerCollisionBox.y < 535) ||
          (playerCollisionBox.x + playerCollisionBox.w > 442 && playerCollisionBox.x < 482 &&
