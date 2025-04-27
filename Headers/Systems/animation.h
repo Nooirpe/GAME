@@ -22,7 +22,7 @@ public:
         RIGHT = 2,
         UP = 3,
         IDLE = 4,
-        ATTACK = 5 // Thêm trạng thái ATTACK
+        ATTACK = 5
     };
 
     Direction currentDirection = IDLE;

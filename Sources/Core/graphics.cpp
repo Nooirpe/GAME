@@ -90,9 +90,3 @@ void Graphics::quit()
 
     SDL_Quit();
 }
-
-void Graphics::render(const ScrollingBackground &background)
-{
-    renderTexture(background.texture, background.scrollingOffset, 0);
-    renderTexture(background.texture, background.scrollingOffset - background.width, 0);
-}

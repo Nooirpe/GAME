@@ -4,8 +4,7 @@
 #define SCREEN_WIDTH 1366
 #define SCREEN_HEIGHT 768
 
-#define PLAYER_SIZE 30
-#define ALIEN_SIZE 20
+#define PLAYER_SIZE 64
 
 #define WINDOW_TITLE "RunMo!"
 

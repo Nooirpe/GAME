@@ -33,6 +33,7 @@ private:
     bool playerWinning;
     bool playSound;
     bool sfxEnabled;
+    bool isPaused; // Thêm biến theo dõi trạng thái tạm dừng
 
     // Menu and level state
     int countmenu;
@@ -49,6 +50,7 @@ private:
     SDL_Texture *levelTexture[4];
     SDL_Texture *settingTexture[4];
     SDL_Texture *quitTexture[3];
+    SDL_Texture *pauseTexture[3];
 
     Mix_Music *gameMusic;
     Mix_Chunk *menuSelect;
@@ -68,6 +70,7 @@ private:
     void handleIntro();
     void handleMenu();
     void handleGameplay();
+    void handlePauseMenu();
     void handleWin();
     void handleDeath();
 

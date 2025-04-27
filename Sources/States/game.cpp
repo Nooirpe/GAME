@@ -492,6 +492,103 @@ void drawhealth(Graphics &graphics, Player &player, SDL_Texture *mn)
         SDL_DestroyTexture(healthTexture);
     }
 }
+
+void pauseMenu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, bool &userAction, bool &playSound, bool &ingame, bool &oneMenu, bool &oneLevel, int &options, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled)
+{
+    cursor.update();
+    const Uint8 *currentKeyStates = SDL_GetKeyboardState(NULL);
+    SDL_Texture *tempTexture = nullptr;
+
+    // Đặt giá trị mặc định là false - người dùng chưa thực hiện hành động
+    userAction = false;
+
+    // Default pause menu
+    tempTexture = graphics.loadTexture("Assets\\Things\\Pause\\pause1.png");
+
+    // Check for mouse hover on resume button (coordinates: x = 460 to 845, y = 310 to 375)
+    if (cursor.point.x > 460 && cursor.point.x < 845 && cursor.point.y > 310 && cursor.point.y < 375)
+    {
+        SDL_DestroyTexture(tempTexture);
+        tempTexture = graphics.loadTexture("Assets\\Things\\Pause\\pause2.png");
+
+        // Play sound effect if just started hovering
+        if (playSound)
+        {
+            soundSystem.playSound(menuChoose, sfxEnabled);
+            playSound = false;
+        }
+
+        // Check for mouse click to resume game
+        if (mouseClicked)
+        {
+            soundSystem.playSound(menuSelect, sfxEnabled);
+            userAction = true; // Người dùng đã nhấp vào nút Resume
+            if (tempTexture)
+            {
+                SDL_DestroyTexture(tempTexture);
+                tempTexture = nullptr;
+            }
+            return;
+        }
+    }
+    // Check for mouse hover on menu button (coordinates: x = 460 to 845, y = 440 to 503)
+    else if (cursor.point.x > 460 && cursor.point.x < 845 && cursor.point.y > 440 && cursor.point.y < 503)
+    {
+        SDL_DestroyTexture(tempTexture);
+        tempTexture = graphics.loadTexture("Assets\\Things\\Pause\\pause3.png");
+
+        // Play sound effect if just started hovering
+        if (playSound)
+        {
+            soundSystem.playSound(menuChoose, sfxEnabled);
+            playSound = false;
+        }
+
+        // Check for mouse click to return to main menu
+        if (mouseClicked)
+        {
+            soundSystem.playSound(menuSelect, sfxEnabled);
+            userAction = true; // Người dùng đã nhấp vào nút Return to Menu
+
+            // Return to main menu
+            if (tempTexture)
+            {
+                SDL_DestroyTexture(tempTexture);
+                tempTexture = nullptr;
+            }
+
+            // Clean up and transition to menu
+            SDL_RenderClear(graphics.renderer);
+            graphics.presentScene();
+
+            ingame = false;  // Exit game mode
+            oneMenu = true;  // Enable menu
+            oneLevel = true; // Reset level
+            count = 1;       // Set menu to first screen
+
+            // Load menu
+            tempTexture = graphics.loadTexture("Assets\\Menu\\Menu 1.png");
+            graphics.prepareImg(tempTexture);
+            graphics.presentScene();
+            SDL_DestroyTexture(tempTexture);
+
+            return;
+        }
+    }
+    else
+    {
+        // Reset sound flag when not hovering over any button
+        playSound = true;
+    }
+
+    // Render the current menu texture
+    if (tempTexture)
+    {
+        graphics.prepareImg(tempTexture);
+        SDL_DestroyTexture(tempTexture);
+    }
+}
+
 void win(Graphics &graphics, Player &player)
 {
     SDL_Texture *mn = graphics.loadTexture("Assets\\Things\\win.png");
@@ -587,7 +684,7 @@ void gameover(Graphics &graphics, SDL_Texture *&mn, Player &player, bool &ingame
     graphics.presentScene();
     SDL_Delay(1000);
     SDL_DestroyTexture(mn);
-    player.health = 0;
+    player.health = 5;
     ingame = 0;
 }
 void complete(Graphics &graphics, SDL_Texture *&mn, Player &player, bool &ingame)

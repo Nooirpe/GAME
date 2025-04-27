@@ -11,6 +11,7 @@ GameEngine::GameEngine() : player(nullptr),
                            playerWinning(false),
                            playSound(true),
                            sfxEnabled(true),
+                           isPaused(false),
                            countmenu(1),
                            options(1),
                            level(0),
@@ -29,6 +30,8 @@ GameEngine::GameEngine() : player(nullptr),
     for (int i = 0; i < 3; i++)
     {
         introTexture[i] = nullptr;
+        pauseTexture[i] = nullptr;
+        quitTexture[i] = nullptr;
     }
 
     for (int i = 0; i < 5; i++)
@@ -40,11 +43,6 @@ GameEngine::GameEngine() : player(nullptr),
     {
         levelTexture[i] = nullptr;
         settingTexture[i] = nullptr;
-    }
-
-    for (int i = 0; i < 3; i++)
-    {
-        quitTexture[i] = nullptr;
     }
 }
 
@@ -121,6 +119,13 @@ bool GameEngine::initialize()
         quitTexture[i] = graphics.loadTexture(path.c_str());
     }
 
+    // Initialize pause menu textures
+    for (int i = 0; i < 3; i++)
+    {
+        std::string path = "Assets\\Things\\Pause\\pause " + std::to_string(i + 1) + ".png";
+        pauseTexture[i] = graphics.loadTexture(path.c_str());
+    }
+
     // Initialize player
     player = new Player(graphics.renderer);
 
@@ -152,6 +157,19 @@ void GameEngine::processInput()
         else if (e.type == SDL_MOUSEMOTION)
         {
             cursor.update();
+        }
+        // Pressed ESC
+        else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+        {
+            if (ingame && !playerDying && !playerWinning)
+            {
+                isPaused = !isPaused; // Toggle trạng thái tạm dừng
+                if (isPaused)
+                {
+                    soundSystem.playSound(menuSelect, sfxEnabled);
+                    playSound = true; // Reset trạng thái âm thanh cho menu
+                }
+            }
         }
     }
 }
@@ -296,10 +314,64 @@ void GameEngine::handleDeath()
     }
 }
 
+void GameEngine::handlePauseMenu()
+{
+    // Biến đếm để quản lý trạng thái menu tạm dừng
+    static int pauseMenuState = 1;
+    bool userAction = false;   // Biến để theo dõi hành động của người dùng
+    bool tempOnelevel = false; // Biến tạm cho tham số onelevel
+    bool wasInGame = ingame;   // Ghi nhớ trạng thái game trước khi có thay đổi
+
+    // Vẽ menu tạm dừng
+    SDL_RenderClear(graphics.renderer);
+
+    // Vẽ lại màn chơi hiện tại
+    if (level == 1)
+    {
+        level1(tempOnelevel, graphics, *player, menuTexture, level, playerDying,
+               playerWinning, stateChangeTime);
+    }
+    else if (level == 2)
+    {
+        level2(tempOnelevel, graphics, *player, menuTexture, level, playerDying,
+               playerWinning, stateChangeTime);
+    }
+    else if (level == 3)
+    {
+        level3(tempOnelevel, graphics, *player, menuTexture, level, playerDying,
+               playerWinning, stateChangeTime);
+    }
+
+    // Vẽ overlay menu tạm dừng
+    pauseMenu(menuTexture, graphics, cursor, mouseClicked, pauseMenuState, userAction, playSound, ingame,
+              onemenu, onelevel, options, menuSelect, menuChoose, sfxEnabled);
+
+    // Vẽ con trỏ chuột
+    cursor.draw(graphics);
+
+    // Hiển thị cảnh
+    graphics.presentScene();
+
+    // Reset click chuột
+    mouseClicked = false;
+
+    // Chỉ tắt menu tạm dừng nếu người dùng đã thực hiện hành động (nhấn nút Resume hoặc Return)
+    if (userAction)
+    {
+        isPaused = false;
+        pauseMenuState = 1;
+
+        // Nếu người chơi đã thoát về menu chính (ingame từ true thành false)
+        if (wasInGame && !ingame)
+        {
+            // Đặt lại máu về 5 khi thoát về menu chính
+            player->health = 5;
+        }
+    }
+}
+
 void GameEngine::run()
 {
-    SDL_Event e;
-
     while (!quit)
     {
         // Process input
@@ -312,8 +384,17 @@ void GameEngine::run()
         }
         else
         {
-            // Handle gameplay state
-            handleGameplay();
+            // Kiểm tra nếu game đang tạm dừng
+            if (isPaused)
+            {
+                // Xử lý menu tạm dừng
+                handlePauseMenu();
+            }
+            else
+            {
+                // Handle gameplay state
+                handleGameplay();
+            }
         }
 
         // Limit frame rate
@@ -344,6 +425,18 @@ void GameEngine::cleanup()
             SDL_DestroyTexture(introTexture[i]);
             introTexture[i] = nullptr;
         }
+
+        if (pauseTexture[i] != nullptr)
+        {
+            SDL_DestroyTexture(pauseTexture[i]);
+            pauseTexture[i] = nullptr;
+        }
+
+        if (quitTexture[i] != nullptr)
+        {
+            SDL_DestroyTexture(quitTexture[i]);
+            quitTexture[i] = nullptr;
+        }
     }
 
     for (int i = 0; i < 5; i++)
@@ -366,15 +459,6 @@ void GameEngine::cleanup()
         {
             SDL_DestroyTexture(settingTexture[i]);
             settingTexture[i] = nullptr;
-        }
-    }
-
-    for (int i = 0; i < 3; i++)
-    {
-        if (quitTexture[i] != nullptr)
-        {
-            SDL_DestroyTexture(quitTexture[i]);
-            quitTexture[i] = nullptr;
         }
     }
 
@@ -406,6 +490,5 @@ void GameEngine::cleanup()
     // Quit SDL subsystems
     Mix_Quit();
     IMG_Quit();
-    TTF_Quit();
     SDL_Quit();
 }

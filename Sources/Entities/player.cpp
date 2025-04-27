@@ -684,12 +684,11 @@ void Player::attack()
         if (animation.currentDirection == Animation::LEFT || animation.currentDirection == Animation::RIGHT)
             lastDirection = animation.currentDirection;
 
-        // Setup attack hitbox based on player direction (left/right)
         if (lastDirection == Animation::LEFT)
         {
             // Attack hitbox to the left
             attackHitbox = {
-                static_cast<int>(x - width / 2), // Hitbox extends to the left
+                static_cast<int>(x - width / 2),
                 static_cast<int>(y + height / 4),
                 width / 2, // Hitbox width
                 height / 2 // Hitbox height
@@ -699,7 +698,7 @@ void Player::attack()
         {
             // Attack hitbox to the right
             attackHitbox = {
-                static_cast<int>(x + width), // Hitbox extends to the right
+                static_cast<int>(x + width),
                 static_cast<int>(y + height / 4),
                 width / 2, // Hitbox width
                 height / 2 // Hitbox height
