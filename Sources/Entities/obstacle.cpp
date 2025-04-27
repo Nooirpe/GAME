@@ -20,10 +20,11 @@ void Bat::createBat(const Graphics &graphics, float startX, float startY, float 
     y = startY;
     leftBoundary = leftBound;
     rightBoundary = rightBound;
+    hitCount = 0; // Khởi tạo số lần bị đánh là 0
 
     idleTexture = IMG_LoadTexture(graphics.renderer, "Assets/monster/Idle/Idle.png");
     flyTexture = IMG_LoadTexture(graphics.renderer, "Assets/monster/Fly/Fly.png");
-    attackTexture = IMG_LoadTexture(graphics.renderer, "Assets/monster/Attack/Attack.png");
+    hurtTexture = IMG_LoadTexture(graphics.renderer, "Assets/monster/Hurt/Hurt.png");
     dieTexture = IMG_LoadTexture(graphics.renderer, "Assets/monster/Die/Die.png");
 
     int textureWidth, textureHeight;
@@ -32,7 +33,7 @@ void Bat::createBat(const Graphics &graphics, float startX, float startY, float 
         SDL_QueryTexture(flyTexture, NULL, NULL, &textureWidth, &textureHeight);
         int frameWidth = textureWidth / flyFrames;
         int frameHeight = textureHeight;
-        float scale = 0.5f;
+        float scale = 0.35f; // Giảm kích thước bat (từ 0.5f xuống 0.35f)
         width = static_cast<int>(frameWidth * scale);
         height = static_cast<int>(frameHeight * scale);
     }
@@ -42,33 +43,15 @@ void Bat::createBat(const Graphics &graphics, float startX, float startY, float 
 
 void Bat::update(float deltaTime, const Player &player)
 {
+    // Nếu đang ở trạng thái DIE, chỉ cập nhật animation và không làm gì thêm
     if (currentState == DIE)
     {
         updateAnimation(deltaTime);
         return;
     }
 
-    float horizontalDistance = abs((x + width / 2) - (player.x + player.width / 2));
-    float verticalDistance = abs((y + height / 2) - (player.y + player.height / 2));
-
-    bool playerInRange = (horizontalDistance < 100 && verticalDistance < height);
-
-    if (playerInRange && currentState != ATTACK && currentState != DIE)
-    {
-        currentState = ATTACK;
-        currentFrame = 0;
-        frameTime = 0.0f;
-    }
-    else if (currentState == ATTACK)
-    {
-        if (currentFrame >= attackFrames - 1 && frameTime >= frameDuration)
-        {
-            currentState = FLY;
-            currentFrame = 0;
-            frameTime = 0.0f;
-        }
-    }
-    else
+    // Tiếp tục di chuyển qua lại nếu không ở trạng thái DIE hoặc HURT
+    if (currentState != HURT)
     {
         currentState = FLY;
         x += direction * speed * deltaTime;
@@ -92,9 +75,11 @@ void Bat::update(float deltaTime, const Player &player)
 void Bat::updateAnimation(float deltaTime)
 {
     frameTime += deltaTime;
+
     if (frameTime >= frameDuration)
     {
         frameTime = 0.0f;
+
         switch (currentState)
         {
         case IDLE:
@@ -103,9 +88,16 @@ void Bat::updateAnimation(float deltaTime)
         case FLY:
             currentFrame = (currentFrame + 1) % flyFrames;
             break;
-        case ATTACK:
-            if (currentFrame < attackFrames - 1)
+        case HURT:
+            // Handle hurt animation just like die animation
+            if (currentFrame < hurtFrames - 1)
                 currentFrame++;
+            else
+            {
+                // When hurt animation completes, return to FLY state
+                currentState = FLY;
+                currentFrame = 0;
+            }
             break;
         case DIE:
             if (currentFrame < dieFrames - 1)
@@ -127,6 +119,30 @@ void Bat::die()
     }
 }
 
+void Bat::hurt()
+{
+    if (currentState != DIE && currentState != HURT && !isDead)
+    {
+        hitCount++;
+
+        if (hitCount == 1)
+        {
+            // Lần đầu bị đánh - chuyển sang trạng thái HURT
+            currentState = HURT;
+            currentFrame = 0;
+            frameTime = 0;
+            hurtTimer = 0.0f;
+        }
+        else if (hitCount >= 2)
+        {
+            // Lần thứ hai bị đánh - chuyển sang trạng thái DIE
+            currentState = DIE;
+            currentFrame = 0;
+            frameTime = 0;
+        }
+    }
+}
+
 void Bat::render(SDL_Renderer *renderer)
 {
     if (isDead)
@@ -144,9 +160,9 @@ void Bat::render(SDL_Renderer *renderer)
         currentTexture = flyTexture;
         frameCount = flyFrames;
         break;
-    case ATTACK:
-        currentTexture = attackTexture;
-        frameCount = attackFrames;
+    case HURT:
+        currentTexture = hurtTexture;
+        frameCount = hurtFrames;
         break;
     case DIE:
         currentTexture = dieTexture;
@@ -184,4 +200,32 @@ bool Bat::collidesWithPlayer(const Player &player, SDL_Renderer *renderer)
                                 player.width - playerOffsetX * 2, player.height - playerOffsetY * 2};
 
     return SDL_HasIntersection(&batCollision, &playerCollision);
+}
+
+bool Bat::checkAttackCollision(const SDL_Rect &attackHitbox, SDL_Renderer *renderer)
+{
+    if (isDead)
+        return false;
+
+    // Hitbox của bat
+    int batOffsetX = width * 0.2;
+    int batOffsetY = height * 0.3;
+
+    SDL_Rect batCollision = {
+        static_cast<int>(x + batOffsetX),
+        static_cast<int>(y + batOffsetY),
+        width - batOffsetX * 2,
+        height - batOffsetY * 2};
+
+    // Vẽ hitbox
+    if (renderer != nullptr)
+    {
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 100); // Màu xanh lá cho hitbox bat
+        SDL_RenderDrawRect(renderer, &batCollision);
+    }
+
+    // Kiểm tra va chạm giữa hitbox của bat và hitbox tấn công
+    bool hasCollision = SDL_HasIntersection(&batCollision, &attackHitbox);
+
+    return hasCollision;
 }

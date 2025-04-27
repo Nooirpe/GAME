@@ -49,7 +49,7 @@
 
 - Tính năng thoát màn khi ấn ESC
 
-![image]()
+![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/Pause/pause1.png)
 
 ### **Nhân vật**
 

@@ -38,7 +38,13 @@ struct Player
     // Biến cho animation ban đầu
     int startFrame = 0;
     float startFrameTime = 0.0f;
-    float startFrameDelay = 0.1f; // Mỗi frame tồn tại 0.1 giây
+
+    // Biến cho immunity sau khi bị thương
+    bool isImmune = false;
+    float immuneTimer = 0.0f;
+    float immuneDuration = 1.0f; // 1 giây bất khả xâm sau khi bị thương
+    bool showPlayer = true;      // Để tạo hiệu ứng nhấp nháy khi bị thương
+    float blinkTimer = 0.0f;
 
     // Debug
     bool enableDebug = true;
@@ -63,7 +69,7 @@ struct Player
     void render(SDL_Renderer *renderer, float deltaTime); // Added deltaTime parameter
     void movePlayer(Player &player, const Uint8 *currentKeyStates, float deltaTime, int level);
     void attack();
-    // Constructor and destructor
+    void takeDamage();
     Player(SDL_Renderer *renderer);
     ~Player();
 };

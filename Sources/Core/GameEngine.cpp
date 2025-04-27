@@ -122,7 +122,7 @@ bool GameEngine::initialize()
     // Initialize pause menu textures
     for (int i = 0; i < 3; i++)
     {
-        std::string path = "Assets\\Things\\Pause\\pause " + std::to_string(i + 1) + ".png";
+        std::string path = "Assets\\Things\\Pause\\pause" + std::to_string(i + 1) + ".png";
         pauseTexture[i] = graphics.loadTexture(path.c_str());
     }
 
@@ -304,6 +304,10 @@ void GameEngine::handleWin()
 
 void GameEngine::handleDeath()
 {
+    // Đảm bảo nhân vật dừng di chuyển hoàn toàn khi chết
+    player->velocityX = 0;
+    player->velocityY = 0;
+
     death(graphics, *player, menuTexture, onelevel);
     playerDying = false;
 

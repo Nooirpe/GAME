@@ -12,8 +12,8 @@ struct Bat
 {
     SDL_Texture *idleTexture = nullptr;
     SDL_Texture *flyTexture = nullptr;
-    SDL_Texture *attackTexture = nullptr;
     SDL_Texture *dieTexture = nullptr;
+    SDL_Texture *hurtTexture = nullptr;
 
     float x = 0.0f;
     float y = 0.0f;
@@ -33,14 +33,17 @@ struct Bat
 
     int idleFrames = 12;
     int flyFrames = 8;
-    int attackFrames = 8;
+    int hurtFrames = 8;
     int dieFrames = 8;
+
+    int hitCount = 0;       // Số lần bị đánh
+    float hurtTimer = 0.0f; // Timer cho animation hurt
 
     enum State
     {
         IDLE,
         FLY,
-        ATTACK,
+        HURT,
         DIE
     };
     State currentState = FLY;
@@ -51,9 +54,11 @@ struct Bat
     void createBat(const Graphics &graphics, float startX, float startY, float leftBound, float rightBound);
     void update(float deltaTime, const Player &player);
     void updateAnimation(float deltaTime);
+    void hurt(); // Hàm mới để xử lý khi bị thương
     void die();
     void render(SDL_Renderer *renderer);
     bool collidesWithPlayer(const Player &player, SDL_Renderer *renderer = nullptr);
+    bool checkAttackCollision(const SDL_Rect &attackHitbox, SDL_Renderer *renderer = nullptr); // Hàm mới để kiểm tra va chạm với hitbox tấn công
 };
 
 #endif

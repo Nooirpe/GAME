@@ -17,6 +17,7 @@ void level1(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         mapTexture = graphics.loadTexture("Assets\\Things\\Map\\map 1.png");
         player.x = 54;
         player.y = Player::PLATFORM_HEIGHT + 13 - player.height;
+        player.velocityX = 0;
         player.velocityY = 0;
         player.isGrounded = true;
         player.hasFallen = false;
@@ -41,12 +42,17 @@ void level1(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         {
             playerWinning = true;
             stateChangeTime = SDL_GetTicks();
+            SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 255);
         }
     }
     else if (player.y > 700 && !playerDying)
     {
+        // Dừng di chuyển khi nhân vật chết
+        player.velocityX = 0;
+        player.velocityY = 0;
         playerDying = true;
         stateChangeTime = SDL_GetTicks();
+        SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 255);
     }
 }
 
@@ -64,6 +70,7 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         mapTexture = graphics.loadTexture("Assets\\Things\\Map\\map 2.png");
         player.x = 54;
         player.y = Player::PLATFORM_HEIGHT + 13 - player.height;
+        player.velocityX = 0;
         player.velocityY = 0;
         player.isGrounded = true;
         player.hasFallen = false;
@@ -94,6 +101,7 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         {
             playerWinning = true;
             stateChangeTime = SDL_GetTicks();
+            SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 255);
         }
     }
     else if (((playerCollisionBox.x + playerCollisionBox.w > 249 && playerCollisionBox.x < 269 &&
@@ -104,8 +112,12 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
                playerCollisionBox.y + playerCollisionBox.h > 498 && playerCollisionBox.y < 509)) &&
              !playerDying)
     {
+        // Dừng di chuyển khi nhân vật chết
+        player.velocityX = 0;
+        player.velocityY = 0;
         playerDying = true;
         stateChangeTime = SDL_GetTicks();
+        SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 255);
     }
 }
 
@@ -125,15 +137,31 @@ void level3(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         mapTexture = graphics.loadTexture("Assets\\Things\\Map\\map 3.png");
         player.x = 54;
         player.y = Player::PLATFORM_HEIGHT + 13 - player.height;
+        player.velocityX = 0; // Đặt lại vận tốc ngang khi respawn
         player.velocityY = 0;
         player.isGrounded = true;
         player.hasFallen = false;
         player.justSpawned = true;
+
+        // Reset bat's state completely when entering level
         if (!batInitialized)
         {
             bat.createBat(graphics, 500, 300, 400, 800);
             batInitialized = true;
         }
+        else
+        {
+            // Reset existing bat
+            bat.isDead = false;
+            bat.hitCount = 0;
+            bat.currentState = Bat::FLY;
+            bat.currentFrame = 0;
+            bat.frameTime = 0.0f;
+            bat.x = 500;
+            bat.y = 300;
+            bat.direction = 1;
+        }
+
         onelevel = false;
     }
 
@@ -142,28 +170,64 @@ void level3(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
         SDL_RenderCopy(graphics.renderer, mapTexture, NULL, NULL);
     }
 
+    SDL_Rect playerCollisionBox = {
+        static_cast<int>(player.x + 12),
+        static_cast<int>(player.y + 12),
+        player.width - 24,
+        player.height - 24};
+
     // Update player
     player.update(deltaTime);
 
     // Render player
     player.render(graphics.renderer, deltaTime);
 
+    // Kiểm tra chiến thắng
     if (player.x > 1156 && player.y > 425)
     {
         if (!playerWinning)
         {
             playerWinning = true;
             stateChangeTime = SDL_GetTicks();
+            SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 255);
         }
     }
-    else if (batInitialized)
+
+    // Xử lý logic liên quan đến bat - không dùng else if
+    if (batInitialized && !playerDying && !playerWinning)
     {
         bat.update(deltaTime, player);
-        if (bat.collidesWithPlayer(player, graphics.renderer) && bat.currentState != Bat::DIE)
+
+        if (player.isAttacking && bat.checkAttackCollision(player.attackHitbox, graphics.renderer) &&
+            bat.currentState != Bat::DIE && bat.currentState != Bat::HURT)
         {
-            player.health--;
-            bat.die();
+            bat.hurt(); // Bat bị thương khi bị đánh trúng
         }
+
+        // Kiểm tra va chạm của nhân vật với bat để trừ máu player
+        if (bat.collidesWithPlayer(player, graphics.renderer) &&
+            bat.currentState != Bat::DIE && bat.currentState != Bat::HURT)
+        {
+            player.takeDamage();
+        }
+
         bat.render(graphics.renderer);
+    }
+
+    // Kiểm tra va chạm với các khu vực nguy hiểm - không dùng else if để đảm bảo luôn được kiểm tra
+    if (((playerCollisionBox.x + playerCollisionBox.w > 305 && playerCollisionBox.x < 330 &&
+          playerCollisionBox.y + playerCollisionBox.h > 505 && playerCollisionBox.y < 535) ||
+         (playerCollisionBox.x + playerCollisionBox.w > 442 && playerCollisionBox.x < 482 &&
+          playerCollisionBox.y + playerCollisionBox.h > 439 && playerCollisionBox.y < 469) ||
+         (playerCollisionBox.x + playerCollisionBox.w > 773 && playerCollisionBox.x < 790 &&
+          playerCollisionBox.y + playerCollisionBox.h > 379 && playerCollisionBox.y < 400)) &&
+        !playerDying && !playerWinning)
+    {
+        // Dừng di chuyển khi nhân vật chết
+        player.velocityX = 0;
+        player.velocityY = 0;
+        playerDying = true;
+        stateChangeTime = SDL_GetTicks();
+        SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 255);
     }
 }
