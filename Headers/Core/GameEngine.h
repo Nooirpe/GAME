@@ -72,34 +72,16 @@ private:
      */
     bool initializeComponents();
 
-    /**
-     * @brief Manages the introduction sequence
-     */
     void handleIntro();
 
-    /**
-     * @brief Manages the main menu state
-     */
     void handleMenu();
 
-    /**
-     * @brief Manages active gameplay state
-     */
     void handleGameplay();
 
-    /**
-     * @brief Manages the pause menu
-     */
     void handlePauseMenu();
 
-    /**
-     * @brief Manages level completion state
-     */
     void handleWin();
 
-    /**
-     * @brief Manages player death state
-     */
     void handleDeath();
 
     /**
@@ -133,14 +115,8 @@ public:
      */
     void cleanup();
 
-    /**
-     * @brief Checks if mouse was clicked
-     */
     bool wasMouseClicked() { return mouseClicked; }
 
-    /**
-     * @brief Resets mouse click state
-     */
     void resetMouseClick() { mouseClicked = false; }
 };
 

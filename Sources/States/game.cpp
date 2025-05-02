@@ -29,12 +29,12 @@ void intro(Graphics graphics)
     SDL_DestroyTexture(show);
 }
 
-void AudioSettings(int options, Mix_Music *music, bool &sfxEnabled)
+void AudioSettings(int options, bool &sfxEnabled)
 {
-    soundSystem.applyAudioSettings(options, music, sfxEnabled);
+    soundSystem.applyAudioSettings(options, sfxEnabled);
 }
 
-void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, bool &quit, bool &playSound, bool &ingame, int &options, int &level, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled, Mix_Music *massahMusic)
+void menu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, bool &quit, bool &playSound, bool &ingame, int &options, int &level, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled)
 {
     cursor.update();
     const Uint8 *currentKeyStates = SDL_GetKeyboardState(NULL);
@@ -48,7 +48,6 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
     }
 
     // Xử lý menu dựa trên vị trí chuột và trạng thái click
-    int prevCount = count;
     if (count == 1)
     {
         if (cursor.point.x > 541 && cursor.point.x < 877)
@@ -318,24 +317,24 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
                     if (options == 1)
                     {
                         options = 2;
-                        AudioSettings(3, massahMusic, sfxEnabled);
+                        AudioSettings(3, sfxEnabled);
                     }
                     else if (options == 3)
                     {
                         options = 1;
                         soundSystem.playSound(menuSelect, sfxEnabled);
-                        AudioSettings(1, massahMusic, sfxEnabled);
+                        AudioSettings(1, sfxEnabled);
                     }
                     else if (options == 6)
                     {
                         options = 4;
                         soundSystem.playSound(menuSelect, sfxEnabled);
-                        AudioSettings(5, massahMusic, sfxEnabled);
+                        AudioSettings(5, sfxEnabled);
                     }
                     else if (options == 5)
                     {
                         options = 6;
-                        AudioSettings(6, massahMusic, sfxEnabled);
+                        AudioSettings(6, sfxEnabled);
                     }
                 }
             }
@@ -352,24 +351,24 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
                     if (options == 1)
                     {
                         options = 4;
-                        AudioSettings(5, massahMusic, sfxEnabled);
+                        AudioSettings(5, sfxEnabled);
                     }
                     else if (options == 5)
                     {
                         options = 1;
                         soundSystem.playSound(menuSelect, sfxEnabled);
-                        AudioSettings(1, massahMusic, sfxEnabled);
+                        AudioSettings(1, sfxEnabled);
                     }
                     else if (options == 6)
                     {
                         options = 2;
                         soundSystem.playSound(menuSelect, sfxEnabled);
-                        AudioSettings(3, massahMusic, sfxEnabled);
+                        AudioSettings(3, sfxEnabled);
                     }
                     else if (options == 3)
                     {
                         options = 6;
-                        AudioSettings(6, massahMusic, sfxEnabled);
+                        AudioSettings(6, sfxEnabled);
                     }
                 }
             }
@@ -461,7 +460,7 @@ void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked
         SDL_DestroyTexture(tempTexture);
     }
 }
-void drawhealth(Graphics &graphics, Player &player, SDL_Texture *mn)
+void drawhealth(Graphics &graphics, Player &player)
 {
     SDL_Texture *healthTexture = nullptr;
     if (player.health == 5)
@@ -493,10 +492,9 @@ void drawhealth(Graphics &graphics, Player &player, SDL_Texture *mn)
     }
 }
 
-void pauseMenu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, bool &userAction, bool &playSound, bool &ingame, bool &oneMenu, bool &oneLevel, int &options, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled)
+void pauseMenu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, bool &userAction, bool &playSound, bool &ingame, bool &oneMenu, bool &oneLevel, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled)
 {
     cursor.update();
-    const Uint8 *currentKeyStates = SDL_GetKeyboardState(NULL);
     SDL_Texture *tempTexture = nullptr;
 
     // Đặt giá trị mặc định là false - người dùng chưa thực hiện hành động
@@ -589,7 +587,7 @@ void pauseMenu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseCl
     }
 }
 
-void win(Graphics &graphics, Player &player)
+void win(Graphics &graphics)
 {
     SDL_Texture *mn = graphics.loadTexture("Assets\\Things\\win.png");
     SDL_RenderClear(graphics.renderer);
@@ -598,6 +596,7 @@ void win(Graphics &graphics, Player &player)
     SDL_Delay(2000);
     SDL_DestroyTexture(mn);
 }
+
 void death(Graphics &graphics, Player &player, SDL_Texture *mn, bool &onelevel)
 {
     SDL_RenderClear(graphics.renderer);
@@ -699,5 +698,6 @@ void complete(Graphics &graphics, SDL_Texture *&mn, Player &player, bool &ingame
     graphics.presentScene();
     SDL_Delay(1000);
     SDL_DestroyTexture(mn);
+    player.health = 5;
     ingame = 0;
 }

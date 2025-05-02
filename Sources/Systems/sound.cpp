@@ -96,28 +96,32 @@ void Sound::playSound(Mix_Chunk *sound, bool enabled)
     }
 }
 
-void Sound::applyAudioSettings(int option, Mix_Music *music, bool &sfxEnabled)
+void Sound::applyAudioSettings(int option, bool &sfxEnabled)
 {
-    switch (option)
+
+    // Setting 1: Music ON, SFX ON
+    if (option == 1)
     {
-    case 1: // Music on, SFX on
-        resumeMusic();
-        setMusicVolume(68);
+        Mix_VolumeMusic(68); // 100% volume
         sfxEnabled = true;
-        break;
-    case 3: // Music off, SFX on
-        pauseMusic();
+    }
+    // Setting 2/3: Music OFF, SFX ON
+    else if (option == 3)
+    {
+        Mix_VolumeMusic(0); // Mute music
         sfxEnabled = true;
-        break;
-    case 5: // Music on, SFX off
-        resumeMusic();
-        setMusicVolume(68);
+    }
+    // Setting 4/5: Music ON, SFX OFF
+    else if (option == 5)
+    {
+        Mix_VolumeMusic(68); // 100% volume
         sfxEnabled = false;
-        break;
-    case 6: // Music off, SFX off
-        pauseMusic();
+    }
+    // Setting 6: Music OFF, SFX OFF
+    else if (option == 6)
+    {
+        Mix_VolumeMusic(0); // Mute music
         sfxEnabled = false;
-        break;
     }
 }
 

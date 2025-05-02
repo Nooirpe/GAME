@@ -12,15 +12,15 @@ using namespace std;
 
 void intro(Graphics graphics);
 
-void AudioSettings(int options, Mix_Music *music, bool &sfxEnabled);
+void AudioSettings(int options, bool &sfxEnabled);
 
-void menu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, bool &quit, bool &playSound, bool &ingame, int &options, int &level, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled, Mix_Music *massahMusic);
+void menu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, bool &quit, bool &playSound, bool &ingame, int &options, int &level, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled);
 
-void pauseMenu(SDL_Texture *mn, Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, bool &userAction, bool &playSound, bool &ingame, bool &oneMenu, bool &oneLevel, int &options, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled);
+void pauseMenu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, bool &userAction, bool &playSound, bool &ingame, bool &oneMenu, bool &oneLevel, Mix_Chunk *menuSelect, Mix_Chunk *menuChoose, bool &sfxEnabled);
 
-void drawhealth(Graphics &graphics, Player &player, SDL_Texture *mn);
+void drawhealth(Graphics &graphics, Player &player);
 
-void win(Graphics &graphics, Player &player);
+void win(Graphics &graphics);
 
 void death(Graphics &graphics, Player &player, SDL_Texture *mn, bool &onelevel);
 

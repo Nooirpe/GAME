@@ -25,19 +25,10 @@ struct Graphics
      */
     void init();
 
-    /**
-     * @brief Prepares background image for rendering
-     */
     void prepareImg(SDL_Texture *background);
 
-    /**
-     * @brief Prepares the scene for rendering
-     */
     void prepareScene(SDL_Texture *background = nullptr);
 
-    /**
-     * @brief Presents the rendered scene to the screen
-     */
     void presentScene();
 
     /**

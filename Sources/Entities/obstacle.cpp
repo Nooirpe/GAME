@@ -1,13 +1,5 @@
 #include "../../Headers/Entities/obstacle.h"
 
-/**
- * @brief Khởi tạo đối tượng Bat tại vị trí và ranh giới di chuyển cho trước
- *
- * @param spawnX Tọa độ x ban đầu
- * @param spawnY Tọa độ y ban đầu
- * @param leftBound Ranh giới bên trái mà Bat có thể di chuyển tới
- * @param rightBound Ranh giới bên phải mà Bat có thể di chuyển tới
- */
 void Bat::spawnBat(float spawnX, float spawnY, float leftBound, float rightBound)
 {
     x = spawnX;
@@ -22,15 +14,6 @@ void Bat::spawnBat(float spawnX, float spawnY, float leftBound, float rightBound
     isDead = false;
 }
 
-/**
- * @brief Tạo đối tượng Bat với các textures và thông số ban đầu
- *
- * @param graphics Đối tượng Graphics chứa renderer
- * @param startX Tọa độ x ban đầu
- * @param startY Tọa độ y ban đầu
- * @param leftBound Ranh giới bên trái mà Bat có thể di chuyển tới
- * @param rightBound Ranh giới bên phải mà Bat có thể di chuyển tới
- */
 void Bat::createBat(const Graphics &graphics, float startX, float startY, float leftBound, float rightBound)
 {
     // Khởi tạo vị trí và ranh giới
@@ -50,11 +33,6 @@ void Bat::createBat(const Graphics &graphics, float startX, float startY, float 
     rect = {static_cast<int>(x), static_cast<int>(y), width, height};
 }
 
-/**
- * @brief Phương thức riêng để tải textures
- *
- * @param renderer SDL_Renderer để tải textures
- */
 void Bat::LoadTextures(SDL_Renderer *renderer)
 {
     idleTexture = IMG_LoadTexture(renderer, "Assets/monster/Idle/Idle.png");
@@ -63,9 +41,6 @@ void Bat::LoadTextures(SDL_Renderer *renderer)
     dieTexture = IMG_LoadTexture(renderer, "Assets/monster/Die/Die.png");
 }
 
-/**
- * @brief Tính toán kích thước của Bat dựa vào texture
- */
 void Bat::CalculateDimensions()
 {
     if (flyTexture)
@@ -81,13 +56,7 @@ void Bat::CalculateDimensions()
     }
 }
 
-/**
- * @brief Cập nhật trạng thái của Bat trong mỗi frame
- *
- * @param deltaTime Thời gian giữa các frame
- * @param player Tham chiếu đến người chơi để tương tác
- */
-void Bat::update(float deltaTime, const Player &player)
+void Bat::update(float deltaTime)
 {
     // Nếu đã chết, chỉ cập nhật animation
     if (currentState == DIE)
@@ -107,11 +76,6 @@ void Bat::update(float deltaTime, const Player &player)
     updateAnimation(deltaTime);
 }
 
-/**
- * @brief Xử lý chuyển động của Bat
- *
- * @param deltaTime Thời gian giữa các frame
- */
 void Bat::UpdateMovement(float deltaTime)
 {
     // Nếu đang bị thương, không di chuyển
@@ -128,9 +92,6 @@ void Bat::UpdateMovement(float deltaTime)
     HandleBoundaryCollisions();
 }
 
-/**
- * @brief Xử lý va chạm với ranh giới di chuyển
- */
 void Bat::HandleBoundaryCollisions()
 {
     if (x <= leftBoundary)
@@ -145,11 +106,6 @@ void Bat::HandleBoundaryCollisions()
     }
 }
 
-/**
- * @brief Cập nhật animation dựa theo trạng thái hiện tại
- *
- * @param deltaTime Thời gian giữa các frame
- */
 void Bat::updateAnimation(float deltaTime)
 {
     frameTime += deltaTime;
@@ -193,9 +149,6 @@ void Bat::updateAnimation(float deltaTime)
     }
 }
 
-/**
- * @brief Đánh dấu Bat đã chết và bắt đầu animation chết
- */
 void Bat::die()
 {
     if (currentState != DIE && !isDead)
@@ -206,9 +159,6 @@ void Bat::die()
     }
 }
 
-/**
- * @brief Xử lý khi Bat bị tấn công
- */
 void Bat::hurt()
 {
     // Chỉ xử lý nếu không đang trong trạng thái die hoặc hurt và chưa chết
@@ -234,11 +184,6 @@ void Bat::hurt()
     }
 }
 
-/**
- * @brief Vẽ Bat lên màn hình
- *
- * @param renderer SDL_Renderer để vẽ
- */
 void Bat::render(SDL_Renderer *renderer)
 {
     // Nếu đã chết hoàn toàn thì không vẽ gì
@@ -273,13 +218,6 @@ void Bat::render(SDL_Renderer *renderer)
     RenderCurrentFrame(renderer, currentTexture, frameCount);
 }
 
-/**
- * @brief Vẽ frame hiện tại của sprite
- *
- * @param renderer SDL_Renderer để vẽ
- * @param texture Texture hiện tại
- * @param frameCount Tổng số frame của animation hiện tại
- */
 void Bat::RenderCurrentFrame(SDL_Renderer *renderer, SDL_Texture *texture, int frameCount)
 {
     if (!texture)
@@ -312,13 +250,7 @@ void Bat::RenderCurrentFrame(SDL_Renderer *renderer, SDL_Texture *texture, int f
     SDL_RenderCopyEx(renderer, texture, &srcRect, &destRect, 0, NULL, flip);
 }
 
-/**
- * @brief Kiểm tra va chạm với người chơi và xử lý sát thương
- *
- * @param player Tham chiếu người chơi
- * @param renderer SDL_Renderer để vẽ debug hitbox (tuỳ chọn)
- */
-bool Bat::collidesWithPlayer(const Player &player, SDL_Renderer *renderer)
+bool Bat::collidesWithPlayer(const Player &player)
 {
     // Không thể va chạm nếu đã chết
     if (isDead)
@@ -343,11 +275,6 @@ bool Bat::collidesWithPlayer(const Player &player, SDL_Renderer *renderer)
     return false;
 }
 
-/**
- * @brief Tính toán hitbox thực tế của Bat (nhỏ hơn sprite)
- *
- * @return SDL_Rect Hitbox của Bat
- */
 SDL_Rect Bat::CalculateBatHitbox()
 {
     int batOffsetX = width * 0.2;
@@ -360,12 +287,6 @@ SDL_Rect Bat::CalculateBatHitbox()
         height - batOffsetY * 2};
 }
 
-/**
- * @brief Tính toán hitbox thực tế của Player (nhỏ hơn sprite)
- *
- * @param player Tham chiếu đến Player
- * @return SDL_Rect Hitbox của Player
- */
 SDL_Rect Bat::CalculatePlayerHitbox(const Player &player)
 {
     int playerOffsetX = player.width * 0.2;
@@ -378,11 +299,6 @@ SDL_Rect Bat::CalculatePlayerHitbox(const Player &player)
         player.height - playerOffsetY * 2};
 }
 
-/**
- * @brief Gây sát thương cho người chơi với hướng knockback phù hợp
- *
- * @param player Tham chiếu đến Player (const)
- */
 void Bat::ApplyDamageToPlayer(const Player &player)
 {
     // Xác định hướng knockback dựa vào vị trí của Bat và người chơi
@@ -400,15 +316,9 @@ void Bat::ApplyDamageToPlayer(const Player &player)
     mutablePlayer->takeDamage(knockbackDirection);
 }
 
-/**
- * @brief Kiểm tra va chạm với hitbox tấn công của người chơi
- *
- * @param attackHitbox Hitbox tấn công để kiểm tra
- * @param renderer SDL_Renderer để vẽ debug hitbox (tuỳ chọn)
- * @return true nếu có va chạm, false nếu không
- */
 bool Bat::checkAttackCollision(const SDL_Rect &attackHitbox, SDL_Renderer *renderer)
 {
+
     if (isDead)
         return false;
 

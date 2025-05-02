@@ -80,51 +80,8 @@ bool GameEngine::initialize()
     menuSelect = soundSystem.loadSound("Assets\\Sound\\sfx\\menuselect.wav");
     menuChoose = soundSystem.loadSound("Assets\\Sound\\sfx\\menuchoose.wav");
 
-    // Load textures
+    // Load basic menu texture (other textures will be loaded on demand)
     menuTexture = graphics.loadTexture("Assets\\Menu\\Menu 1.png");
-
-    // Initialize intro textures
-    for (int i = 0; i < 3; i++)
-    {
-        std::string path = "Assets\\Intro\\intro " + std::to_string(i + 1) + ".png";
-        introTexture[i] = graphics.loadTexture(path.c_str());
-    }
-
-    // Initialize health textures
-    for (int i = 0; i < 5; i++)
-    {
-        std::string path = "Assets\\Things\\Health\\health " + std::to_string(i + 1) + ".png";
-        healthTexture[i] = graphics.loadTexture(path.c_str());
-    }
-
-    // Initialize level textures
-    levelTexture[0] = graphics.loadTexture("Assets\\Menu\\level.png");
-    for (int i = 0; i < 3; i++)
-    {
-        std::string path = "Assets\\Menu\\level " + std::to_string(i + 1) + ".png";
-        levelTexture[i + 1] = graphics.loadTexture(path.c_str());
-    }
-
-    // Initialize setting textures
-    for (int i = 0; i < 4; i++)
-    {
-        std::string path = "Assets\\Menu\\setting " + std::to_string(i + 1) + ".png";
-        settingTexture[i] = graphics.loadTexture(path.c_str());
-    }
-
-    // Initialize quit textures
-    for (int i = 0; i < 3; i++)
-    {
-        std::string path = "Assets\\Menu\\quit " + std::to_string(i + 1) + ".png";
-        quitTexture[i] = graphics.loadTexture(path.c_str());
-    }
-
-    // Initialize pause menu textures
-    for (int i = 0; i < 3; i++)
-    {
-        std::string path = "Assets\\Things\\Pause\\pause" + std::to_string(i + 1) + ".png";
-        pauseTexture[i] = graphics.loadTexture(path.c_str());
-    }
 
     // Initialize player
     player = new Player(graphics.renderer);
@@ -196,8 +153,8 @@ void GameEngine::handleMenu()
     if (!end)
     {
 
-        menu(menuTexture, graphics, cursor, mouseClicked, countmenu, quit, playSound,
-             ingame, options, level, menuSelect, menuChoose, sfxEnabled, gameMusic);
+        menu(graphics, cursor, mouseClicked, countmenu, quit, playSound,
+             ingame, options, level, menuSelect, menuChoose, sfxEnabled);
 
         mouseClicked = false;
     }
@@ -258,7 +215,7 @@ void GameEngine::handleGameplay()
         // Handle player winning
         if (playerWinning && SDL_GetTicks() - stateChangeTime > 500)
         {
-            win(graphics, *player);
+            win(graphics);
             complete(graphics, menuTexture, *player, ingame);
             playerWinning = false;
             player->health = 5;
@@ -272,32 +229,31 @@ void GameEngine::handleGameplay()
     // Render the appropriate level
     if (level == 1)
     {
-        level1(onelevel, graphics, *player, level, playerDying,
+        level1(onelevel, graphics, *player, playerDying,
                playerWinning, stateChangeTime);
     }
     else if (level == 2)
     {
-        level2(onelevel, graphics, *player, level, playerDying,
+        level2(onelevel, graphics, *player, playerDying,
                playerWinning, stateChangeTime);
     }
     else if (level == 3)
     {
-        level3(onelevel, graphics, *player, level, playerDying,
+        level3(onelevel, graphics, *player, playerDying,
                playerWinning, stateChangeTime);
     }
 
     // Draw health indicators
-    drawhealth(graphics, *player, menuTexture);
+    drawhealth(graphics, *player);
 
     graphics.presentScene();
 }
 
 void GameEngine::handleWin()
 {
-    win(graphics, *player);
+    win(graphics);
     complete(graphics, menuTexture, *player, ingame);
     playerWinning = false;
-    player->health = 5;
     level = 0;
     onelevel = true;
 }
@@ -332,23 +288,23 @@ void GameEngine::handlePauseMenu()
     // Vẽ lại màn chơi hiện tại
     if (level == 1)
     {
-        level1(tempOnelevel, graphics, *player, level, playerDying,
+        level1(tempOnelevel, graphics, *player, playerDying,
                playerWinning, stateChangeTime);
     }
     else if (level == 2)
     {
-        level2(tempOnelevel, graphics, *player, level, playerDying,
+        level2(tempOnelevel, graphics, *player, playerDying,
                playerWinning, stateChangeTime);
     }
     else if (level == 3)
     {
-        level3(tempOnelevel, graphics, *player, level, playerDying,
+        level3(tempOnelevel, graphics, *player, playerDying,
                playerWinning, stateChangeTime);
     }
 
     // Vẽ overlay menu tạm dừng
-    pauseMenu(menuTexture, graphics, cursor, mouseClicked, pauseMenuState, userAction, playSound, ingame,
-              onemenu, onelevel, options, menuSelect, menuChoose, sfxEnabled);
+    pauseMenu(graphics, cursor, mouseClicked, pauseMenuState, userAction, playSound, ingame,
+              onemenu, onelevel, menuSelect, menuChoose, sfxEnabled);
 
     // Vẽ con trỏ chuột
     cursor.draw(graphics);

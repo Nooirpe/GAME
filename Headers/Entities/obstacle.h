@@ -71,36 +71,21 @@ struct Bat
     /**
      * @brief Updates the bat state each frame
      */
-    void update(float deltaTime, const Player &player);
+    void update(float deltaTime);
 
     /**
      * @brief Updates animation based on current state
      */
     void updateAnimation(float deltaTime);
 
-    /**
-     * @brief Handles when bat is hit by player
-     */
     void hurt();
 
-    /**
-     * @brief Sets bat to death state
-     */
     void die();
 
-    /**
-     * @brief Renders the bat on screen
-     */
     void render(SDL_Renderer *renderer);
 
-    /**
-     * @brief Checks collision with player and applies damage
-     */
-    bool collidesWithPlayer(const Player &player, SDL_Renderer *renderer = nullptr);
+    bool collidesWithPlayer(const Player &player);
 
-    /**
-     * @brief Checks if player's attack hits the bat
-     */
     bool checkAttackCollision(const SDL_Rect &attackHitbox, SDL_Renderer *renderer = nullptr);
 
 private:
@@ -124,24 +109,12 @@ private:
      */
     void HandleBoundaryCollisions();
 
-    /**
-     * @brief Renders the current animation frame
-     */
     void RenderCurrentFrame(SDL_Renderer *renderer, SDL_Texture *texture, int frameCount);
 
-    /**
-     * @brief Calculates bat's actual hitbox
-     */
     SDL_Rect CalculateBatHitbox();
 
-    /**
-     * @brief Calculates player's actual hitbox
-     */
     SDL_Rect CalculatePlayerHitbox(const Player &player);
 
-    /**
-     * @brief Applies damage effect to player
-     */
     void ApplyDamageToPlayer(const Player &player);
 };
 

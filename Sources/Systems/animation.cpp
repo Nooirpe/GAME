@@ -40,7 +40,7 @@ void Animation::update(float deltaTime)
 
 SDL_Rect Animation::getCurrentFrame()
 {
-    if (currentFrame >= frames.size())
+    if (currentFrame >= static_cast<int>(frames.size()))
         currentFrame = 0;
     return frames[currentFrame];
 }

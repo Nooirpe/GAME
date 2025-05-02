@@ -8,7 +8,7 @@ void Player::createPlayer(const Graphics &graphics)
     rect.w = width;
 }
 
-void Player::spawnPlayer(Graphics &graphics, int spawnX, int spawnY)
+void Player::spawnPlayer(int spawnX, int spawnY)
 {
     this->x = spawnX;
     this->y = spawnY;
@@ -415,7 +415,7 @@ void Player::handleInput(const Uint8 *currentKeyStates, float deltaTime, int lev
 
     // Process physics for the current level
     applyGravity(deltaTime);
-    checkPlatformCollisions(level, deltaTime);
+    checkPlatformCollisions(level);
     applyHorizontalMovement(deltaTime);
     checkBoundaries(level);
 
@@ -466,7 +466,7 @@ void Player::applyHorizontalMovement(float deltaTime)
     x += velocityX * deltaTime;
 }
 
-bool Player::checkPlatformLanding(float left, float right, float height, float tolerance, float deltaTime)
+bool Player::checkPlatformLanding(float left, float right, float height, float tolerance)
 {
     // Check if player is above the platform
     if (x + width > left && x < right &&
@@ -496,23 +496,23 @@ bool Player::isOnPlatform(float left, float right, float height)
             y + this->height == PLATFORM_HEIGHT - height);
 }
 
-void Player::checkPlatformCollisions(int level, float deltaTime)
+void Player::checkPlatformCollisions(int level)
 {
     if (level == 1)
     {
-        handleLevelOneCollisions(deltaTime);
+        handleLevelOneCollisions();
     }
     else if (level == 2)
     {
-        handleLevelTwoCollisions(deltaTime);
+        handleLevelTwoCollisions();
     }
     else if (level == 3)
     {
-        handleLevelThreeCollisions(deltaTime);
+        handleLevelThreeCollisions();
     }
 }
 
-void Player::handleLevelOneCollisions(float deltaTime)
+void Player::handleLevelOneCollisions()
 {
     // Check for gaps in level 1
     bool isOverGap = ((x + width) > 432 && (x + width) < 480) ||
@@ -554,7 +554,7 @@ void Player::handleLevelOneCollisions(float deltaTime)
     }
 }
 
-void Player::handleLevelTwoCollisions(float deltaTime)
+void Player::handleLevelTwoCollisions()
 {
     if (!isGrounded)
     {
@@ -562,19 +562,19 @@ void Player::handleLevelTwoCollisions(float deltaTime)
         bool landed = false;
 
         // Platform 1: x from 350 to 406, height = 33
-        landed |= checkPlatformLanding(350, 406, 33, 5, deltaTime);
+        landed |= checkPlatformLanding(350, 406, 33, 5);
 
         // Platform 2: x from 410 to 460, height = 71
-        landed |= checkPlatformLanding(430, 460, 71, 5, deltaTime);
+        landed |= checkPlatformLanding(430, 460, 71, 5);
 
         // Platform 3: x from 465 to 736, height = 111
-        landed |= checkPlatformLanding(480, 736, 111, 5, deltaTime);
+        landed |= checkPlatformLanding(480, 736, 111, 5);
 
         // Platform 4: x from 811 to 860, height = 52
-        landed |= checkPlatformLanding(811, 860, 52, 5, deltaTime);
+        landed |= checkPlatformLanding(811, 860, 52, 5);
 
         // Platform 5: x from 928 to 1015, height = 16
-        landed |= checkPlatformLanding(948, 995, 16, 5, deltaTime);
+        landed |= checkPlatformLanding(948, 995, 16, 5);
 
         // Main platform
         if (!landed && y >= PLATFORM_HEIGHT + 13 - height && velocityY > 0)
@@ -606,7 +606,7 @@ void Player::handleLevelTwoCollisions(float deltaTime)
     }
 }
 
-void Player::handleLevelThreeCollisions(float deltaTime)
+void Player::handleLevelThreeCollisions()
 {
     if (!isGrounded)
     {
@@ -614,10 +614,10 @@ void Player::handleLevelThreeCollisions(float deltaTime)
         bool landed = false;
 
         // Platform 1: x from 367 to 616, height = 57
-        landed |= checkPlatformLanding(375, 600, 57, 5, deltaTime);
+        landed |= checkPlatformLanding(375, 600, 57, 5);
 
         // Platform 2: x from 618 to 913, height = 121
-        landed |= checkPlatformLanding(630, 900, 121, 5, deltaTime);
+        landed |= checkPlatformLanding(630, 900, 121, 5);
 
         // Main platform
         if (!landed && y >= PLATFORM_HEIGHT + 13 - height && velocityY > 0)

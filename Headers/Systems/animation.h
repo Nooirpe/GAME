@@ -55,9 +55,6 @@ public:
      */
     int getDirectionOffset();
 
-    /**
-     * @brief Sets animation playback speed
-     */
     void setAnimationSpeed(float speed);
 
     /**

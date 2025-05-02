@@ -4,7 +4,7 @@
 #include "../../Headers/Core/graphics.h"
 #include "../../Headers/Entities/obstacle.h"
 
-void level1(bool &onelevel, Graphics &graphics, Player &player, int &level,
+void level1(bool &onelevel, Graphics &graphics, Player &player,
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
 {
     static SDL_Texture *mapTexture = nullptr;
@@ -57,7 +57,7 @@ void level1(bool &onelevel, Graphics &graphics, Player &player, int &level,
     }
 }
 
-void level2(bool &onelevel, Graphics &graphics, Player &player, int &level,
+void level2(bool &onelevel, Graphics &graphics, Player &player,
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
 {
     static SDL_Texture *mapTexture = nullptr;
@@ -122,7 +122,7 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, int &level,
     }
 }
 
-void level3(bool &onelevel, Graphics &graphics, Player &player, int &level,
+void level3(bool &onelevel, Graphics &graphics, Player &player,
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
 {
     static SDL_Texture *mapTexture = nullptr;
@@ -197,7 +197,7 @@ void level3(bool &onelevel, Graphics &graphics, Player &player, int &level,
     // Xử lý logic liên quan đến bat
     if (batInitialized && !playerDying && !playerWinning)
     {
-        bat.update(deltaTime, player);
+        bat.update(deltaTime);
 
         if (player.isAttacking && bat.checkAttackCollision(player.attackHitbox, graphics.renderer) &&
             bat.currentState != Bat::DIE && bat.currentState != Bat::HURT)
@@ -206,7 +206,7 @@ void level3(bool &onelevel, Graphics &graphics, Player &player, int &level,
         }
 
         // Kiểm tra va chạm của nhân vật với bat để trừ máu player
-        if (bat.collidesWithPlayer(player, graphics.renderer) &&
+        if (bat.collidesWithPlayer(player) &&
             bat.currentState != Bat::DIE && bat.currentState != Bat::HURT)
         {
             player.takeDamage();

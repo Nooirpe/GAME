@@ -15,9 +15,6 @@ struct Cursor
 
     bool in = 0;
 
-    /**
-     * @brief Initializes the cursor with textures
-     */
     void createCursor(const Graphics &graphics);
 
     /**

@@ -47,9 +47,9 @@ public:
     void playSound(Mix_Chunk *sound, bool enabled = true);
 
     /**
-     * @brief Applies audio settings based on user selection
+     * @brief Apply audio settings based on option
      */
-    void applyAudioSettings(int option, Mix_Music *music, bool &sfxEnabled);
+    void applyAudioSettings(int option, bool &sfxEnabled);
 
     /**
      * @brief Closes audio subsystem
