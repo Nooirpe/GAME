@@ -188,6 +188,10 @@ bool Bat::collidesWithPlayer(const Player &player, SDL_Renderer *renderer)
     if (isDead)
         return false;
 
+    // Skip collision if player is already immune
+    if (player.isImmune)
+        return false;
+
     int batOffsetX = width * 0.2;
     int batOffsetY = height * 0.3;
     int playerOffsetX = player.width * 0.2;
@@ -199,7 +203,27 @@ bool Bat::collidesWithPlayer(const Player &player, SDL_Renderer *renderer)
     SDL_Rect playerCollision = {static_cast<int>(player.x + playerOffsetX), static_cast<int>(player.y + playerOffsetY),
                                 player.width - playerOffsetX * 2, player.height - playerOffsetY * 2};
 
-    return SDL_HasIntersection(&batCollision, &playerCollision);
+    // Kiểm tra xem có va chạm không
+    if (SDL_HasIntersection(&batCollision, &playerCollision))
+    {
+        // Xác định hướng knockback dựa vào vị trí tương đối của quái vật và người chơi
+        int knockbackDirection = 0;
+
+        // Nếu quái vật ở bên phải người chơi, đẩy người chơi về bên trái
+        if (x > player.x)
+            knockbackDirection = 1; // Đẩy người chơi sang trái
+        // Nếu quái vật ở bên trái người chơi, đẩy người chơi về bên phải
+        else
+            knockbackDirection = -1; // Đẩy người chơi sang phải
+
+        // Áp dụng sát thương và knockback vào người chơi với hướng đúng
+        Player *mutablePlayer = const_cast<Player *>(&player);
+        mutablePlayer->takeDamage(knockbackDirection);
+
+        return true;
+    }
+
+    return false;
 }
 
 bool Bat::checkAttackCollision(const SDL_Rect &attackHitbox, SDL_Renderer *renderer)

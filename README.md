@@ -82,9 +82,9 @@
 
 - Lập trình game: Nguyễn Lê Dũng
 
-- Thư viện SDL2.0 (tham khảo trên [lazyfoo](https://lazyfoo.net/tutorials/SDL/index.php), [tianchinchiko](https://www.youtube.com/@tianchinchiko) và tài liệu trên lớp)
+- Thư viện SDL2.0 (tham khảo trên [Lazyfoo](https://lazyfoo.net/tutorials/SDL/index.php), [Tianchinchiko](https://www.youtube.com/@tianchinchiko) và tài liệu trên lớp)
 
-- Đồ hoạ được lấy từ [opengameart](https://opengameart.org) và tự thiết kế trên [LibreSprite](https://github.com/LibreSprite/libresprite.github.io/blob/master/install.md)
+- Đồ hoạ được lấy từ [Opengameart](https://opengameart.org) và tự thiết kế trên [LibreSprite](https://github.com/LibreSprite/libresprite.github.io/blob/master/install.md)
 
 - Âm nhạc: [Massah](https://www.newgrounds.com/audio/listen/1412555)
 

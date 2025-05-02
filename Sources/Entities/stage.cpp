@@ -1,3 +1,4 @@
+
 #include "../../Headers/Entities/stage.h"
 #include "../../Headers/Entities/player.h"
 #include "../../Headers/Core/graphics.h"

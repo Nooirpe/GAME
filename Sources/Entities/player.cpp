@@ -85,15 +85,24 @@ void Player::update(float deltaTime)
     wasMoving = isMoving;
     isMoving = (velocityX != 0 || velocityY != 0);
 
-    // Update attack state
+    // Update specific states in order
+    updateAttackState(deltaTime);
+    updateImmunityState(deltaTime);
+    updateMovementAnimation();
+    updateKnockbackState(deltaTime);
+
+    // Update animation system
+    animation.update(deltaTime);
+}
+
+void Player::updateAttackState(float deltaTime)
+{
     if (isAttacking)
     {
         attackTimer += deltaTime;
 
-        const float totalAttackDuration = attackDuration;
-
         // End attack state when animation completes
-        if (attackTimer >= totalAttackDuration)
+        if (attackTimer >= attackDuration)
         {
             isAttacking = false;
             attackTimer = 0.0f;
@@ -103,32 +112,35 @@ void Player::update(float deltaTime)
             animation.setDirection(lastDirection);
         }
     }
+}
 
-    // Update immunity state
+void Player::updateImmunityState(float deltaTime)
+{
     if (isImmune)
     {
         immuneTimer += deltaTime;
         blinkTimer += deltaTime;
 
-        // Tạo hiệu ứng nhấp nháy
+        // Create blinking effect
         if (blinkTimer >= 0.1f)
         {
             showPlayer = !showPlayer;
             blinkTimer = 0.0f;
         }
 
-        // Kết thúc trạng thái bất khả xâm
+        // End immunity state when timer expires
         if (immuneTimer >= immuneDuration)
         {
             isImmune = false;
             showPlayer = true;
         }
     }
+}
 
-    // Cập nhật vị trí dựa trên vận tốc
-    x += velocityX * deltaTime;
-    // Cập nhật hướng di chuyển cho animation
-    if (!isAttacking) // Chỉ cập nhật hướng khi không tấn công
+void Player::updateMovementAnimation()
+{
+    // Only update movement direction when not attacking
+    if (!isAttacking)
     {
         if (velocityX > 0)
         {
@@ -153,13 +165,13 @@ void Player::update(float deltaTime)
             animation.setDirection(Animation::IDLE);
         }
     }
-
-    // Xử lý animation - luôn cập nhật animation kể cả khi đang tấn công
-    animation.update(deltaTime);
 }
 
 void Player::render(SDL_Renderer *renderer, float deltaTime)
 {
+    // Always update attack state in render to ensure it gets called every frame
+    updateAttackState(deltaTime);
+
     // Nếu đang trong trạng thái bất khả xâm và đang ở giai đoạn ẩn của hiệu ứng nhấp nháy
     if (isImmune && !showPlayer)
     {
@@ -292,486 +304,9 @@ void Player::render(SDL_Renderer *renderer, float deltaTime)
             SDL_RenderCopyEx(renderer, animationTexture, &srcRect, &dstRect, 0, NULL, flip);
         }
     }
-}
-
-void Player::movePlayer(Player &player, const Uint8 *currentKeyStates, float deltaTime, int level)
-{
-    // Store previous moving state
-    player.wasMoving = player.isMoving;
-
-    // Reset horizontal velocity
-    player.velocityX = 0;
-
-    // Handle horizontal movement only
-    if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
-    {
-        player.velocityX = -player.speed;
-        player.animation.currentDirection = player.animation.LEFT;
-    }
-    else if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
-    {
-        player.velocityX = player.speed;
-        player.animation.currentDirection = player.animation.RIGHT;
-    }
-
-    // Handle jump input - only when player is on the ground
-    if ((currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP] ||
-         currentKeyStates[SDL_SCANCODE_W]) &&
-        player.isGrounded)
-    {
-        player.jump();
-        player.animation.currentDirection = player.animation.UP;
-    }
-
-    // Handle attack input - can attack in any state, even while jumping
-    if (currentKeyStates[SDL_SCANCODE_J] && !player.isAttacking)
-    {
-        player.attack();
-    }
-
-    // Level-specific movement logic
-    if (level == 1)
-    {
-        // Kiểm tra nếu nhân vật đang ở trên hố
-        bool isOverGap = ((player.x + player.width) > 432 && (player.x + player.width) < 480) || ((player.x + player.width) > 935 && (player.x + player.width) < 975);
-
-        // IMMEDIATELY make the player not grounded when over a gap
-        if (isOverGap)
-        {
-            player.isGrounded = false;
-
-            // Set hasFallen only when they actually drop below platform level
-            if (player.y >= PLATFORM_HEIGHT - 10)
-            {
-                player.hasFallen = true;
-                player.justSpawned = false;
-            }
-        }
-
-        // ALWAYS apply gravity when not grounded
-        if (!player.isGrounded)
-        {
-            // Increase falling speed (gravity effect)
-            player.velocityY += player.gravity * deltaTime;
-
-            // Update position based on velocity
-            player.y += player.velocityY * deltaTime;
-
-            // Check if player landed on platform
-            if (player.y >= PLATFORM_HEIGHT + 13 - player.height && !isOverGap && !player.hasFallen)
-            {
-                player.y = PLATFORM_HEIGHT + 13 - player.height;
-                player.velocityY = 0;
-                player.isGrounded = true;
-                // landing animation
-                player.justLanded = true;
-                player.landTimer = 0.2f; // Reset timer for landing animation
-                if (player.velocityX == 0)
-                    player.animation.currentDirection = player.animation.IDLE;
-            }
-            // Neu roi qua y = 700 thi chet
-            if (player.y > 730 && isOverGap)
-            {
-                player.y = 730;
-            }
-        }
-
-        // Update horizontal position
-        player.x += player.velocityX * deltaTime;
-
-        // Apply horizontal boundaries
-        if (player.x < 0)
-            player.x = 0;
-        if (player.x > 1300 - player.width)
-            player.x = 1300 - player.width;
-
-        if (player.y >= PLATFORM_HEIGHT && player.y < PLATFORM_HEIGHT + 250)
-        {
-            // First gap boundaries
-            if ((player.x + player.width) < 432)
-            {
-                player.x = 432 - player.width;
-            }
-            else if ((player.x + player.width > 480) && (player.x + player.width < 600))
-            {
-                player.x = 480 - player.width;
-            }
-
-            // Second gap boundaries
-            else if ((player.x + player.width) < 935 && (player.x + player.width) > 800)
-            {
-                player.x = 935 - player.width;
-            }
-            else if ((player.x + player.width > 975))
-            {
-                player.x = 975 - player.width;
-            }
-        }
-
-        // Check if player is over the gap
-        if (isOverGap)
-        {
-            // Player is not grounded when over a gap
-            player.isGrounded = false;
-            if (player.y >= PLATFORM_HEIGHT - 10)
-            {
-                player.justSpawned = false;
-                player.hasFallen = true;
-            }
-        }
-    }
-    else if (level == 2)
-    {
-        if (!player.isGrounded)
-        {
-            // Apply gravity
-            player.velocityY += player.gravity * deltaTime;
-
-            // Update vertical position
-            player.y += player.velocityY * deltaTime;
-
-            // Platform 1: x from 350 to 406, height = 33
-            if (player.x + player.width > 350 && player.x < 406 &&
-                player.y + player.height <= PLATFORM_HEIGHT - 33 + 5 &&  // Add small tolerance
-                player.y + player.height >= PLATFORM_HEIGHT - 33 - 10 && // Check if close enough
-                player.velocityY > 0)                                    // Only land when falling down
-            {
-                player.y = PLATFORM_HEIGHT - player.height - 33;
-                player.velocityY = 0;
-                player.isGrounded = true;
-                player.justLanded = true;
-                player.landTimer = 0.2f;
-            }
-
-            // Platform 2: x from 410 to 460, height = 71
-            else if (player.x + player.width > 430 && player.x < 460 &&
-                     player.y + player.height <= PLATFORM_HEIGHT - 71 + 5 &&
-                     player.y + player.height >= PLATFORM_HEIGHT - 71 - 10 &&
-                     player.velocityY > 0)
-            {
-                player.y = PLATFORM_HEIGHT - player.height - 71;
-                player.velocityY = 0;
-                player.isGrounded = true;
-                player.justLanded = true;
-                player.landTimer = 0.2f;
-            }
-
-            // Platform 3: x from 465 to 736, height = 111
-            else if (player.x + player.width > 480 && player.x < 736 &&
-                     player.y + player.height <= PLATFORM_HEIGHT - 111 + 5 &&
-                     player.y + player.height >= PLATFORM_HEIGHT - 111 - 10 &&
-                     player.velocityY > 0)
-            {
-                player.y = PLATFORM_HEIGHT - player.height - 111;
-                player.velocityY = 0;
-                player.isGrounded = true;
-                player.justLanded = true;
-                player.landTimer = 0.2f;
-            }
-
-            // Platform 4: x from 811 to 860, height = 52
-            else if (player.x + player.width > 811 && player.x < 860 &&
-                     player.y + player.height <= PLATFORM_HEIGHT - 52 + 5 &&
-                     player.y + player.height >= PLATFORM_HEIGHT - 52 - 10 &&
-                     player.velocityY > 0)
-            {
-                player.y = PLATFORM_HEIGHT - player.height - 52;
-                player.velocityY = 0;
-                player.isGrounded = true;
-                player.justLanded = true;
-                player.landTimer = 0.2f;
-            }
-
-            // Platform 5: x from 928 to 1015, height = 16
-            else if (player.x + player.width > 948 && player.x < 995 &&
-                     player.y + player.height <= PLATFORM_HEIGHT - 16 + 5 &&
-                     player.y + player.height >= PLATFORM_HEIGHT - 16 - 10 &&
-                     player.velocityY > 0)
-            {
-                player.y = PLATFORM_HEIGHT - player.height - 16;
-                player.velocityY = 0;
-                player.isGrounded = true;
-                player.justLanded = true;
-                player.landTimer = 0.2f;
-            }
-            // Check if player should land on the flat platform
-            else if (player.y >= PLATFORM_HEIGHT + 13 - player.height && player.velocityY > 0)
-            {
-                // Land on platform
-                player.y = PLATFORM_HEIGHT + 13 - player.height;
-                player.velocityY = 0;
-                player.isGrounded = true;
-
-                // Show landing animation
-                player.justLanded = true;
-                player.landTimer = 0.2f;
-
-                if (player.velocityX == 0)
-                    player.animation.currentDirection = player.animation.IDLE;
-            }
-        }
-        if (player.isGrounded) // Player is grounded
-        {
-            // Check if player is still on a platform
-            bool stillOnPlatform = false;
-
-            // Platform 1
-            if (player.x + player.width > 350 && player.x < 406 &&
-                player.y + player.height == PLATFORM_HEIGHT - 33)
-            {
-                stillOnPlatform = true;
-            }
-            // Platform 2
-            else if (player.x + player.width > 430 && player.x < 460 &&
-                     player.y + player.height == PLATFORM_HEIGHT - 71)
-            {
-                stillOnPlatform = true;
-            }
-            // Platform 3
-            else if (player.x + player.width > 480 && player.x < 736 &&
-                     player.y + player.height == PLATFORM_HEIGHT - 111)
-            {
-                stillOnPlatform = true;
-            }
-            // Platform 4
-            else if (player.x + player.width > 811 && player.x < 860 &&
-                     player.y + player.height == PLATFORM_HEIGHT - 52)
-            {
-                stillOnPlatform = true;
-            }
-            // Platform 5
-            else if (player.x + player.width > 948 && player.x < 995 &&
-                     player.y + player.height == PLATFORM_HEIGHT - 16)
-            {
-                stillOnPlatform = true;
-            }
-            // Main floor
-            else if (player.y + player.height == PLATFORM_HEIGHT + 13)
-            {
-                stillOnPlatform = true;
-            }
-
-            // FALL
-            if (!stillOnPlatform)
-            {
-                player.isGrounded = false;
-            }
-        }
-
-        // Update horizontal position
-        player.x += player.velocityX * deltaTime;
-
-        // Apply horizontal boundaries
-        if (player.x < 0)
-            player.x = 0;
-        if (player.x > 1300 - player.width)
-            player.x = 1300 - player.width;
-        if (player.y + player.height > PLATFORM_HEIGHT - 33 &&
-            player.y < PLATFORM_HEIGHT - 33 + 33)
-        {
-            if (player.x + player.width > 370 && player.x < 370)
-            {
-                player.x = 370 - player.width;
-            }
-        }
-
-        // Platform 2 boundaries collision (430-460, height 71)
-        if (player.y + player.height > PLATFORM_HEIGHT - 71 &&
-            player.y < PLATFORM_HEIGHT - 71 + 71)
-        {
-            if (player.x + player.width > 430 && player.x < 430)
-            {
-                player.x = 430 - player.width;
-            }
-            if (player.x < 460 && player.x + player.width > 460)
-            {
-                player.x = 460;
-            }
-        }
-
-        // Platform 3 boundaries collision (480-736, height 111)
-        if (player.y + player.height > PLATFORM_HEIGHT - 111 &&
-            player.y < PLATFORM_HEIGHT - 111 + 111)
-        {
-            if (player.x + player.width > 490 && player.x < 490)
-            {
-                player.x = 490 - player.width;
-            }
-            if (player.x < 736 && player.x + player.width > 736)
-            {
-                player.x = 736;
-            }
-        }
-
-        // Platform 4 boundaries collision (811-860, height 52)
-        if (player.y + player.height > PLATFORM_HEIGHT - 52 &&
-            player.y < PLATFORM_HEIGHT - 52 + 52)
-        {
-            if (player.x + player.width > 811 && player.x + player.width < 811)
-            {
-                player.x = 811 - player.width;
-            }
-            if (player.x < 840 && player.x + player.width > 840)
-            {
-                player.x = 840;
-            }
-        }
-
-        // Platform 5 boundaries collision (928-1015, height 16)
-        if (player.y + player.height > PLATFORM_HEIGHT - 16 &&
-            player.y < PLATFORM_HEIGHT - 16 + 16)
-        {
-            if (player.x + player.width > 948 && player.x < 948)
-            {
-                player.x = 948 - player.width;
-            }
-            if (player.x < 995 && player.x + player.width > 995)
-            {
-                player.x = 995;
-            }
-        }
-    }
-    else if (level == 3)
-    {
-        if (!player.isGrounded)
-        {
-            // Apply gravity
-            player.velocityY += player.gravity * deltaTime;
-
-            // Update vertical position
-            player.y += player.velocityY * deltaTime;
-
-            // Platform 1: x from 367 to 616, height = 57
-            if (player.x + player.width > 380 && player.x < 600 &&
-                player.y + player.height <= PLATFORM_HEIGHT - 57 + 5 &&  // Add small tolerance
-                player.y + player.height >= PLATFORM_HEIGHT - 57 - 10 && // Check if close enough
-                player.velocityY > 0)                                    // Only land when falling down
-            {
-                player.y = PLATFORM_HEIGHT - player.height - 57;
-                player.velocityY = 0;
-                player.isGrounded = true;
-                player.justLanded = true;
-                player.landTimer = 0.2f;
-            }
-
-            // Platform 2: x from 618 to 913, height = 121
-            else if (player.x + player.width > 630 && player.x < 900 &&
-                     player.y + player.height <= PLATFORM_HEIGHT - 121 + 5 &&
-                     player.y + player.height >= PLATFORM_HEIGHT - 121 - 10 &&
-                     player.velocityY > 0)
-            {
-                player.y = PLATFORM_HEIGHT - player.height - 121;
-                player.velocityY = 0;
-                player.isGrounded = true;
-                player.justLanded = true;
-                player.landTimer = 0.2f;
-            }
-            // Check if player should land on the flat platform
-            else if (player.y >= PLATFORM_HEIGHT + 13 - player.height && player.velocityY > 0)
-            {
-                // Land on platform
-                player.y = PLATFORM_HEIGHT + 13 - player.height;
-                player.velocityY = 0;
-                player.isGrounded = true;
-
-                // Show landing animation
-                player.justLanded = true;
-                player.landTimer = 0.2f;
-
-                if (player.velocityX == 0)
-                    player.animation.currentDirection = player.animation.IDLE;
-            }
-        }
-        if (player.isGrounded) // Player is grounded
-        {
-            // Check if player is still on a platform
-            bool stillOnPlatform = false;
-
-            // Platform 1
-            if (player.x + player.width > 380 && player.x < 600 &&
-                player.y + player.height == PLATFORM_HEIGHT - 57)
-            {
-                stillOnPlatform = true;
-            }
-            // Platform 2
-            else if (player.x + player.width > 630 && player.x < 900 &&
-                     player.y + player.height == PLATFORM_HEIGHT - 121)
-            {
-                stillOnPlatform = true;
-            }
-            // Main floor
-            else if (player.y + player.height == PLATFORM_HEIGHT + 13)
-            {
-                stillOnPlatform = true;
-            }
-            // FALL
-            if (!stillOnPlatform)
-            {
-                player.isGrounded = false;
-            }
-        }
-        // Update horizontal position
-        player.x += player.velocityX * deltaTime;
-
-        // Apply horizontal boundaries
-        if (player.x < 0)
-            player.x = 0;
-        if (player.x > 1300 - player.width)
-            player.x = 1300 - player.width;
-        if (player.y + player.height > PLATFORM_HEIGHT - 57 &&
-            player.y < PLATFORM_HEIGHT - 57 + 57)
-        {
-            if (player.x + player.width > 400 && player.x < 400)
-            {
-                player.x = 400 - player.width;
-            }
-        }
-
-        // Platform 2 boundaries collision
-        if (player.y + player.height > PLATFORM_HEIGHT - 121 &&
-            player.y < PLATFORM_HEIGHT - 121 + 121)
-        {
-            if (player.x + player.width > 630 && player.x < 630)
-            {
-                player.x = 630 - player.width;
-            }
-            if (player.x < 900 && player.x + player.width > 900)
-            {
-                player.x = 900;
-            }
-        }
-    }
-
-    // Set moving state based on any movement (horizontal or vertical)
-    player.isMoving = (player.velocityX != 0 || !player.isGrounded);
-
-    // Update collision rect
-    player.rect.x = static_cast<int>(player.x);
-    player.rect.y = static_cast<int>(player.y);
-
-    // Update attack hitbox position based on player direction and position
-    if (player.isAttacking)
-    {
-        if (player.animation.currentDirection == Animation::LEFT)
-        {
-            player.attackHitbox = {
-                static_cast<int>(player.x - player.width / 2),
-                static_cast<int>(player.y + player.height / 4),
-                player.width / 2,
-                player.height / 2};
-        }
-        else
-        {
-            player.attackHitbox = {
-                static_cast<int>(player.x + player.width),
-                static_cast<int>(player.y + player.height / 4),
-                player.width / 2,
-                player.height / 2};
-        }
-    }
 
     // Update animation
-    player.animation.update(deltaTime);
+    animation.update(deltaTime);
 }
 
 void Player::attack()
@@ -809,7 +344,7 @@ void Player::attack()
     }
 }
 
-void Player::takeDamage()
+void Player::takeDamage(int damageDirection)
 {
     if (!isImmune)
     {
@@ -818,5 +353,443 @@ void Player::takeDamage()
         immuneTimer = 0.0f;
         showPlayer = true;
         blinkTimer = 0.0f;
+
+        // Activate knockback effect
+        isKnockback = true;
+        knockbackTimer = 0.0f;
+
+        // Set knockback direction based on parameter or player facing direction
+        if (damageDirection != 0)
+        {
+            // Use specified direction
+            knockbackDirection = -damageDirection; // Reverse to push away
+        }
+        else
+        {
+            // Determine direction based on player facing direction
+            if (lastDirection == Animation::RIGHT)
+                knockbackDirection = -1; // Knock back to the left
+            else
+                knockbackDirection = 1; // Knock back to the right
+        }
+    }
+}
+
+void Player::handleInput(const Uint8 *currentKeyStates, float deltaTime, int level)
+{
+    // Store previous moving state
+    wasMoving = isMoving;
+
+    // Only allow player control if not in knockback state
+    if (!isKnockback)
+    {
+        velocityX = 0;
+
+        // Handle horizontal movement
+        if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A])
+        {
+            velocityX = -speed;
+            animation.currentDirection = Animation::LEFT;
+        }
+        else if (currentKeyStates[SDL_SCANCODE_RIGHT] || currentKeyStates[SDL_SCANCODE_D])
+        {
+            velocityX = speed;
+            animation.currentDirection = Animation::RIGHT;
+        }
+
+        // Handle jump input - only when player is on the ground
+        if ((currentKeyStates[SDL_SCANCODE_SPACE] || currentKeyStates[SDL_SCANCODE_UP] ||
+             currentKeyStates[SDL_SCANCODE_W]) &&
+            isGrounded)
+        {
+            jump();
+            animation.currentDirection = Animation::UP;
+        }
+
+        // Handle attack input - can attack in any state, even while jumping
+        if (currentKeyStates[SDL_SCANCODE_J] && !isAttacking)
+        {
+            attack();
+        }
+    }
+
+    // Process physics for the current level
+    applyGravity(deltaTime);
+    checkPlatformCollisions(level, deltaTime);
+    applyHorizontalMovement(deltaTime);
+    checkBoundaries(level);
+
+    // Update collision rect
+    rect.x = static_cast<int>(x);
+    rect.y = static_cast<int>(y);
+
+    // Update attack hitbox position based on player direction and position
+    if (isAttacking)
+    {
+        if (animation.currentDirection == Animation::LEFT)
+        {
+            attackHitbox = {
+                static_cast<int>(x - width / 2),
+                static_cast<int>(y + height / 4),
+                width / 2,
+                height / 2};
+        }
+        else
+        {
+            attackHitbox = {
+                static_cast<int>(x + width),
+                static_cast<int>(y + height / 4),
+                width / 2,
+                height / 2};
+        }
+    }
+
+    // Set moving state based on any movement (horizontal or vertical)
+    isMoving = (velocityX != 0 || !isGrounded);
+}
+
+void Player::applyGravity(float deltaTime)
+{
+    if (!isGrounded)
+    {
+        // Increase falling speed (gravity effect)
+        velocityY += gravity * deltaTime;
+
+        // Update vertical position
+        y += velocityY * deltaTime;
+    }
+}
+
+void Player::applyHorizontalMovement(float deltaTime)
+{
+    // Update horizontal position
+    x += velocityX * deltaTime;
+}
+
+bool Player::checkPlatformLanding(float left, float right, float height, float tolerance, float deltaTime)
+{
+    // Check if player is above the platform
+    if (x + width > left && x < right &&
+        y + this->height <= PLATFORM_HEIGHT - height + tolerance + 3.0f &&
+        y + this->height >= PLATFORM_HEIGHT - height - tolerance - 3.0f &&
+        velocityY > 0) // Only land when falling down
+    {
+        // Land on platform
+        y = PLATFORM_HEIGHT - this->height - height;
+        velocityY = 0;
+        isGrounded = true;
+        justLanded = true;
+        landTimer = 0.2f;
+
+        if (velocityX == 0)
+            animation.currentDirection = Animation::IDLE;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool Player::isOnPlatform(float left, float right, float height)
+{
+    return (x + width > left && x < right &&
+            y + this->height == PLATFORM_HEIGHT - height);
+}
+
+void Player::checkPlatformCollisions(int level, float deltaTime)
+{
+    if (level == 1)
+    {
+        handleLevelOneCollisions(deltaTime);
+    }
+    else if (level == 2)
+    {
+        handleLevelTwoCollisions(deltaTime);
+    }
+    else if (level == 3)
+    {
+        handleLevelThreeCollisions(deltaTime);
+    }
+}
+
+void Player::handleLevelOneCollisions(float deltaTime)
+{
+    // Check for gaps in level 1
+    bool isOverGap = ((x + width) > 432 && (x + width) < 480) ||
+                     ((x + width) > 935 && (x + width) < 975);
+
+    // IMMEDIATELY make the player not grounded when over a gap
+    if (isOverGap)
+    {
+        isGrounded = false;
+
+        // Set hasFallen only when they actually drop below platform level
+        if (y >= PLATFORM_HEIGHT - 10)
+        {
+            hasFallen = true;
+            justSpawned = false;
+        }
+    }
+
+    // Check if player landed on main platform
+    if (!isGrounded)
+    {
+        if (y >= PLATFORM_HEIGHT + 13 - height && !isOverGap && !hasFallen)
+        {
+            y = PLATFORM_HEIGHT + 13 - height;
+            velocityY = 0;
+            isGrounded = true;
+            justLanded = true;
+            landTimer = 0.2f;
+
+            if (velocityX == 0)
+                animation.currentDirection = Animation::IDLE;
+        }
+
+        // Limit maximum fall depth
+        if (y > 730 && isOverGap)
+        {
+            y = 730;
+        }
+    }
+}
+
+void Player::handleLevelTwoCollisions(float deltaTime)
+{
+    if (!isGrounded)
+    {
+        // Check multiple platform landings using the helper function
+        bool landed = false;
+
+        // Platform 1: x from 350 to 406, height = 33
+        landed |= checkPlatformLanding(350, 406, 33, 5, deltaTime);
+
+        // Platform 2: x from 410 to 460, height = 71
+        landed |= checkPlatformLanding(430, 460, 71, 5, deltaTime);
+
+        // Platform 3: x from 465 to 736, height = 111
+        landed |= checkPlatformLanding(480, 736, 111, 5, deltaTime);
+
+        // Platform 4: x from 811 to 860, height = 52
+        landed |= checkPlatformLanding(811, 860, 52, 5, deltaTime);
+
+        // Platform 5: x from 928 to 1015, height = 16
+        landed |= checkPlatformLanding(948, 995, 16, 5, deltaTime);
+
+        // Main platform
+        if (!landed && y >= PLATFORM_HEIGHT + 13 - height && velocityY > 0)
+        {
+            y = PLATFORM_HEIGHT + 13 - height;
+            velocityY = 0;
+            isGrounded = true;
+            justLanded = true;
+            landTimer = 0.2f;
+
+            if (velocityX == 0)
+                animation.currentDirection = Animation::IDLE;
+        }
+    }
+    else // Player is grounded - check if still on platform
+    {
+        bool stillOnPlatform =
+            isOnPlatform(350, 406, 33) ||       // Platform 1
+            isOnPlatform(430, 460, 71) ||       // Platform 2
+            isOnPlatform(480, 736, 111) ||      // Platform 3
+            isOnPlatform(811, 860, 52) ||       // Platform 4
+            isOnPlatform(948, 995, 16) ||       // Platform 5
+            y + height == PLATFORM_HEIGHT + 13; // Main floor
+
+        if (!stillOnPlatform)
+        {
+            isGrounded = false;
+        }
+    }
+}
+
+void Player::handleLevelThreeCollisions(float deltaTime)
+{
+    if (!isGrounded)
+    {
+        // Check multiple platform landings using the helper function
+        bool landed = false;
+
+        // Platform 1: x from 367 to 616, height = 57
+        landed |= checkPlatformLanding(375, 600, 57, 5, deltaTime);
+
+        // Platform 2: x from 618 to 913, height = 121
+        landed |= checkPlatformLanding(630, 900, 121, 5, deltaTime);
+
+        // Main platform
+        if (!landed && y >= PLATFORM_HEIGHT + 13 - height && velocityY > 0)
+        {
+            y = PLATFORM_HEIGHT + 13 - height;
+            velocityY = 0;
+            isGrounded = true;
+            justLanded = true;
+            landTimer = 0.2f;
+
+            if (velocityX == 0)
+                animation.currentDirection = Animation::IDLE;
+        }
+    }
+    else // Player is grounded - check if still on platform
+    {
+        bool stillOnPlatform =
+            isOnPlatform(375, 600, 57) ||       // Platform 1
+            isOnPlatform(630, 900, 121) ||      // Platform 2
+            y + height == PLATFORM_HEIGHT + 13; // Main floor
+
+        if (!stillOnPlatform)
+        {
+            isGrounded = false;
+        }
+    }
+}
+
+void Player::checkBoundaries(int level)
+{
+    // Basic horizontal boundaries for all levels
+    if (x < 0)
+        x = 0;
+    if (x > 1300 - width)
+        x = 1300 - width;
+
+    // Level-specific boundaries
+    if (level == 1)
+    {
+        if (y >= PLATFORM_HEIGHT && y < PLATFORM_HEIGHT + 250)
+        {
+            // First gap boundaries
+            if ((x + width) < 432)
+            {
+                x = 432 - width;
+            }
+            else if ((x + width > 480) && (x + width < 600))
+            {
+                x = 480 - width;
+            }
+
+            // Second gap boundaries
+            else if ((x + width) < 935 && (x + width) > 800)
+            {
+                x = 935 - width;
+            }
+            else if ((x + width > 975))
+            {
+                x = 975 - width;
+            }
+        }
+    }
+    else if (level == 2)
+    {
+        // Platform 1 boundaries collision (350-406, height 33)
+        if (y + height > PLATFORM_HEIGHT - 33 && y < PLATFORM_HEIGHT - 33 + 33)
+        {
+            if (x + width > 370 && x < 370)
+            {
+                x = 370 - width;
+            }
+        }
+
+        // Platform 2 boundaries collision (430-460, height 71)
+        if (y + height > PLATFORM_HEIGHT - 71 && y < PLATFORM_HEIGHT - 71 + 71)
+        {
+            if (x + width > 430 && x < 430)
+            {
+                x = 430 - width;
+            }
+            if (x < 460 && x + width > 460)
+            {
+                x = 460;
+            }
+        }
+
+        // Platform 3 boundaries collision (480-736, height 111)
+        if (y + height > PLATFORM_HEIGHT - 111 && y < PLATFORM_HEIGHT - 111 + 111)
+        {
+            if (x + width > 490 && x < 490)
+            {
+                x = 490 - width;
+            }
+            if (x < 736 && x + width > 736)
+            {
+                x = 736;
+            }
+        }
+
+        // Platform 4 boundaries collision (811-860, height 52)
+        if (y + height > PLATFORM_HEIGHT - 52 && y < PLATFORM_HEIGHT - 52 + 52)
+        {
+            if (x + width > 811 && x + width < 811)
+            {
+                x = 811 - width;
+            }
+            if (x < 840 && x + width > 840)
+            {
+                x = 840;
+            }
+        }
+
+        // Platform 5 boundaries collision (928-1015, height 16)
+        if (y + height > PLATFORM_HEIGHT - 16 && y < PLATFORM_HEIGHT - 16 + 16)
+        {
+            if (x + width > 948 && x < 948)
+            {
+                x = 948 - width;
+            }
+            if (x < 995 && x + width > 995)
+            {
+                x = 995;
+            }
+        }
+    }
+    else if (level == 3)
+    {
+        // Platform 1 boundaries (375-600, height 57)
+        if (y + height > PLATFORM_HEIGHT - 57 && y < PLATFORM_HEIGHT - 57 + 57)
+        {
+            if (x + width > 400 && x < 400)
+            {
+                x = 400 - width;
+            }
+        }
+
+        // Platform 2 boundaries (630-900, height 121)
+        if (y + height > PLATFORM_HEIGHT - 121 && y < PLATFORM_HEIGHT - 121 + 121)
+        {
+            if (x + width > 630 && x < 630)
+            {
+                x = 630 - width;
+            }
+            if (x < 900 && x + width > 900)
+            {
+                x = 900;
+            }
+        }
+    }
+}
+
+void Player::updateKnockbackState(float deltaTime)
+{
+    if (isKnockback)
+    {
+        knockbackTimer += deltaTime;
+
+        // Apply knockback forces
+        velocityX = knockbackDirection * knockbackForceX;
+
+        // Apply upward force if the player is on the ground
+        if (isGrounded)
+        {
+            velocityY = -knockbackForceY;
+            isGrounded = false;
+        }
+
+        // End knockback state when timer expires
+        if (knockbackTimer >= knockbackDuration)
+        {
+            isKnockback = false;
+            velocityX = 0;
+        }
     }
 }

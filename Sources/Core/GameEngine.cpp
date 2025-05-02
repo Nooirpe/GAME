@@ -238,7 +238,7 @@ void GameEngine::handleGameplay()
         float deltaTime = (currentTime - lastTime) / 1000.0f;
         lastTime = currentTime;
 
-        player->movePlayer(*player, currentKeyStates, deltaTime, level);
+        player->handleInput(currentKeyStates, deltaTime, level);
     }
     else
     {
@@ -376,6 +376,9 @@ void GameEngine::handlePauseMenu()
 
 void GameEngine::run()
 {
+    // Handle intro state
+    // handleIntro();
+
     while (!quit)
     {
         // Process input
