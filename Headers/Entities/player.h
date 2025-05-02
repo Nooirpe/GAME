@@ -58,7 +58,7 @@ struct Player
     float movetime = 0.0f;
     bool isGrounded = false;
     float gravity = 1350.0f;
-    float jumpForce = 600.0f;
+    float jumpForce = 500.0f;
     bool justSpawned = true;
     bool hasFallen = false;
 

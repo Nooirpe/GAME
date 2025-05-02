@@ -272,17 +272,17 @@ void GameEngine::handleGameplay()
     // Render the appropriate level
     if (level == 1)
     {
-        level1(onelevel, graphics, *player, menuTexture, level, playerDying,
+        level1(onelevel, graphics, *player, level, playerDying,
                playerWinning, stateChangeTime);
     }
     else if (level == 2)
     {
-        level2(onelevel, graphics, *player, menuTexture, level, playerDying,
+        level2(onelevel, graphics, *player, level, playerDying,
                playerWinning, stateChangeTime);
     }
     else if (level == 3)
     {
-        level3(onelevel, graphics, *player, menuTexture, level, playerDying,
+        level3(onelevel, graphics, *player, level, playerDying,
                playerWinning, stateChangeTime);
     }
 
@@ -332,17 +332,17 @@ void GameEngine::handlePauseMenu()
     // Vẽ lại màn chơi hiện tại
     if (level == 1)
     {
-        level1(tempOnelevel, graphics, *player, menuTexture, level, playerDying,
+        level1(tempOnelevel, graphics, *player, level, playerDying,
                playerWinning, stateChangeTime);
     }
     else if (level == 2)
     {
-        level2(tempOnelevel, graphics, *player, menuTexture, level, playerDying,
+        level2(tempOnelevel, graphics, *player, level, playerDying,
                playerWinning, stateChangeTime);
     }
     else if (level == 3)
     {
-        level3(tempOnelevel, graphics, *player, menuTexture, level, playerDying,
+        level3(tempOnelevel, graphics, *player, level, playerDying,
                playerWinning, stateChangeTime);
     }
 

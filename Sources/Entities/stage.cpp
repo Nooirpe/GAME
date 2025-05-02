@@ -4,7 +4,7 @@
 #include "../../Headers/Core/graphics.h"
 #include "../../Headers/Entities/obstacle.h"
 
-void level1(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn, int &level,
+void level1(bool &onelevel, Graphics &graphics, Player &player, int &level,
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
 {
     static SDL_Texture *mapTexture = nullptr;
@@ -57,7 +57,7 @@ void level1(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
     }
 }
 
-void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn, int &level,
+void level2(bool &onelevel, Graphics &graphics, Player &player, int &level,
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
 {
     static SDL_Texture *mapTexture = nullptr;
@@ -122,7 +122,7 @@ void level2(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
     }
 }
 
-void level3(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn, int &level,
+void level3(bool &onelevel, Graphics &graphics, Player &player, int &level,
             bool &playerDying, bool &playerWinning, Uint32 &stateChangeTime)
 {
     static SDL_Texture *mapTexture = nullptr;
@@ -216,7 +216,7 @@ void level3(bool &onelevel, Graphics &graphics, Player &player, SDL_Texture *&mn
     }
 
     // Kiểm tra va chạm với các khu vực nguy hiểm
-    if (((playerCollisionBox.x + playerCollisionBox.w > 305 && playerCollisionBox.x < 330 &&
+    if (((playerCollisionBox.x + playerCollisionBox.w > 310 && playerCollisionBox.x < 335 &&
           playerCollisionBox.y + playerCollisionBox.h > 505 && playerCollisionBox.y < 535) ||
          (playerCollisionBox.x + playerCollisionBox.w > 442 && playerCollisionBox.x < 482 &&
           playerCollisionBox.y + playerCollisionBox.h > 439 && playerCollisionBox.y < 469) ||
