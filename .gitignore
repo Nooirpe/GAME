@@ -1,0 +1,78 @@
+# C++ build artifacts
+*.exe
+*.obj
+*.o
+*.a
+*.out
+*.so
+*.dylib
+*.lib
+*.dll
+
+# Exception for SDL2 DLLs that should be tracked
+!SDL2.dll
+!SDL2_image.dll
+!SDL2_mixer.dll
+!SDL2_ttf.dll
+
+# Precompiled headers and debug symbols
+*.pch
+*.idb
+*.pdb
+*.ilk
+
+# Build directories
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+
+# IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+ipch/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+build.ninja
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Core dump files
+core
+
+# Backup files
+*.bak
+*~
+*.orig
+
+# Generated documentation
+doc/html/
+doc/latex/
+
+# Code coverage files
+*.gcov
+*.gcda
+*.gcno
+
+# MinGW specific
+*.map
