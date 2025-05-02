@@ -10,7 +10,7 @@ using namespace std;
 
 /**
  * @struct Bat
- * @brief Quái vật bay trong game, di chuyển qua lại và tấn công người chơi
+ * @brief Enemy that flies and attacks the player
  */
 struct Bat
 {
@@ -57,26 +57,91 @@ struct Bat
     bool isDead = false;
     SDL_Rect rect;
 
-    // Main functions
+    // Phương thức chính
+    /**
+     * @brief Spawns a bat at the specified position with movement boundaries
+     */
     void spawnBat(float spawnX, float spawnY, float leftBound, float rightBound);
+
+    /**
+     * @brief Creates a bat with textures and initial parameters
+     */
     void createBat(const Graphics &graphics, float startX, float startY, float leftBound, float rightBound);
+
+    /**
+     * @brief Updates the bat state each frame
+     */
     void update(float deltaTime, const Player &player);
+
+    /**
+     * @brief Updates animation based on current state
+     */
     void updateAnimation(float deltaTime);
-    void hurt(); // Xử lý khi bị thương
-    void die();  // Xử lý khi chết
+
+    /**
+     * @brief Handles when bat is hit by player
+     */
+    void hurt();
+
+    /**
+     * @brief Sets bat to death state
+     */
+    void die();
+
+    /**
+     * @brief Renders the bat on screen
+     */
     void render(SDL_Renderer *renderer);
+
+    /**
+     * @brief Checks collision with player and applies damage
+     */
     bool collidesWithPlayer(const Player &player, SDL_Renderer *renderer = nullptr);
+
+    /**
+     * @brief Checks if player's attack hits the bat
+     */
     bool checkAttackCollision(const SDL_Rect &attackHitbox, SDL_Renderer *renderer = nullptr);
 
 private:
-    // Others
+    /**
+     * @brief Loads all required textures
+     */
     void LoadTextures(SDL_Renderer *renderer);
+
+    /**
+     * @brief Calculates bat dimensions based on texture
+     */
     void CalculateDimensions();
+
+    /**
+     * @brief Handles bat movement logic
+     */
     void UpdateMovement(float deltaTime);
+
+    /**
+     * @brief Handles collision with movement boundaries
+     */
     void HandleBoundaryCollisions();
+
+    /**
+     * @brief Renders the current animation frame
+     */
     void RenderCurrentFrame(SDL_Renderer *renderer, SDL_Texture *texture, int frameCount);
+
+    /**
+     * @brief Calculates bat's actual hitbox
+     */
     SDL_Rect CalculateBatHitbox();
+
+    /**
+     * @brief Calculates player's actual hitbox
+     */
     SDL_Rect CalculatePlayerHitbox(const Player &player);
+
+    /**
+     * @brief Applies damage effect to player
+     */
     void ApplyDamageToPlayer(const Player &player);
 };
 

@@ -1,5 +1,13 @@
 #include "../../Headers/Entities/obstacle.h"
 
+/**
+ * @brief Khởi tạo đối tượng Bat tại vị trí và ranh giới di chuyển cho trước
+ *
+ * @param spawnX Tọa độ x ban đầu
+ * @param spawnY Tọa độ y ban đầu
+ * @param leftBound Ranh giới bên trái mà Bat có thể di chuyển tới
+ * @param rightBound Ranh giới bên phải mà Bat có thể di chuyển tới
+ */
 void Bat::spawnBat(float spawnX, float spawnY, float leftBound, float rightBound)
 {
     x = spawnX;
@@ -309,7 +317,6 @@ void Bat::RenderCurrentFrame(SDL_Renderer *renderer, SDL_Texture *texture, int f
  *
  * @param player Tham chiếu người chơi
  * @param renderer SDL_Renderer để vẽ debug hitbox (tuỳ chọn)
- * @return true nếu có va chạm, false nếu không
  */
 bool Bat::collidesWithPlayer(const Player &player, SDL_Renderer *renderer)
 {
@@ -321,7 +328,7 @@ bool Bat::collidesWithPlayer(const Player &player, SDL_Renderer *renderer)
     if (player.isImmune)
         return false;
 
-    // Tính toán hitbox thực tế (nhỏ hơn sprite để phù hợp hơn)
+    // Tính toán hitbox thực tế
     SDL_Rect batCollision = CalculateBatHitbox();
     SDL_Rect playerCollision = CalculatePlayerHitbox(player);
 

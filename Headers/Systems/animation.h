@@ -3,6 +3,10 @@
 #include <vector>
 #include "../../src/include/SDL2/SDL.h"
 
+/**
+ * @class Animation
+ * @brief Manages sprite animations with directional support
+ */
 class Animation
 {
 private:
@@ -15,6 +19,10 @@ private:
     int framesPerDirection = 2;
 
 public:
+    /**
+     * @enum Direction
+     * @brief Possible directions for sprite animations
+     */
     enum Direction
     {
         DOWN = 0,
@@ -27,12 +35,39 @@ public:
 
     Direction currentDirection = IDLE;
 
+    /**
+     * @brief Constructor that initializes animation parameters
+     */
     Animation(int spriteWidth, int spriteHeight, int numFrames, int framesPerDir = 2);
+
+    /**
+     * @brief Updates animation state based on time
+     */
     void update(float deltaTime);
+
+    /**
+     * @brief Gets current frame for rendering
+     */
     SDL_Rect getCurrentFrame();
+
+    /**
+     * @brief Gets offset for current direction
+     */
     int getDirectionOffset();
+
+    /**
+     * @brief Sets animation playback speed
+     */
     void setAnimationSpeed(float speed);
+
+    /**
+     * @brief Sets current animation direction
+     */
     void setDirection(Direction dir);
+
+    /**
+     * @brief Gets current frame index
+     */
     int getCurrentFrameIndex();
 };
 

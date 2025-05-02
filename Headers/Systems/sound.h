@@ -4,36 +4,59 @@
 #include "../../src/include/SDL2/SDL_mixer.h"
 #include <string>
 
+/**
+ * @class Sound
+ * @brief Handles audio playback and management
+ */
 class Sound
 {
 public:
     Sound();
     ~Sound();
 
-    // Initialize the audio system
+    /**
+     * @brief Initializes the audio subsystem
+     */
     bool init(int frequency = 44100, Uint16 format = MIX_DEFAULT_FORMAT, int channels = 2, int chunksize = 2048);
 
-    // Load and manage music
+    /**
+     * @brief Loads music file from disk
+     */
     Mix_Music *loadMusic(const char *path);
+
+    /**
+     * @brief Plays loaded music
+     */
     void playMusic(Mix_Music *music, int loops = -1);
+
     void stopMusic();
+
     void pauseMusic();
+
     void resumeMusic();
+
     void setMusicVolume(int volume); // 0-128
+
     int getMusicVolume();
 
-    // Load and manage sound effects
+    /**
+     * @brief Loads sound effect from disk
+     */
     Mix_Chunk *loadSound(const char *path);
+
     void playSound(Mix_Chunk *sound, bool enabled = true);
 
-    // Audio settings
+    /**
+     * @brief Applies audio settings based on user selection
+     */
     void applyAudioSettings(int option, Mix_Music *music, bool &sfxEnabled);
 
-    // Close audio system
+    /**
+     * @brief Closes audio subsystem
+     */
     void close();
 
 private:
-    // Audio management
     bool initialized;
 };
 

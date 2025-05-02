@@ -15,6 +15,10 @@
 #include "../Entities/stage.h"
 #include "../Systems/sound.h"
 
+/**
+ * @class GameEngine
+ * @brief Main game controller that manages all game systems
+ */
 class GameEngine
 {
 private:
@@ -63,29 +67,80 @@ private:
     // Key states
     bool keyStates[SDL_NUM_SCANCODES];
 
-    // Initialize the game components
+    /**
+     * @brief Initializes all game components
+     */
     bool initializeComponents();
 
-    // Handle game states
+    /**
+     * @brief Manages the introduction sequence
+     */
     void handleIntro();
+
+    /**
+     * @brief Manages the main menu state
+     */
     void handleMenu();
+
+    /**
+     * @brief Manages active gameplay state
+     */
     void handleGameplay();
+
+    /**
+     * @brief Manages the pause menu
+     */
     void handlePauseMenu();
+
+    /**
+     * @brief Manages level completion state
+     */
     void handleWin();
+
+    /**
+     * @brief Manages player death state
+     */
     void handleDeath();
 
-    // Process input
+    /**
+     * @brief Processes user input each frame
+     */
     void processInput();
 
 public:
+    /**
+     * @brief Constructor for GameEngine
+     */
     GameEngine();
+
+    /**
+     * @brief Destructor for GameEngine
+     */
     ~GameEngine();
 
+    /**
+     * @brief Initializes the game engine
+     */
     bool initialize();
+
+    /**
+     * @brief Runs the main game loop
+     */
     void run();
+
+    /**
+     * @brief Cleans up resources before exit
+     */
     void cleanup();
 
+    /**
+     * @brief Checks if mouse was clicked
+     */
     bool wasMouseClicked() { return mouseClicked; }
+
+    /**
+     * @brief Resets mouse click state
+     */
     void resetMouseClick() { mouseClicked = false; }
 };
 
