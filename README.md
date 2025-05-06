@@ -112,7 +112,7 @@
 - Graphics sourced from [Opengameart](https://opengameart.org) and self-designed using [LibreSprite](https://github.com/LibreSprite/libresprite.github.io/blob/master/install.md)
 - Music: [Massah](https://www.newgrounds.com/audio/listen/1412555)
 - Sound Effects (SFX): from retro sfx on YouTube
-- Building references from [Phaser](https://phaser.io/examples/v3.85.0)
+- Building references from [Phaser](https://phaser.io/examples/v3.85.0) and [GIVE-UP](https://github.com/NPNLong/GIVE-UP?fbclid=IwY2xjawKGtftleHRuA2FlbQIxMABicmlkETE1eDVEVWlzb1V6dmFURDhuAR6yitnHWqIJapz-Lg82sW0wm4693QIQk0DthdXm7jot79TJv8zGP0d7-2yEfQ_aem_4LRSt8B7oUwCqGvp6azH6A)
 
 ---
 
@@ -239,4 +239,4 @@
 
 - Âm thanh (SFX): từ các retro sfx trên youtube
 
-- Tham khảo các cách dựng từ [Phaser](https://phaser.io/examples/v3.85.0)
+- Tham khảo các cách dựng từ [Phaser](https://phaser.io/examples/v3.85.0) và [GIVE-UP](https://github.com/NPNLong/GIVE-UP?fbclid=IwY2xjawKGtftleHRuA2FlbQIxMABicmlkETE1eDVEVWlzb1V6dmFURDhuAR6yitnHWqIJapz-Lg82sW0wm4693QIQk0DthdXm7jot79TJv8zGP0d7-2yEfQ_aem_4LRSt8B7oUwCqGvp6azH6A)
