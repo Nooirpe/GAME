@@ -25,25 +25,6 @@ GameEngine::GameEngine() : player(nullptr),
 {
     // Initialize key states array
     memset(keyStates, false, sizeof(keyStates));
-
-    // Initialize texture arrays
-    for (int i = 0; i < 3; i++)
-    {
-        introTexture[i] = nullptr;
-        pauseTexture[i] = nullptr;
-        quitTexture[i] = nullptr;
-    }
-
-    for (int i = 0; i < 5; i++)
-    {
-        healthTexture[i] = nullptr;
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-        levelTexture[i] = nullptr;
-        settingTexture[i] = nullptr;
-    }
 }
 
 GameEngine::~GameEngine() {}
@@ -379,50 +360,6 @@ void GameEngine::cleanup()
     {
         SDL_DestroyTexture(menuTexture);
         menuTexture = nullptr;
-    }
-
-    for (int i = 0; i < 3; i++)
-    {
-        if (introTexture[i] != nullptr)
-        {
-            SDL_DestroyTexture(introTexture[i]);
-            introTexture[i] = nullptr;
-        }
-
-        if (pauseTexture[i] != nullptr)
-        {
-            SDL_DestroyTexture(pauseTexture[i]);
-            pauseTexture[i] = nullptr;
-        }
-
-        if (quitTexture[i] != nullptr)
-        {
-            SDL_DestroyTexture(quitTexture[i]);
-            quitTexture[i] = nullptr;
-        }
-    }
-
-    for (int i = 0; i < 5; i++)
-    {
-        if (healthTexture[i] != nullptr)
-        {
-            SDL_DestroyTexture(healthTexture[i]);
-            healthTexture[i] = nullptr;
-        }
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-        if (levelTexture[i] != nullptr)
-        {
-            SDL_DestroyTexture(levelTexture[i]);
-            levelTexture[i] = nullptr;
-        }
-        if (settingTexture[i] != nullptr)
-        {
-            SDL_DestroyTexture(settingTexture[i]);
-            settingTexture[i] = nullptr;
-        }
     }
 
     // Free music and sound effects

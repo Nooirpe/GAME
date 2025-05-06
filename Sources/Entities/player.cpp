@@ -1,13 +1,6 @@
 #include "../../Headers/Entities/player.h"
 #include "../../Headers/Systems/animation.h"
 
-void Player::createPlayer(const Graphics &graphics)
-{
-    character = IMG_LoadTexture(graphics.renderer, "C:/C++/GAME/GAME/Assets/chibi/idle/idle.png");
-    rect.h = height;
-    rect.w = width;
-}
-
 void Player::spawnPlayer(int spawnX, int spawnY)
 {
     this->x = spawnX;
@@ -139,31 +132,27 @@ void Player::updateImmunityState(float deltaTime)
 
 void Player::updateMovementAnimation()
 {
-    // Only update movement direction when not attacking
-    if (!isAttacking)
+    if (velocityX > 0)
     {
-        if (velocityX > 0)
-        {
-            lastDirection = Animation::RIGHT;
-            animation.setDirection(Animation::RIGHT);
-        }
-        else if (velocityX < 0)
-        {
-            lastDirection = Animation::LEFT;
-            animation.setDirection(Animation::LEFT);
-        }
-        else if (velocityY > 0)
-        {
-            animation.setDirection(Animation::DOWN);
-        }
-        else if (velocityY < 0)
-        {
-            animation.setDirection(Animation::UP);
-        }
-        else
-        {
-            animation.setDirection(Animation::IDLE);
-        }
+        lastDirection = Animation::RIGHT;
+        animation.setDirection(Animation::RIGHT);
+    }
+    else if (velocityX < 0)
+    {
+        lastDirection = Animation::LEFT;
+        animation.setDirection(Animation::LEFT);
+    }
+    else if (velocityY > 0)
+    {
+        animation.setDirection(Animation::DOWN);
+    }
+    else if (velocityY < 0)
+    {
+        animation.setDirection(Animation::UP);
+    }
+    else
+    {
+        animation.setDirection(Animation::IDLE);
     }
 }
 
@@ -304,9 +293,6 @@ void Player::render(SDL_Renderer *renderer, float deltaTime)
             SDL_RenderCopyEx(renderer, animationTexture, &srcRect, &dstRect, 0, NULL, flip);
         }
     }
-
-    // Update animation
-    animation.update(deltaTime);
 }
 
 void Player::attack()
@@ -377,9 +363,6 @@ void Player::takeDamage(int damageDirection)
 
 void Player::handleInput(const Uint8 *currentKeyStates, float deltaTime, int level)
 {
-    // Store previous moving state
-    wasMoving = isMoving;
-
     // Only allow player control if not in knockback state
     if (!isKnockback)
     {
@@ -418,15 +401,10 @@ void Player::handleInput(const Uint8 *currentKeyStates, float deltaTime, int lev
     checkPlatformCollisions(level);
     applyHorizontalMovement(deltaTime);
     checkBoundaries(level);
-
-    // Update collision rect
-    rect.x = static_cast<int>(x);
-    rect.y = static_cast<int>(y);
-
     // Update attack hitbox position based on player direction and position
     if (isAttacking)
     {
-        if (animation.currentDirection == Animation::LEFT)
+        if (lastDirection == Animation::LEFT)
         {
             attackHitbox = {
                 static_cast<int>(x - width / 2),
@@ -443,9 +421,6 @@ void Player::handleInput(const Uint8 *currentKeyStates, float deltaTime, int lev
                 height / 2};
         }
     }
-
-    // Set moving state based on any movement (horizontal or vertical)
-    isMoving = (velocityX != 0 || !isGrounded);
 }
 
 void Player::applyGravity(float deltaTime)
@@ -466,16 +441,16 @@ void Player::applyHorizontalMovement(float deltaTime)
     x += velocityX * deltaTime;
 }
 
-bool Player::checkPlatformLanding(float left, float right, float height, float tolerance)
+bool Player::checkPlatformLanding(float left, float right, float platformHeight, float tolerance)
 {
     // Check if player is above the platform
     if (x + width > left && x < right &&
-        y + this->height <= PLATFORM_HEIGHT - height + tolerance + 3.0f &&
-        y + this->height >= PLATFORM_HEIGHT - height - tolerance - 3.0f &&
+        y + height <= PLATFORM_HEIGHT - platformHeight + tolerance + 3.0f &&
+        y + height >= PLATFORM_HEIGHT - platformHeight - tolerance - 3.0f &&
         velocityY > 0) // Only land when falling down
     {
         // Land on platform
-        y = PLATFORM_HEIGHT - this->height - height;
+        y = PLATFORM_HEIGHT - height - platformHeight;
         velocityY = 0;
         isGrounded = true;
         justLanded = true;
@@ -490,10 +465,10 @@ bool Player::checkPlatformLanding(float left, float right, float height, float t
     return false;
 }
 
-bool Player::isOnPlatform(float left, float right, float height)
+bool Player::isOnPlatform(float left, float right, float platformHeight)
 {
     return (x + width > left && x < right &&
-            y + this->height == PLATFORM_HEIGHT - height);
+            y + height == PLATFORM_HEIGHT - platformHeight);
 }
 
 void Player::checkPlatformCollisions(int level)
@@ -518,16 +493,14 @@ void Player::handleLevelOneCollisions()
     bool isOverGap = ((x + width) > 432 && (x + width) < 480) ||
                      ((x + width) > 935 && (x + width) < 975);
 
-    // IMMEDIATELY make the player not grounded when over a gap
+    // make the player not grounded when over a gap
     if (isOverGap)
     {
         isGrounded = false;
 
-        // Set hasFallen only when they actually drop below platform level
         if (y >= PLATFORM_HEIGHT - 10)
         {
             hasFallen = true;
-            justSpawned = false;
         }
     }
 
@@ -720,7 +693,7 @@ void Player::checkBoundaries(int level)
         // Platform 4 boundaries collision (811-860, height 52)
         if (y + height > PLATFORM_HEIGHT - 52 && y < PLATFORM_HEIGHT - 52 + 52)
         {
-            if (x + width > 811 && x + width < 811)
+            if (x + width > 811 && x < 811)
             {
                 x = 811 - width;
             }

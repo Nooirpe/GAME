@@ -1,19 +1,5 @@
 #include "../../Headers/Entities/obstacle.h"
 
-void Bat::spawnBat(float spawnX, float spawnY, float leftBound, float rightBound)
-{
-    x = spawnX;
-    y = spawnY;
-    leftBoundary = leftBound;
-    rightBoundary = rightBound;
-    direction = 1;
-    currentFrame = 0;
-    frameTime = 0.0f;
-    currentState = FLY;
-    rect = {static_cast<int>(x), static_cast<int>(y), width, height};
-    isDead = false;
-}
-
 void Bat::createBat(const Graphics &graphics, float startX, float startY, float leftBound, float rightBound)
 {
     // Khởi tạo vị trí và ranh giới
@@ -35,7 +21,6 @@ void Bat::createBat(const Graphics &graphics, float startX, float startY, float 
 
 void Bat::LoadTextures(SDL_Renderer *renderer)
 {
-    idleTexture = IMG_LoadTexture(renderer, "Assets/monster/Idle/Idle.png");
     flyTexture = IMG_LoadTexture(renderer, "Assets/monster/Fly/Fly.png");
     hurtTexture = IMG_LoadTexture(renderer, "Assets/monster/Hurt/Hurt.png");
     dieTexture = IMG_LoadTexture(renderer, "Assets/monster/Die/Die.png");
@@ -49,7 +34,7 @@ void Bat::CalculateDimensions()
         SDL_QueryTexture(flyTexture, NULL, NULL, &textureWidth, &textureHeight);
         int frameWidth = textureWidth / flyFrames;
         int frameHeight = textureHeight;
-        float scale = 0.35f; // Scale để giảm kích thước so với texture gốc
+        float scale = 0.25f; // Scale để giảm kích thước so với texture gốc
 
         width = static_cast<int>(frameWidth * scale);
         height = static_cast<int>(frameHeight * scale);
@@ -118,10 +103,6 @@ void Bat::updateAnimation(float deltaTime)
         // Xử lý animation theo từng trạng thái
         switch (currentState)
         {
-        case IDLE:
-            currentFrame = (currentFrame + 1) % idleFrames;
-            break;
-
         case FLY:
             currentFrame = (currentFrame + 1) % flyFrames;
             break;
@@ -161,7 +142,7 @@ void Bat::die()
 
 void Bat::hurt()
 {
-    // Chỉ xử lý nếu không đang trong trạng thái die hoặc hurt và chưa chết
+    // Chỉ xử lý nếu không đang trong trạng thái die hợac hurt
     if (currentState != DIE && currentState != HURT && !isDead)
     {
         hitCount++;
@@ -196,10 +177,6 @@ void Bat::render(SDL_Renderer *renderer)
 
     switch (currentState)
     {
-    case IDLE:
-        currentTexture = idleTexture;
-        frameCount = idleFrames;
-        break;
     case FLY:
         currentTexture = flyTexture;
         frameCount = flyFrames;

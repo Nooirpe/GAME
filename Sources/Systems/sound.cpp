@@ -1,7 +1,6 @@
 #include "../../Headers/Systems/sound.h"
 #include <iostream>
 
-// Global sound system instance
 Sound soundSystem;
 
 Sound::Sound() : initialized(false)

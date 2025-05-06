@@ -15,7 +15,6 @@ using namespace std;
 struct Bat
 {
     // Textures
-    SDL_Texture *idleTexture = nullptr;
     SDL_Texture *flyTexture = nullptr;
     SDL_Texture *dieTexture = nullptr;
     SDL_Texture *hurtTexture = nullptr;
@@ -38,7 +37,6 @@ struct Bat
     float frameDuration = 0.1f;
 
     // Frame counts cho mỗi trạng thái
-    int idleFrames = 12;
     int flyFrames = 8;
     int hurtFrames = 8;
     int dieFrames = 8;
@@ -48,7 +46,6 @@ struct Bat
     float hurtTimer = 0.0f; // Timer cho animation hurt
     enum State
     {
-        IDLE,
         FLY,
         HURT,
         DIE

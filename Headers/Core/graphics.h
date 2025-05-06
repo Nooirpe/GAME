@@ -42,11 +42,6 @@ struct Graphics
     void renderTexture(SDL_Texture *texture, int x, int y);
 
     /**
-     * @brief Renders part of a texture using a source rectangle
-     */
-    void blitRect(SDL_Texture *texture, SDL_Rect *src, int x, int y);
-
-    /**
      * @brief Cleans up and shuts down the graphics system
      */
     void quit();

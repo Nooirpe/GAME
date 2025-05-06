@@ -12,7 +12,7 @@
 #include "../Systems/animation.h"
 #include "../States/game.h"
 #include "../Entities/obstacle.h"
-#include "../Entities/stage.h"
+#include "../States/stage.h"
 #include "../Systems/sound.h"
 
 /**
@@ -26,6 +26,7 @@ private:
     Graphics graphics;
     Cursor cursor;
     Player *player;
+    Sound soundSystem;
 
     // Game state
     bool quit;
@@ -49,12 +50,6 @@ private:
 
     // Resources
     SDL_Texture *menuTexture;
-    SDL_Texture *introTexture[3];
-    SDL_Texture *healthTexture[5];
-    SDL_Texture *levelTexture[4];
-    SDL_Texture *settingTexture[4];
-    SDL_Texture *quitTexture[3];
-    SDL_Texture *pauseTexture[3];
 
     Mix_Music *gameMusic;
     Mix_Chunk *menuSelect;
@@ -114,10 +109,6 @@ public:
      * @brief Cleans up resources before exit
      */
     void cleanup();
-
-    bool wasMouseClicked() { return mouseClicked; }
-
-    void resetMouseClick() { mouseClicked = false; }
 };
 
 #endif // GAME_ENGINE_H

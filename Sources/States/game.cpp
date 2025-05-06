@@ -2,7 +2,7 @@
 #include "../../Headers/Entities/player.h"
 #include "../../Headers/Core/graphics.h"
 #include "../../Headers/Entities/obstacle.h"
-#include "../../Headers/Entities/stage.h"
+#include "../../Headers/States/stage.h"
 #include "../../Headers/Systems/sound.h"
 
 void intro(Graphics graphics)
@@ -150,10 +150,6 @@ void menu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, boo
                     {
                         SDL_DestroyTexture(tempTexture);
                     }
-                    tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
-                    graphics.prepareImg(tempTexture);
-                    graphics.presentScene();
-                    SDL_DestroyTexture(tempTexture);
                     tempTexture = nullptr;
 
                     ingame = 1;
@@ -195,10 +191,6 @@ void menu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, boo
                     {
                         SDL_DestroyTexture(tempTexture);
                     }
-                    tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
-                    graphics.prepareImg(tempTexture);
-                    graphics.presentScene();
-                    SDL_DestroyTexture(tempTexture);
                     tempTexture = nullptr;
 
                     ingame = 1;
@@ -240,10 +232,6 @@ void menu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, boo
                     {
                         SDL_DestroyTexture(tempTexture);
                     }
-                    tempTexture = graphics.loadTexture("Assets\\Menu\\level.png");
-                    graphics.prepareImg(tempTexture);
-                    graphics.presentScene();
-                    SDL_DestroyTexture(tempTexture);
                     tempTexture = nullptr;
 
                     ingame = 1;
@@ -288,12 +276,12 @@ void menu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, boo
         {
             tempTexture = graphics.loadTexture("Assets\\Menu\\setting 1.png");
         }
-        else if (options == 2 || options == 3)
+        else if (options == 3)
         {
             tempTexture = graphics.loadTexture("Assets\\Menu\\setting 3.png");
             options = 3;
         }
-        else if (options == 4 || options == 5)
+        else if (options == 5)
         {
             tempTexture = graphics.loadTexture("Assets\\Menu\\setting 4.png");
             options = 5;
@@ -316,25 +304,25 @@ void menu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, boo
                 {
                     if (options == 1)
                     {
-                        options = 2;
-                        AudioSettings(3, sfxEnabled);
+                        options = 3;
+                        AudioSettings(options, sfxEnabled);
                     }
                     else if (options == 3)
                     {
                         options = 1;
                         soundSystem.playSound(menuSelect, sfxEnabled);
-                        AudioSettings(1, sfxEnabled);
+                        AudioSettings(options, sfxEnabled);
                     }
                     else if (options == 6)
                     {
-                        options = 4;
+                        options = 5;
                         soundSystem.playSound(menuSelect, sfxEnabled);
-                        AudioSettings(5, sfxEnabled);
+                        AudioSettings(options, sfxEnabled);
                     }
                     else if (options == 5)
                     {
                         options = 6;
-                        AudioSettings(6, sfxEnabled);
+                        AudioSettings(options, sfxEnabled);
                     }
                 }
             }
@@ -350,25 +338,25 @@ void menu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count, boo
                 {
                     if (options == 1)
                     {
-                        options = 4;
-                        AudioSettings(5, sfxEnabled);
+                        options = 5;
+                        AudioSettings(options, sfxEnabled);
                     }
                     else if (options == 5)
                     {
                         options = 1;
                         soundSystem.playSound(menuSelect, sfxEnabled);
-                        AudioSettings(1, sfxEnabled);
+                        AudioSettings(options, sfxEnabled);
                     }
                     else if (options == 6)
                     {
-                        options = 2;
+                        options = 3;
                         soundSystem.playSound(menuSelect, sfxEnabled);
-                        AudioSettings(3, sfxEnabled);
+                        AudioSettings(options, sfxEnabled);
                     }
                     else if (options == 3)
                     {
                         options = 6;
-                        AudioSettings(6, sfxEnabled);
+                        AudioSettings(options, sfxEnabled);
                     }
                 }
             }
@@ -500,10 +488,8 @@ void pauseMenu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count
     // Đặt giá trị mặc định là false - người dùng chưa thực hiện hành động
     userAction = false;
 
-    // Default pause menu
     tempTexture = graphics.loadTexture("Assets\\Things\\Pause\\pause1.png");
 
-    // Check for mouse hover on resume button (coordinates: x = 460 to 845, y = 310 to 375)
     if (cursor.point.x > 460 && cursor.point.x < 845 && cursor.point.y > 310 && cursor.point.y < 375)
     {
         SDL_DestroyTexture(tempTexture);
@@ -529,7 +515,6 @@ void pauseMenu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count
             return;
         }
     }
-    // Check for mouse hover on menu button (coordinates: x = 460 to 845, y = 440 to 503)
     else if (cursor.point.x > 460 && cursor.point.x < 845 && cursor.point.y > 440 && cursor.point.y < 503)
     {
         SDL_DestroyTexture(tempTexture);

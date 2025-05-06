@@ -45,27 +45,12 @@ public:
      */
     void update(float deltaTime);
 
-    /**
-     * @brief Gets current frame for rendering
-     */
-    SDL_Rect getCurrentFrame();
-
-    /**
-     * @brief Gets offset for current direction
-     */
-    int getDirectionOffset();
-
     void setAnimationSpeed(float speed);
 
     /**
      * @brief Sets current animation direction
      */
     void setDirection(Direction dir);
-
-    /**
-     * @brief Gets current frame index
-     */
-    int getCurrentFrameIndex();
 };
 
 #endif

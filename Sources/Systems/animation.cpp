@@ -38,18 +38,6 @@ void Animation::update(float deltaTime)
     }
 }
 
-SDL_Rect Animation::getCurrentFrame()
-{
-    if (currentFrame >= static_cast<int>(frames.size()))
-        currentFrame = 0;
-    return frames[currentFrame];
-}
-
-int Animation::getDirectionOffset()
-{
-    return (currentDirection < IDLE) ? currentDirection * framesPerDirection : 0;
-}
-
 void Animation::setAnimationSpeed(float speed)
 {
     frameDelay = 1.0f / speed;
@@ -63,9 +51,4 @@ void Animation::setDirection(Direction dir)
         frameTime = 0;
     }
     currentDirection = dir;
-}
-
-int Animation::getCurrentFrameIndex()
-{
-    return currentFrame;
 }

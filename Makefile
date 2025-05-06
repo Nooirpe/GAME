@@ -1,14 +1,15 @@
 CXX = g++
-CXXFLAGS = -g -Wall -Wextra -std=c++11
+CXXFLAGS = -g -Wall -std=c++11
 INCLUDES = -Isrc/include
 LIBS = -Lsrc/lib -lmingw32 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lSDL2
 
+# Unity build - all source files are included in GameUnity.cpp
 OBJECTS = main.o GameUnity.o
 
-all: main
+all: RunMo
 
-main: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o main $(OBJECTS) $(LIBS)
+RunMo: $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o RunMo $(OBJECTS) $(LIBS)
 
 # Main program files
 main.o: main.cpp
@@ -18,13 +19,17 @@ GameUnity.o: GameUnity.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 run: all
-	.\main
+	.\RunMo
 
-.PHONY: clean all run
+# Create a zip file for distribution
+zip:
+	powershell Compress-Archive -Path *, Assets/*, Headers/*, Sources/*, src/* -DestinationPath RunMo_Windows.zip -Force
+
+.PHONY: clean all run zip
 
 clean:
 ifeq ($(OS),Windows_NT)
-	del /Q /F main.exe *.o 2>NUL || echo "Already clean"
+	del /Q /F RunMo.exe *.o 2>NUL || echo "Already clean"
 else
-	rm -f main *.o *.exe
+	rm -f RunMo *.o
 endif

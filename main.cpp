@@ -1,5 +1,5 @@
 #define SDL_MAIN_HANDLED
-#include <bits/stdc++.h>
+#include <iostream>
 #include "Headers/Core/GameEngine.h"
 
 int main()

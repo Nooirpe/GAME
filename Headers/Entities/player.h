@@ -24,7 +24,6 @@ struct Player
     ~Player();
 
     // Core functions
-    void createPlayer(const Graphics &graphics);
     void spawnPlayer(int spawnX, int spawnY);
     void update(float deltaTime);
     void render(SDL_Renderer *renderer, float deltaTime);
@@ -91,7 +90,6 @@ struct Player
     int attackDamage = 1;
     SDL_Rect attackHitbox;
     Animation::Direction lastDirection = Animation::RIGHT;
-    bool canAttackAgain = true; // Flag để kiểm soát việc spam phím attack
 
     // Damage states
     bool isImmune = false;
@@ -116,11 +114,11 @@ private:
     void updateAttackState(float deltaTime);
     void updateImmunityState(float deltaTime);
     void updateMovementAnimation();
-    void updateKnockbackState(float deltaTime); // New method to handle knockback
+    void updateKnockbackState(float deltaTime);
     void handleLevelOneCollisions();
     void handleLevelTwoCollisions();
     void handleLevelThreeCollisions();
-    bool checkPlatformLanding(float left, float right, float height, float tolerance);
-    bool isOnPlatform(float left, float right, float height);
+    bool checkPlatformLanding(float left, float right, float platformHeight, float tolerance);
+    bool isOnPlatform(float left, float right, float platformHeight);
 };
 #endif
