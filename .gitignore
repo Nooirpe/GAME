@@ -1,5 +1,4 @@
 # C++ build artifacts
-*.exe
 *.obj
 *.o
 *.a
