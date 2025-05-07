@@ -59,5 +59,5 @@ public:
 private:
     bool initialized;
 };
-
+extern Sound soundSystem;
 #endif // _SOUND__H

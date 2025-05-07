@@ -489,9 +489,11 @@ void pauseMenu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count
     userAction = false;
 
     tempTexture = graphics.loadTexture("Assets\\Things\\Pause\\pause1.png");
+    cursor.in = 0;
 
     if (cursor.point.x > 460 && cursor.point.x < 845 && cursor.point.y > 310 && cursor.point.y < 375)
     {
+        cursor.in = 1;
         SDL_DestroyTexture(tempTexture);
         tempTexture = graphics.loadTexture("Assets\\Things\\Pause\\pause2.png");
 
@@ -560,6 +562,7 @@ void pauseMenu(Graphics &graphics, Cursor &cursor, bool mouseClicked, int &count
     }
     else
     {
+        cursor.in = 0;
         // Reset sound flag when not hovering over any button
         playSound = true;
     }

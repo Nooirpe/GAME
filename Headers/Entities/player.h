@@ -85,7 +85,7 @@ struct Player
     // Attack states
     bool isAttacking = false;
     float attackTimer = 0.0f;
-    float attackDuration = 0.8f; // Tăng từ 0.5f lên 0.8f để animation hoàn thành đầy đủ
+    float attackDuration = 0.8f;
     int attackFrame = 0;
     int attackDamage = 1;
     SDL_Rect attackHitbox;

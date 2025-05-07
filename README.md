@@ -1,242 +1,525 @@
-# **RunMo!**
+# <img src="Assets/chibi/idle/player.png" width="30"> **RunMo!** <img src="Assets/chibi/idle/player.png" width="30">
 
-# **_English/Tiếng Anh_**
-
-## **Introduction**
-
-- Name: Nguyen Le Dung - K69I - UET
-- Student ID: 24022633
-- Game name: RunMo!
-
-## **Description**
-
-### **General Description**
-
-- RunMo! is a game developed using C++ and SDL2, created as a project for the Advanced Programming class (2425II_INT2215_12)
-- You play as a knight. All you need to do is overcome obstacles and reach the end
-- The game concept is inspired by and simplified from "I Wanna Be the Guy: The Movie: The Game (Michael O'Reilly, 2007)"
-- Video: [RunMo!](https://youtu.be/JKnO0Bbb6xU)
-
-### **Details**
-
-- An Intro section when first entering the game
-- Main menu
-- The game consists of 3 levels, with more features and obstacles as you progress
-- Each level includes CHARACTER, PATH, OBSTACLES, END GATE, press ESC to exit the level. In the right corner, the remaining health is displayed, when health reaches 0, it's GAME OVER!
-
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/Menu%201.png)
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Intro/Intro%201.PNG)
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/gameover.png)
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/complete.png)
-
-## **Key Features**
-
-### **Structure**
-
-- Files are organized by functionality for better system organization and easier debugging
-
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Structure.png)
-
-- Core:
-  - GameEngine: Manages all systems
-  - Graphics: Handles rendering and window management
-- Entities:
-  - Obstacles: Handles monsters and features (Bat)
-  - Player: Handles the playable character
-  - Stage: Handles each game level
-- States:
-  - Game: Handles intro, menu, pause, win, death, etc. (ingame and outgame)
-- Systems:
-
-  - Animation: Handles spriteSheet animation
-  - Cursor: Draws the mouse and updates position
-  - Defs: Basic parameters (screen length, width, etc.)
-  - Sounds: Manages audio
-
-- The integration and extension of features in the game becomes flexible. Game loop is tightly organized.
-
-### **Features**
-
-- Level selection feature activated by mouse click
-
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/level.png)
-
-- Turn on/off sfx/music feature
-
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/setting%201.png)
-
-- Exit game feature
-
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/quit%201.png)
-
-- Health reduction feature upon death
-
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/Death/5.png)
-
-- Level exit feature when pressing ESC
-
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/Pause/pause1.png)
-
-### **Victory and Defeat**
-
-- When entering the victory gate
-
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/win.png)
-
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/complete.png)
-
-- When failing (health = 0)
-
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/gameover.png)
-
-### **Characters**
-
-- Knight
-
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/chibi/idle/player.png)
-
-- Monster
-
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/monster/Idle/monster.png)
-
-### **Sound and Graphics**
-
-- Sound plays throughout the game, with sfx for buttons
-- Graphics run using spritesheets and images, leading to a smooth experience
-
-## **Credits**
-
-- Game idea, features, and gameplay: Nguyen Le Dung
-- Game programming: Nguyen Le Dung
-- SDL2.0 library (referenced from [Lazyfoo](https://lazyfoo.net/tutorials/SDL/index.php), [Tianchinchiko](https://www.youtube.com/@tianchinchiko) and class materials)
-- Graphics sourced from [Opengameart](https://opengameart.org) and self-designed using [LibreSprite](https://github.com/LibreSprite/libresprite.github.io/blob/master/install.md)
-- Music: [Massah](https://www.newgrounds.com/audio/listen/1412555)
-- Sound Effects (SFX): from retro sfx on YouTube
-- Building references from [Phaser](https://phaser.io/examples/v3.85.0) and [GIVE-UP](https://github.com/NPNLong/GIVE-UP?fbclid=IwY2xjawKGtftleHRuA2FlbQIxMABicmlkETE1eDVEVWlzb1V6dmFURDhuAR6yitnHWqIJapz-Lg82sW0wm4693QIQk0DthdXm7jot79TJv8zGP0d7-2yEfQ_aem_4LRSt8B7oUwCqGvp6azH6A)
+<div align="center">
+  <img src="Assets/Menu/Menu 1.png" width="500">
+</div>
 
 ---
 
-# **RunMo!**
+# 📃 **English/Tiếng Anh**
 
-# **Vietnamese/Tiếng Việt**
+## 🎮 **Introduction**
 
-## **Giới thiệu**
+- **Developer:** Nguyen Le Dung - K69I - UET
+- **Student ID:** 24022633
+- **Game:** RunMo!
+- **Demo:** [Watch RunMo! on YouTube](https://youtu.be/JKnO0Bbb6xU)
 
-- Họ và tên: Nguyễn Lê Dũng - K69I - UET
+## 🌟 **Description**
 
-- Mã số sinh viên: 24022633
+### **Overview**
 
-- Tên game: RunMo!
+RunMo! is a 2D platform game developed in C++ using the SDL2 library, created as a project for the Advanced Programming class (2425II_INT2215_12). The game follows a knight character on a challenging journey through various levels with increasing difficulty.
 
-## **Mô tả**
+Inspired by the challenging gameplay of "I Wanna Be the Guy: The Movie: The Game (Michael O'Reilly, 2007)", RunMo! offers a simplified yet engaging platforming experience where timing and precision are key.
 
-### **Mô tả chung**
+<div align="center">
+  <img src="Assets/Things/complete.png" width="400">
+</div>
 
-- RunMo! là trò chơi sử dụng ngôn ngữ C++ và SDL2, là sản phẩm cho bài tập lớn của lớp Lập trình nâng cao (2425II_INT2215_12)
-- Bạn là một kị sĩ. Tất cả những gì bạn cần làm là vượt qua các chướng ngại vật và tới đích
-- Tựa game được lấy ý tưởng và đơn giản hoá từ tựa game "I Wanna Be the Guy: The Movie: The Game (Michael O’Reilly, 2007)"
-- Video: [RunMo!](https://youtu.be/JKnO0Bbb6xU)
+### **Game Elements**
 
-### **Chi tiết**
+- **Introductory sequence** that welcomes players to the game world
+- **Interactive main menu** with multiple options
+- **Three progressive levels** with unique layouts and challenges
+- **Health system** displayed in the top-right corner
+- **Enemy encounters** with animated monsters
+- **Victory and defeat conditions**
 
-- Một phần Intro khi mới vào game
-- Menu chính
-- Game gồm 3 levels, càng lên level cao càng có thêm tính năng cũng như chướng ngại vật
-- Mỗi màn sẽ gồm NHÂN VẬT, ĐƯỜNG ĐI, CHƯỚNG NGẠI VẬT, CỔNG KẾT THÚC, ấn ESC để thoát ra ngoài màn. Bên góc phải màn sẽ hiện lượng máu còn lại, khi máu về 0 sẽ GAME OVER!
+## 🎲 **Gameplay**
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/Menu%201.png)
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Intro/Intro%201.PNG)
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/gameover.png)
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/complete.png)
+### **Controls**
 
-## **Một số điểm nổi bật**
+- **Movement:** W/A/S/D or Arrow keys
+- **Jump:** Space or W/Up Arrow
+- **Attack:** J key
+- **Pause:** ESC key
+- **Menu Navigation:** Mouse
 
-### **Cấu trúc**
+### **Character Abilities**
 
-- Chia file ra riêng từng mục để hệ thống cũng như dễ dàng hơn trong việc sửa lỗi
+- **Running:** Move horizontally across the level
+- **Jumping:** Overcome obstacles and gaps
+- **Attacking:** Defeat enemies with your sword
+- **Platform Detection:** Automatically land on platforms
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Structure.png)
+### **Progression**
 
-- Core:
-  - GameEngine: Quản lý tất cả các hệ thống
-  - Graphics: Xử lý render và quản lý window
-- Entities:
-  - Obstacles: Xử lý quái vật và tính năng (Bat)
-  - Player: Xử lý nhân vật điều khiển
-  - Stage: Xử lý từng màn chơi
-- States:
-  - Game: Xử lý intro, menu, pause, win, death,... (ingame và outgame)
-- Systems:
+Each level introduces new challenges:
 
-  - Animation: Xử lý spriteSheet animation
-  - Cursor: Vẽ chuột và cập nhật vị trí
-  - Defs: 1 số thông số cơ bản (chiều dài, chiều rộng màn hình,...)
-  - Sounds: Quản lý âm thanh
+- **Level 1:** Basic platforming with gaps to jump over
+- **Level 2:** More complex platform arrangements
+- **Level 3:** Advanced platforming with enemy encounters
 
-- Việc tích hợp và mở rộng các chức năng trong game trở nên linh hoạt. Game loop được tổ chức chặt chẽ.
+<div align="center">
+  <img src="Assets/Things/Map/map 1.png" width="250">
+  <img src="Assets/Things/Map/map 2.png" width="250">
+  <img src="Assets/Things/Map/map 3.png" width="250">
+</div>
 
-### **Tính năng**
+### **Health System**
 
-- Tính năng chọn level khi có event click chuột
+- Player starts with 5 health points
+- Health decreases upon falling into pits or enemy contact
+- When health reaches zero, it's GAME OVER!
+- Health is displayed with visual indicators in the corner
 
-  ![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/level.png)
+<div align="center">
+  <img src="Assets/Things/Health/health 5.png" height="50">
+</div>
 
-- Tính năng tắt, bật sfx/music
+## 🔧 **Technical Architecture**
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/setting%201.png)
+The project follows a modular architecture organized by functionality:
 
-- Tính năng thoát game
+<div align="center">
+  <img src="Assets/Structure.png" width="500">
+</div>
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Menu/quit%201.png)
+### **Core Components**
 
-- Tính năng giảm máu khi chết
+- **GameEngine:** The central controller managing the game loop, state transitions, and core systems
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/Death/5.png)
+  ```cpp
+  // Main game loop example
+  void GameEngine::run() {
+      while (!quit) {
+          processInput();
+          if (!ingame) {
+              handleMenu();
+          } else if (isPaused) {
+              handlePauseMenu();
+          } else {
+              handleGameplay();
+          }
+          SDL_Delay(16); // ~60 FPS
+      }
+  }
+  ```
 
-- Tính năng thoát màn khi ấn ESC
+- **Graphics System:** Handles rendering, texture management, and window operations
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/Pause/pause1.png)
+### **Entity System**
 
-### **Chiến thắng và thất bại**
+- **Player:** Implements physics, controls, animations, and state management
 
-- Khi tiến vào cổng chiến thắng
+  ```cpp
+  // Player movement system
+  void Player::handleInput(const Uint8 *currentKeyStates, float deltaTime, int level) {
+      if (!isKnockback) {
+          velocityX = 0;
+          if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A]) {
+              velocityX = -speed;
+              animation.currentDirection = Animation::LEFT;
+          }
+          // More control handling...
+      }
+  }
+  ```
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/win.png)
+- **Enemies:** Features movement patterns, collision detection, and AI behaviors
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/complete.png)
+### **State Management**
 
-- Khi thất bại (máu = 0)
+- **Game State System:** Controls transitions between intro, menu, levels, pause, and game over states
+- **Level-specific Logic:** Each level has unique platform layouts and collision mechanics
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/Things/gameover.png)
+### **Support Systems**
+
+- **Animation:** Sprite-based animation system with frame control
+- **Sound:** Background music and sound effect management
+- **Input:** Mouse and keyboard input handling
+- **Physics:** Gravity, jumping mechanics, and collision resolution
+
+## ✨ **Game Features**
+
+### **Menu System**
+
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="Assets/Menu/level.png" width="200"></td>
+      <td><img src="Assets/Menu/setting 1.png" width="200"></td>
+      <td><img src="Assets/Menu/quit 1.png" width="200"></td>
+    </tr>
+    <tr>
+      <td>Level Selection</td>
+      <td>Audio Settings</td>
+      <td>Exit Option</td>
+    </tr>
+  </table>
+</div>
+
+- **Level Selection:** Choose between three progressively difficult levels
+- **Audio Settings:** Toggle music and sound effects on/off
+- **Exit Game:** Close the application
+
+### **Game States**
+
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="Assets/Things/Death/5.png" width="200"></td>
+      <td><img src="Assets/Things/Pause/pause1.png" width="200"></td>
+      <td><img src="Assets/Things/win.png" width="200"></td>
+    </tr>
+    <tr>
+      <td>Death Sequence</td>
+      <td>Pause Menu</td>
+      <td>Victory Screen</td>
+    </tr>
+  </table>
+</div>
+
+- **Death Animation:** Visual feedback when losing health
+- **Pause System:** Temporarily stop gameplay with ESC
+- **Victory Sequence:** Special animation upon level completion
+- **Game Over:** Screen shown when all health is depleted
+
+### **Characters**
+
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="Assets/chibi/idle/player.png" width="100"></td>
+      <td><img src="Assets/monster/Idle/monster.png" width="100"></td>
+    </tr>
+    <tr>
+      <td>Knight (Player)</td>
+      <td>Monster (Enemy)</td>
+    </tr>
+  </table>
+</div>
+
+- **Knight:** The playable character with running, jumping, and attack animations
+- **Monster:** Enemy that patrols platforms and damages the player on contact
+
+### **Visual & Audio**
+
+- **Sprite Animations:** Fluid character movements using sprite sheets
+- **Parallax Backgrounds:** Multi-layered backgrounds for depth
+- **Dynamic Sound:** Background music and interactive sound effects
+- **Visual Feedback:** Screen effects for important game events
+
+## 🛠️ **Development Details**
+
+### **Technologies Used**
+
+- **Language:** C++
+- **Graphics Library:** SDL2 (SDL2_image, SDL2_ttf, SDL2_mixer)
+- **Build System:** GNU Make
+- **Unity Build Approach:** For efficient compilation
+
+### **Physical Mechanics Implementation**
+
+The game implements custom physics including:
+
+- Gravity and jumping mechanics
+- Platform collision detection
+- Character knockback on damage
+- Attack hitbox calculations
+
+### **Animation System**
+
+Characters and effects use frame-based animations:
+
+- State-based animation selection (idle, running, jumping, attacking)
+- Direction-aware sprite rendering
+- Smooth transitions between animation states
+
+### **Asset Organization**
+
+Assets are organized by type and purpose:
+
+- Character sprites (idle, attack, jump, run)
+- UI elements (menus, cursor, health display)
+- Level maps and backgrounds
+- Monster animations
+- Sound effects and music
+
+## 🏆 **Credits**
+
+- **Game Concept & Programming:** Nguyen Le Dung
+- **SDL2 Library References:**
+  - [Lazyfoo SDL Tutorials](https://lazyfoo.net/tutorials/SDL/index.php)
+  - [Tianchinchiko YouTube Channel](https://www.youtube.com/@tianchinchiko)
+  - Class materials from Advanced Programming
+- **Graphics:**
+  - [OpenGameArt](https://opengameart.org)
+  - Self-designed using [LibreSprite](https://github.com/LibreSprite/libresprite.github.io/blob/master/install.md)
+- **Audio:**
+  - Background Music: [Massah](https://www.newgrounds.com/audio/listen/1412555)
+  - Sound Effects: Retro SFX collections
+- **Inspiration:**
+  - [Phaser Game Framework](https://phaser.io/examples/v3.85.0)
+  - [GIVE-UP Project](https://github.com/NPNLong/GIVE-UP?fbclid=IwY2xjawKGtftleHRuA2FlbQIxMABicmlkETE1eDVEVWlzb1V6dmFURDhuAR6yitnHWqIJapz-Lg82sW0wm4693QIQk0DthdXm7jot79TJv8zGP0d7-2yEfQ_aem_4LRSt8B7oUwCqGvp6azH6A)
+
+---
+
+# 📃 **Vietnamese/Tiếng Việt**
+
+## 🎮 **Giới thiệu**
+
+- **Người phát triển:** Nguyễn Lê Dũng - K69I - UET
+- **Mã số sinh viên:** 24022633
+- **Game:** RunMo!
+- **Demo:** [Xem RunMo! trên YouTube](https://youtu.be/JKnO0Bbb6xU)
+
+## 🌟 **Mô tả**
+
+### **Tổng quan**
+
+RunMo! là game nền tảng 2D được phát triển bằng C++ sử dụng thư viện SDL2, được tạo ra như một dự án cho lớp Lập trình nâng cao (2425II_INT2215_12). Game theo dõi một nhân vật hiệp sĩ trong hành trình đầy thử thách qua các cấp độ với độ khó tăng dần.
+
+Lấy cảm hứng từ lối chơi đầy thử thách của "I Wanna Be the Guy: The Movie: The Game (Michael O'Reilly, 2007)", RunMo! mang đến trải nghiệm nền tảng đơn giản nhưng hấp dẫn, nơi thời gian và độ chính xác là chìa khóa.
+
+<div align="center">
+  <img src="Assets/Things/complete.png" width="400">
+</div>
+
+### **Các yếu tố của trò chơi**
+
+- **Chuỗi giới thiệu** chào đón người chơi đến với thế giới game
+- **Menu chính tương tác** với nhiều tùy chọn
+- **Ba cấp độ tiến triển** với bố cục và thách thức độc đáo
+- **Hệ thống máu** hiển thị ở góc trên bên phải
+- **Gặp quái vật** với hoạt ảnh sinh động
+- **Điều kiện chiến thắng và thất bại**
+
+## 🎲 **Lối chơi**
+
+### **Điều khiển**
+
+- **Di chuyển:** W/A/S/D hoặc phím mũi tên
+- **Nhảy:** Phím cách hoặc W/Mũi tên lên
+- **Tấn công:** Phím J
+- **Tạm dừng:** Phím ESC
+- **Điều hướng menu:** Chuột
+
+### **Khả năng nhân vật**
+
+- **Chạy:** Di chuyển ngang qua cấp độ
+- **Nhảy:** Vượt qua chướng ngại vật và khoảng cách
+- **Tấn công:** Đánh bại kẻ thù bằng kiếm của bạn
+- **Phát hiện nền tảng:** Tự động hạ cánh xuống nền tảng
+
+### **Tiến trình**
+
+Mỗi cấp độ giới thiệu những thách thức mới:
+
+- **Cấp độ 1:** Nền tảng cơ bản với khoảng cách để nhảy qua
+- **Cấp độ 2:** Sắp xếp nền tảng phức tạp hơn
+- **Cấp độ 3:** Nền tảng nâng cao với gặp gỡ kẻ thù
+
+<div align="center">
+  <img src="Assets/Things/Map/map 1.png" width="250">
+  <img src="Assets/Things/Map/map 2.png" width="250">
+  <img src="Assets/Things/Map/map 3.png" width="250">
+</div>
+
+### **Hệ thống máu**
+
+- Người chơi bắt đầu với 5 điểm máu
+- Máu giảm khi rơi xuống hố hoặc tiếp xúc với kẻ thù
+- Khi máu về không, GAME OVER!
+- Máu được hiển thị bằng chỉ số trực quan ở góc
+
+<div align="center">
+  <img src="Assets/Things/Health/health 5.png" height="50">
+</div>
+
+## 🔧 **Kiến trúc kỹ thuật**
+
+Dự án theo kiến trúc module được tổ chức theo chức năng:
+
+<div align="center">
+  <img src="Assets/Structure.png" width="500">
+</div>
+
+### **Thành phần cốt lõi**
+
+- **GameEngine:** Bộ điều khiển trung tâm quản lý vòng lặp game, chuyển đổi trạng thái, và hệ thống cốt lõi
+
+  ```cpp
+  // Ví dụ vòng lặp game chính
+  void GameEngine::run() {
+      while (!quit) {
+          processInput();
+          if (!ingame) {
+              handleMenu();
+          } else if (isPaused) {
+              handlePauseMenu();
+          } else {
+              handleGameplay();
+          }
+          SDL_Delay(16); // ~60 FPS
+      }
+  }
+  ```
+
+- **Hệ thống đồ họa:** Xử lý render, quản lý texture, và hoạt động cửa sổ
+
+### **Hệ thống thực thể**
+
+- **Người chơi:** Thực hiện vật lý, điều khiển, hoạt ảnh, và quản lý trạng thái
+
+  ```cpp
+  // Hệ thống di chuyển người chơi
+  void Player::handleInput(const Uint8 *currentKeyStates, float deltaTime, int level) {
+      if (!isKnockback) {
+          velocityX = 0;
+          if (currentKeyStates[SDL_SCANCODE_LEFT] || currentKeyStates[SDL_SCANCODE_A]) {
+              velocityX = -speed;
+              animation.currentDirection = Animation::LEFT;
+          }
+          // Xử lý điều khiển thêm...
+      }
+  }
+  ```
+
+- **Kẻ thù:** Các mô hình di chuyển, phát hiện va chạm, và hành vi AI
+
+### **Quản lý trạng thái**
+
+- **Hệ thống trạng thái game:** Điều khiển chuyển đổi giữa intro, menu, cấp độ, tạm dừng, và trạng thái game over
+- **Logic riêng cấp độ:** Mỗi cấp độ có bố cục nền tảng và cơ chế va chạm độc đáo
+
+### **Hệ thống hỗ trợ**
+
+- **Hoạt ảnh:** Hệ thống hoạt ảnh dựa trên sprite với điều khiển khung hình
+- **Âm thanh:** Quản lý nhạc nền và hiệu ứng âm thanh
+- **Đầu vào:** Xử lý đầu vào chuột và bàn phím
+- **Vật lý:** Trọng lực, cơ chế nhảy, và giải quyết va chạm
+
+## ✨ **Tính năng game**
+
+### **Hệ thống Menu**
+
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="Assets/Menu/level.png" width="200"></td>
+      <td><img src="Assets/Menu/setting 1.png" width="200"></td>
+      <td><img src="Assets/Menu/quit 1.png" width="200"></td>
+    </tr>
+    <tr>
+      <td>Chọn cấp độ</td>
+      <td>Cài đặt âm thanh</td>
+      <td>Tùy chọn thoát</td>
+    </tr>
+  </table>
+</div>
+
+- **Chọn cấp độ:** Chọn giữa ba cấp độ có độ khó tăng dần
+- **Cài đặt âm thanh:** Bật/tắt nhạc và hiệu ứng âm thanh
+- **Thoát game:** Đóng ứng dụng
+
+### **Trạng thái game**
+
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="Assets/Things/Death/5.png" width="200"></td>
+      <td><img src="Assets/Things/Pause/pause1.png" width="200"></td>
+      <td><img src="Assets/Things/win.png" width="200"></td>
+    </tr>
+    <tr>
+      <td>Chuỗi tử vong</td>
+      <td>Menu tạm dừng</td>
+      <td>Màn hình chiến thắng</td>
+    </tr>
+  </table>
+</div>
+
+- **Hoạt ảnh tử vong:** Phản hồi trực quan khi mất máu
+- **Hệ thống tạm dừng:** Tạm dừng gameplay bằng ESC
+- **Chuỗi chiến thắng:** Hoạt ảnh đặc biệt khi hoàn thành cấp độ
+- **Game Over:** Màn hình hiển thị khi hết máu
 
 ### **Nhân vật**
 
-- Kị sĩ
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="Assets/chibi/idle/player.png" width="100"></td>
+      <td><img src="Assets/monster/Idle/monster.png" width="100"></td>
+    </tr>
+    <tr>
+      <td>Hiệp sĩ (Người chơi)</td>
+      <td>Quái vật (Kẻ thù)</td>
+    </tr>
+  </table>
+</div>
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/chibi/idle/player.png)
+- **Hiệp sĩ:** Nhân vật có thể chơi với hoạt ảnh chạy, nhảy và tấn công
+- **Quái vật:** Kẻ thù tuần tra nền tảng và gây sát thương cho người chơi khi tiếp xúc
 
-- Quái vật
+### **Đồ họa & Âm thanh**
 
-![image](https://github.com/Nooirpe/GAME/blob/main/Assets/monster/Idle/monster.png)
+- **Hoạt ảnh sprite:** Chuyển động nhân vật mượt mà sử dụng sprite sheet
+- **Nền parallax:** Nền đa lớp để tạo chiều sâu
+- **Âm thanh động:** Nhạc nền và hiệu ứng âm thanh tương tác
+- **Phản hồi trực quan:** Hiệu ứng màn hình cho các sự kiện game quan trọng
 
-### **Hệ thống âm thanh và đồ hoạ**
+## 🛠️ **Chi tiết phát triển**
 
-- Có âm thanh chạy xuyên suốt cả game, sfx cho các nút
+### **Công nghệ sử dụng**
 
-- Đồ hoạ chạy bằng spritesheet cũng như các hình ảnh dẫn tới trải nghiệm mượt mà
+- **Ngôn ngữ:** C++
+- **Thư viện đồ họa:** SDL2 (SDL2_image, SDL2_ttf, SDL2_mixer)
+- **Hệ thống build:** GNU Make
+- **Phương pháp Unity Build:** Giúp biên dịch hiệu quả
 
-## **Credits**
+### **Triển khai cơ chế vật lý**
 
-- Ý tưởng game, các chức năng và gameplay: Nguyễn Lê Dũng
+Game triển khai vật lý tùy chỉnh bao gồm:
 
-- Lập trình game: Nguyễn Lê Dũng
+- Cơ chế trọng lực và nhảy
+- Phát hiện va chạm nền tảng
+- Hiệu ứng đẩy lùi khi bị thương
+- Tính toán hitbox tấn công
 
-- Thư viện SDL2.0 (tham khảo trên [Lazyfoo](https://lazyfoo.net/tutorials/SDL/index.php), [Tianchinchiko](https://www.youtube.com/@tianchinchiko) và tài liệu trên lớp)
+### **Hệ thống hoạt ảnh**
 
-- Đồ hoạ được lấy từ [Opengameart](https://opengameart.org) và tự thiết kế trên [LibreSprite](https://github.com/LibreSprite/libresprite.github.io/blob/master/install.md)
+Nhân vật và hiệu ứng sử dụng hoạt ảnh dựa trên khung hình:
 
-- Âm nhạc: [Massah](https://www.newgrounds.com/audio/listen/1412555)
+- Lựa chọn hoạt ảnh dựa trên trạng thái (đứng yên, chạy, nhảy, tấn công)
+- Render sprite nhận biết hướng
+- Chuyển đổi mượt mà giữa các trạng thái hoạt ảnh
 
-- Âm thanh (SFX): từ các retro sfx trên youtube
+### **Tổ chức tài nguyên**
 
-- Tham khảo các cách dựng từ [Phaser](https://phaser.io/examples/v3.85.0) và [GIVE-UP](https://github.com/NPNLong/GIVE-UP?fbclid=IwY2xjawKGtftleHRuA2FlbQIxMABicmlkETE1eDVEVWlzb1V6dmFURDhuAR6yitnHWqIJapz-Lg82sW0wm4693QIQk0DthdXm7jot79TJv8zGP0d7-2yEfQ_aem_4LRSt8B7oUwCqGvp6azH6A)
+Tài nguyên được tổ chức theo loại và mục đích:
+
+- Sprite nhân vật (đứng yên, tấn công, nhảy, chạy)
+- Phần tử UI (menu, con trỏ, hiển thị máu)
+- Bản đồ cấp độ và nền
+- Hoạt ảnh quái vật
+- Hiệu ứng âm thanh và nhạc
+
+## 🏆 **Ghi công**
+
+- **Khái niệm trò chơi & Lập trình:** Nguyễn Lê Dũng
+- **Tham khảo thư viện SDL2:**
+  - [Hướng dẫn SDL của Lazyfoo](https://lazyfoo.net/tutorials/SDL/index.php)
+  - [Kênh YouTube Tianchinchiko](https://www.youtube.com/@tianchinchiko)
+  - Tài liệu lớp từ Lập trình nâng cao
+- **Đồ họa:**
+  - [OpenGameArt](https://opengameart.org)
+  - Tự thiết kế sử dụng [LibreSprite](https://github.com/LibreSprite/libresprite.github.io/blob/master/install.md)
+- **Âm thanh:**
+  - Nhạc nền: [Massah](https://www.newgrounds.com/audio/listen/1412555)
+  - Hiệu ứng âm thanh: Bộ sưu tập SFX retro
+- **Nguồn cảm hứng:**
+  - [Phaser Game Framework](https://phaser.io/examples/v3.85.0)
+  - [Dự án GIVE-UP](https://github.com/NPNLong/GIVE-UP?fbclid=IwY2xjawKGtftleHRuA2FlbQIxMABicmlkETE1eDVEVWlzb1V6dmFURDhuAR6yitnHWqIJapz-Lg82sW0wm4693QIQk0DthdXm7jot79TJv8zGP0d7-2yEfQ_aem_4LRSt8B7oUwCqGvp6azH6A)
